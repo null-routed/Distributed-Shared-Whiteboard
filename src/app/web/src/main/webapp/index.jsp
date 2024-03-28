@@ -54,7 +54,7 @@
     // Redirect user to main page
     LoggedUserDTO loggedUser = AccessController.getLoggedUser(request);
     if (loggedUser != null) {
-        ClientRedirector.redirectToPortalPage(request, response);
+        ClientRedirector.redirectToMainPage(request, response);
     }
 %>
 

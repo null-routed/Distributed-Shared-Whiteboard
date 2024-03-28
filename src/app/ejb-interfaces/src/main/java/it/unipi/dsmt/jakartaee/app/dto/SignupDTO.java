@@ -12,7 +12,6 @@ public class SignupDTO implements Serializable {
     private String name;
     private String surname;
 
-
     /***
      * Main constructor for SignupDTO.
      * @param username username of the user that requested the signup
