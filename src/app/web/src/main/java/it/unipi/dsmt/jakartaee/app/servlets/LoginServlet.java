@@ -1,4 +1,4 @@
-package servlets;
+package it.unipi.dsmt.jakartaee.app.servlets;
 
 
 import it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO;
@@ -17,7 +17,7 @@ import java.util.Optional;
 @WebServlet(name = "LoginServlet", value = "/login")
 public class LoginServlet extends HttpServlet {
 
-    public static final String failedLoginErrorMessage = "Wrong username or password";
+    public static final String errorOutcome = "error";
 
     @EJB
     private UserEJB userEJB;
@@ -39,9 +39,9 @@ public class LoginServlet extends HttpServlet {
             new LoginInformationsDTO(username, password)
         );
 
-        // Login failed
+        // Login failed -> sending an 'error' GET parameter
         if (loggedUser == null) {
-            response.sendRedirect(request.getContextPath() + "/index.jsp?param=error");
+            response.sendRedirect(request.getContextPath() + "/index.jsp?outcome=error");
         }
 
         //Login successful

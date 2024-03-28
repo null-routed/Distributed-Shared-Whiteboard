@@ -20,8 +20,6 @@ public class SignupDTO implements Serializable {
      * @param email email of the user that requested the signup
      * @param name name of the user that requested the signup
      * @param surname name of the user that requested
-     * @param degree degree of the user that requested the signup
-     * @param language language of the user that requested the signup
      */
     public SignupDTO(String username, String password, String email, String name, String surname, String degree, String language) {
         this.username = username;
