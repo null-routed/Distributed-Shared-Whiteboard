@@ -64,18 +64,18 @@ public class AccessController {
      * @return stored instance of LoggedUserDTO if the user is logged, null otherwise
      * @throws IOException if redirection fails
      */
-//    public static @Nullable LoggedUserDTO getLoggedUserWithRedirect (
-//            @NotNull HttpServletRequest request,
-//            @NotNull HttpServletResponse response) throws IOException
-//    {
-//        LoggedUserDTO loggedUser = getLoggedUser(request);
-//        if (loggedUser == null) {
-//            // User not logged => redirect to the login page
-//            ClientRedirector.redirectToLogin(request, response);
-//        }
-//
-//        return loggedUser;
-//    }
+    public static @Nullable LoggedUserDTO getLoggedUserWithRedirect (
+            @NotNull HttpServletRequest request,
+            @NotNull HttpServletResponse response) throws IOException
+    {
+        LoggedUserDTO loggedUser = getLoggedUser(request);
+        if (loggedUser == null) {
+            // User not logged => redirect to the login page
+            ClientRedirector.redirectToLogin(request, response);
+        }
+
+        return loggedUser;
+    }
 
     /**
      * Get a LoggedUserDTO object corresponding to the currently logged user.

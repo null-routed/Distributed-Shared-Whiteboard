@@ -1,0 +1,4 @@
+it\unipi\dsmt\jakartaee\app\dto\LoginInformationsDTO.class
+it\unipi\dsmt\jakartaee\app\dto\LoggedUserDTO.class
+it\unipi\dsmt\jakartaee\app\interfaces\UserEJB.class
+it\unipi\dsmt\jakartaee\app\dto\SignupDTO.class
