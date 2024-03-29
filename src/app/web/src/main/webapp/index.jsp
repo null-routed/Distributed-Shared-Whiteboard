@@ -41,10 +41,11 @@
 
 <%
     // Login failure check
-    String outcomeParam = request.getParameter("outcome");
+    String outcomeParam = request.getParameter("param");
     if (outcomeParam != null && outcomeParam.equals("error")) {
 %>
         <script>
+            console.log("Wrong username or pwd");
             alert("Error: wrong username or password");       // TODO: show error messages under text box SNH-like
             location.href = "${pageContext.request.contextPath}/";
         </script>

@@ -1,9 +1,9 @@
 <%--
     Webapp login page
 --%>
-<%-- <%@ page import="it.unipi.dsmt.student_platform.utility.ClientRedirector" %> --%>
-<%--<%@ page import="it.unipi.dsmt.student_platform.dto.LoggedUserDTO" %>--%>
-<%--<%@ page import="it.unipi.dsmt.student_platform.utility.AccessController" %>--%>
+<%@ page import="it.unipi.dsmt.jakartaee.app.utility.ClientRedirector" %>
+<%@ page import="it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO" %>
+<%@ page import="it.unipi.dsmt.jakartaee.app.utility.AccessController" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <html>
@@ -33,31 +33,31 @@
         </form>
     </div>
 
-<%--    <button onclick="location.href = '${pageContext.request.contextPath}/signup'">--%>
-<%--        You don't have an account? SIgn up now!--%>
-<%--    </button>--%>
+    <button onclick="location.href = '${pageContext.request.contextPath}/signup'">
+        You don't have an account? SIgn up now!
+    </button>
 </div>
 
 
-<%--<%--%>
-<%--    // Check if the user failed the login--%>
-<%--    String rParam = request.getParameter("r");--%>
-<%--    if (rParam != null && rParam.equals("error")) {--%>
-<%--%>--%>
-<%--<script>--%>
-<%--    alert("Error: failed login");--%>
-<%--    location.href = "${pageContext.request.contextPath}/";--%>
-<%--</script>--%>
-<%--<%--%>
-<%--    }--%>
+<%
+    // Login failure check
+    String outcomeParam = request.getParameter("param");
+    if (outcomeParam != null && outcomeParam.equals("error")) {
+%>
+        <script>
+            console.log("Wrong username or pwd");
+            alert("Error: wrong username or password");       // TODO: show error messages under text box SNH-like
+            location.href = "${pageContext.request.contextPath}/";
+        </script>
+<%
+    }
 
-<%--    // Redirect user is already logged--%>
-<%--    LoggedUserDTO logged_user = AccessController.getLoggedUser(request);--%>
-<%--    if (logged_user != null) {--%>
-<%--        ClientRedirector.redirectToPortalPage(request, response, logged_user.getRole());--%>
-<%--    }--%>
-
-<%--%>--%>
+    // Redirect user to main page
+    LoggedUserDTO loggedUser = AccessController.getLoggedUser(request);
+    if (loggedUser != null) {
+        ClientRedirector.redirectToMainPage(request, response);
+    }
+%>
 
 </body>
 </html>

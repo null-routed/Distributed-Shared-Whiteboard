@@ -10,17 +10,18 @@ import jakarta.ejb.EJB;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Servlet handling POST requests for login.
  */
 @WebServlet(name = "LoginServlet", value = "/login")
 public class LoginServlet extends HttpServlet {
-
-    public static final String errorOutcome = "error";
 
     @EJB
     private UserEJB userEJB;
@@ -43,9 +44,11 @@ public class LoginServlet extends HttpServlet {
         LoginInformationsDTO loginInformationsDTO = new LoginInformationsDTO(username, password);
         LoggedUserDTO loggedUser = userEJB.login(loginInformationsDTO);
 
+        System.out.println("LoginServlet: login procedure completed");
+
         // Login failed -> sending an 'error' GET parameter
         if (loggedUser == null) {
-            response.sendRedirect(request.getContextPath() + "/index.jsp?outcome=error");
+            response.sendRedirect(request.getContextPath() + "/index.jsp?param=error");
         }
 
         //Login successful
