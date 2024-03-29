@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.List;
 
 @WebServlet(name = "HomepageServlet", value = "/homepage")
-public class StudentPortalServlet extends HttpServlet {
+public class HomepageServlet extends HttpServlet {
 
     @EJB
     private DashboardEJB dashboardEJB;
