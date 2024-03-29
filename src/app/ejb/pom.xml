@@ -25,6 +25,18 @@
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
     </dependency>
+      <dependency>
+          <groupId>jakarta.ejb</groupId>
+          <artifactId>jakarta.ejb-api</artifactId>
+          <version>4.0.1</version>
+          <scope>compile</scope>
+      </dependency>
+    <dependency>
+      <groupId>it.unipi.dsmt.jakartaee.app</groupId>
+      <artifactId>ejb-interfaces</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <build>
