@@ -1,19 +1,19 @@
-# Opening and deploying this project using IntelliJ IDEA Ultimate Edition IDE and a local instance of Glassfish 7.0.10:
-## 1) Download this repo and open DSMT/src/app with Intellij IDEA Ultimate edition
-## 2) Delegating build and run actions to Intellij IDEA
+## Opening and deploying this project using IntelliJ IDEA Ultimate Edition IDE and a local instance of Glassfish 7.0.10:
+### 1) Download this repo and open DSMT/src/app with Intellij IDEA Ultimate edition
+### 2) Delegating build and run actions to Intellij IDEA
 * File -> Sttings -> Build, Execution, Deployment -> Build Tools -> Maven -> Runner
 * Check the 'Delegate IDE build/run actions to Maven' checkbox
-## 3) Compiling the 'ejb' and 'ejb-interfaces' modules
+### 3) Compiling the 'ejb' and 'ejb-interfaces' modules
 * Click on 'Maven' in the right sidebar -> ejb -> Lifecycle -> Double-click on 'install'
 * Click on 'Maven' in the right sidebar -> ejb-interfaces -> Lifecycle -> Double-click on 'compile'
-## 4) Configuring the EJB application
+### 4) Configuring the EJB application
 * File -> Project Structure -> Artifacts
 * '+' button -> EJB APplication: Exploded
   * Name: ejb
   * Click on 'ejb' under 'Available Elements' -> Double-click on ''ejb' compile output'
   * CLick on 'ejb-interfaces' under 'Available Elements' -> Double-click on ''ejb-interfaces' compile output'
   * Apply -> OK
-## 5) Setting up the configuration to Glassfish 7.0.10
+### 5) Setting up the configuration to Glassfish 7.0.10
 * Current File -> Edit Configurations...
 * Add new... -> Glassfish Server -> Local
 * Server Tab:
