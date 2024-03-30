@@ -4,14 +4,15 @@ import it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO;
 import it.unipi.dsmt.jakartaee.app.dto.LoginInformationsDTO;
 import it.unipi.dsmt.jakartaee.app.dto.SignupDTO;
 import it.unipi.dsmt.jakartaee.app.interfaces.UserEJB;
+import it.unipi.dsmt.jakartaee.app.enums.SignupStatus;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.Resource;
 import jakarta.ejb.Stateless;
 import org.jetbrains.annotations.NotNull;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.time.Instant;
 
 
 /**
@@ -64,41 +65,50 @@ public class UserEJBImplementation implements UserEJB {
 
     /**
      * definition of the signup operation. Takes a SignupDTO, perform the query and return the result.
+     *
      * @param signupDTO: SignupDTO type which contains user data to be stored
-     * @return boolean value indicating if the signup operation was successful or not
+     * @return SignupStatus value indicating if the signup operation was successful or not, if so error code
      */
     @Override
-    public boolean signup(@NotNull SignupDTO signupDTO){
+    public SignupStatus signup(@NotNull SignupDTO signupDTO){
         System.out.println("UserEJBImplementation: called 'signup' method...");
 
         try(Connection connection = dataSource.getConnection()) {
             // Query preparation
-            String query = "INSERT INTO Users VALUES (?, ?, ?, ?, ?, ?);";
+            String query = "INSERT INTO Users VALUES (?, ?, ?, ?, ?);";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 // Set parameters in prepared statement
                 preparedStatement.setString(1, signupDTO.getUsername());
-                preparedStatement.setString(2, signupDTO.getPassword());
+
+                // hashing password before memorizing in DB -> SHA-256
+                String hashedPassword = DigestUtils.sha256Hex(signupDTO.getPassword());
+                preparedStatement.setString(2, hashedPassword);
+
                 preparedStatement.setString(3, signupDTO.getName());
                 preparedStatement.setString(4, signupDTO.getSurname());
                 preparedStatement.setString(5, signupDTO.getEmail());
-
-                Timestamp userSignupTime = Timestamp.from(Instant.now());
-                preparedStatement.setTimestamp(6, userSignupTime);
-
 
                 // Execute query
                 int result = preparedStatement.executeUpdate();
 
                 // evaluate the return value
                 if (result == 1) {
-                    return true;
+                    return SignupStatus.SUCCESS;
                 } else
-                    return false;
+                    return SignupStatus.OTHER_ERROR;            // general error
             }
-        }
-        catch (SQLException e) {
-            return false;
+        } catch (SQLException e) {
+            // duplicate entry on 'Username' or 'Email' columns
+            if (e.getSQLState().equals("23000") && e.getErrorCode() == 1062) {      // general violation of uniqueness error
+                String SQLErrorMsg =  e.getMessage().toLowerCase();
+                if(SQLErrorMsg.contains("username"))
+                    return SignupStatus.DUPLICATE_USERNAME;
+                if (SQLErrorMsg.contains("email"))
+                    return SignupStatus.DUPLICATE_EMAIL;
+            }
+
+            return SignupStatus.OTHER_ERROR;        // general error
         }
     }
 }

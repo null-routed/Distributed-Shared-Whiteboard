@@ -1,6 +1,7 @@
 package it.unipi.dsmt.jakartaee.app.interfaces;
 
 import it.unipi.dsmt.jakartaee.app.dto.*;
+import it.unipi.dsmt.jakartaee.app.enums.SignupStatus;
 import jakarta.ejb.Remote;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,5 +11,5 @@ import org.jetbrains.annotations.NotNull;
 @Remote
 public interface UserEJB {
     LoggedUserDTO login (@NotNull LoginInformationsDTO loginInformationDTO);
-    boolean signup(SignupDTO signupDTO);
+    SignupStatus signup(SignupDTO signupDTO);
 }

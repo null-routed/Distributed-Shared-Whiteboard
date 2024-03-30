@@ -1,6 +1,5 @@
 package it.unipi.dsmt.jakartaee.app.servlets;
 
-
 import it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO;
 import it.unipi.dsmt.jakartaee.app.dto.LoginInformationsDTO;
 import it.unipi.dsmt.jakartaee.app.interfaces.UserEJB;
@@ -16,6 +15,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+
 
 /**
  * Servlet handling POST requests for login.
@@ -34,20 +34,20 @@ public class LoginServlet extends HttpServlet {
      */
     @Override
     protected void doPost (HttpServletRequest request, HttpServletResponse response) throws IOException {
-        System.out.println("LoginServlet: called 'doPost' method...");
+        System.out.println("LOGINSERVLET: called 'doPost' method...");
 
         // Extract parameters for login
         String username = Optional.ofNullable(request.getParameter("username")).orElse("");
         String password = Optional.ofNullable(request.getParameter("password")).orElse("");
 
         // Execute login through EJB
-        LoginInformationsDTO loginInformationsDTO = new LoginInformationsDTO(username, password);
-        LoggedUserDTO loggedUser = userEJB.login(loginInformationsDTO);
+        LoggedUserDTO loggedUser = userEJB.login(new LoginInformationsDTO(username, password));
 
-        System.out.println("LoginServlet: login procedure completed");
+        System.out.println("LOGINSERVLET: login procedure completed");
 
         // Login failed -> sending an 'error' GET parameter
         if (loggedUser == null) {
+            System.out.println("LOGINSERVLET: redirecting to " + request.getContextPath() + "/index.jsp?param=error");
             response.sendRedirect(request.getContextPath() + "/index.jsp?param=error");
         }
 
@@ -55,5 +55,4 @@ public class LoginServlet extends HttpServlet {
         AccessController.setLoggedUser(request, Objects.requireNonNull(loggedUser));    // add logged user info to session var
         ClientRedirector.redirectToMainPage(request, response);     // redirect to main page
     }
-
 }

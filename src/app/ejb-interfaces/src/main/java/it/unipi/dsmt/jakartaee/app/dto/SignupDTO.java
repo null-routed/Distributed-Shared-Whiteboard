@@ -1,31 +1,40 @@
 package it.unipi.dsmt.jakartaee.app.dto;
 
+import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 
-/***
- * Serializable object for Signup, it carries the information that the server needs to store inside the database.
+/**
+ * DTO used for sending the user's signup information to a remote EJB object.
  */
 public class SignupDTO implements Serializable {
-    private String username;
-    private String password;
-    private String email;
     private String name;
     private String surname;
+    private String email;
+    private String username;
+    private String password;
 
-    /***
-     * Main constructor for SignupDTO.
-     * @param username username of the user that requested the signup
-     * @param password password of the user that requested the signup
-     * @param email email of the user that requested the signup
-     * @param name name of the user that requested the signup
-     * @param surname name of the user that requested
-     */
-    public SignupDTO(String username, String password, String email, String name, String surname, String degree, String language) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
+    public SignupDTO (@NotNull String name, @NotNull String surname, @NotNull String email, @NotNull String username, @NotNull String password) {
         this.name = name;
         this.surname = surname;
+        this.email = email;
+        this.username = username;
+        this.password = password;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getUsername() {
@@ -44,14 +53,6 @@ public class SignupDTO implements Serializable {
         this.password = password;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getName() {
         return name;
     }
@@ -60,11 +61,4 @@ public class SignupDTO implements Serializable {
         this.name = name;
     }
 
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
 }

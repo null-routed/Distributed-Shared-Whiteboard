@@ -1,6 +1,9 @@
 <%--
     Webapp login page
 --%>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page isELIgnored="false" %>
+
 <%@ page import="it.unipi.dsmt.jakartaee.app.utility.ClientRedirector" %>
 <%@ page import="it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO" %>
 <%@ page import="it.unipi.dsmt.jakartaee.app.utility.AccessController" %>
@@ -9,7 +12,7 @@
 <html>
 <head>
     <title>Shared Whiteboards</title>
-<%--    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/login.css">--%>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/login.css">
 </head>
 <body>
 <div>
@@ -17,6 +20,7 @@
 
     <div>
         <h2>Login</h2>
+        <h2>Context path: <%= request.getContextPath() %></h2>
 
         <form method="POST" action="${pageContext.request.contextPath}/login">
             <label>
@@ -34,7 +38,7 @@
     </div>
 
     <button onclick="location.href = '${pageContext.request.contextPath}/signup'">
-        You don't have an account? SIgn up now!
+        You don't have an account? Sign up now!
     </button>
 </div>
 
@@ -45,8 +49,8 @@
     if (outcomeParam != null && outcomeParam.equals("error")) {
 %>
         <script>
-            console.log("Wrong username or pwd");
-            alert("Error: wrong username or password");       // TODO: show error messages under text box SNH-like
+            console.log("Wrong username or pwd");   // TODO: show error messages under text box SNH-like
+            alert("Error: wrong username or password");
             location.href = "${pageContext.request.contextPath}/";
         </script>
 <%

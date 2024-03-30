@@ -10,7 +10,7 @@ import java.util.List;
 
 public class DashboardEJBImplementation implements DashboardEJB {
     // Data source to MySQL database
-    @Resource(lookup = "jdbc/PlatformPool")
+    @Resource(lookup = "jdbc/SharedWhiteboardsPool")
     private DataSource dataSource;
     @Override
     public boolean createCourse(DashboardCreationDTO dashboard) {
