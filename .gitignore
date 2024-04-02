@@ -1,0 +1,5 @@
+
+src/app/ejb/target/ejb-1.0.0-SNAPSHOT.jar
+/src/app/web/target
+*.class
+/src/app/web/target

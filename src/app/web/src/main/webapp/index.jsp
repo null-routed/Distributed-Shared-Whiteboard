@@ -11,57 +11,44 @@
 <html>
 <head>
     <title>Shared Whiteboards</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/login.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common.css">
 </head>
 <body>
 <div>
-    <h1>Welcome to Shared Whiteboards!</h1>
-
-    <div>
-        <h2>Login</h2>
-        <h2>Context path: ${pageContext.request.contextPath} </h2>
-        <h2>Context path: <%= request.getContextPath() %> </h2>
-
-        <form method="POST" action="${pageContext.request.contextPath}/login">
-            <label>
-                Username:
-                <input type="text" name="username" placeholder="Username" required />
-            </label>
-            <br>
-            <label>
-                Password:
-                <input type="password" name="password" placeholder="Password" required />
-            </label>
-            <br>
-            <button type="submit" class="submit-button">LOGIN</button>
-        </form>
+    <div class="custom-header">
+        <div class="text-section">
+            <span> LOGIN TO SHARED WHITEBOARDS </span>
+        </div>
     </div>
-
-    <button onclick="location.href = '${pageContext.request.contextPath}/signup'">
-        This redirects you to: ${pageContext.request.contextPath}/signup
-        You don't have an account? Sign up now!
-    </button>
+    <div class="form-container">
+        <form method="POST" action="${pageContext.request.contextPath}/login">
+            <div class="form-field">
+                <label> Username: </label>
+                <input type="text" name="username" required />
+            </div>
+            <div class="form-field">
+                <label> Password: </label>
+                <input type="password" name="password" required />
+<%
+                    String outcomeParam = request.getParameter("param");
+                    if (outcomeParam != null && outcomeParam.equals("error")) {
+%>
+                        <span class="error-msg"> Wrong username or password. </span>
+<%
+                    }
+%>
+            </div>
+        </form>
+        <button type="submit" class="custom-submit-button"> LOGIN </button>
+    </div>
+    <div class="form-footer">
+        <a onclick="location.href = '${pageContext.request.contextPath}/signup'">
+            Join us
+        </a>
+    </div>
 </div>
 
-
 <%
-    // Login failure check
-    String outcomeParam = request.getParameter("param");
-%>
-    <script>
-        console.log("outcome param: " + <%= outcomeParam %>);
-    </script>
-<%
-    if (outcomeParam != null && outcomeParam.equals("error")) {
-%>
-        <script>
-            console.log("Wrong username or pwd");   // TODO: show error messages under text box SNH-like
-            alert("Error: wrong username or password");
-            location.href = "${pageContext.request.contextPath}/";
-        </script>
-<%
-    }
-
     // Redirect user to main page
     LoggedUserDTO loggedUser = AccessController.getLoggedUser(request);
     if (loggedUser != null) {

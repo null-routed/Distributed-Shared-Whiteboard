@@ -6,6 +6,7 @@ import it.unipi.dsmt.jakartaee.app.interfaces.UserEJB;
 import it.unipi.dsmt.jakartaee.app.utility.ClientRedirector;
 import it.unipi.dsmt.jakartaee.app.utility.AccessController;
 import jakarta.ejb.EJB;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
@@ -33,12 +34,15 @@ public class LoginServlet extends HttpServlet {
      * @throws IOException if redirection fails
      */
     @Override
-    protected void doPost (HttpServletRequest request, HttpServletResponse response) throws IOException {
-        System.out.println("LOGINSERVLET: called 'doPost' method...");
-
+    protected void doPost (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         // Extract parameters for login
         String username = Optional.ofNullable(request.getParameter("username")).orElse("");
         String password = Optional.ofNullable(request.getParameter("password")).orElse("");
+
+        System.out.println("LOGINSERVLET: called 'doPost' method with params:\n" +
+                "Username: " + username + "\n" +
+                "Password: " + password
+        );
 
         // Execute login through EJB
         LoggedUserDTO loggedUser = userEJB.login(new LoginInformationsDTO(username, password));

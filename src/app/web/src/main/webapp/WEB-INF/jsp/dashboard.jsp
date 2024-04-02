@@ -1,7 +1,7 @@
 <%@ page import="it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO" %>
 <%@ page import="it.unipi.dsmt.jakartaee.app.utility.AccessController" %>
 
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <%
     LoggedUserDTO loggedUserDTO = AccessController.getLoggedUserWithRedirect(request, response);
@@ -20,9 +20,9 @@
     }
 %>
 <head>
-    <title>Dashboard</title>
+    <title> Dashboard </title>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/dashboard.css">
-    <script src="${pageContext.request.contextPath}/assets/javascript/dashboard.js"></script>
+    <!-- <script src="${pageContext.request.contextPath}/assets/javascript/dashboard.js"></script> -->
 </head>
 <body onload="connect('<%= loggedUserDTO.getUsername() %>', <%= dashboardId %>)" onunload="disconnect()">
 <div id="dashboard-page">

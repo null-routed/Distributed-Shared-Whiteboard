@@ -25,6 +25,7 @@ public class SignupServlet extends HttpServlet {
 
     private boolean checkSignupParameters(String name, String surname, String username, String password, String repeatPassword) {
         final int USERNAME_NAME_MAX_LENGTH = 50;
+        final int USERNAME_MIN_LENGTH = 5;
         final int SURNAME_MAX_LENGTH = 100;
         final int PASSWORD_MIN_LENGTH = 8;
 
@@ -37,8 +38,14 @@ public class SignupServlet extends HttpServlet {
             messageToJSPPage = "Surname can be at most " + SURNAME_MAX_LENGTH + " characters long.";
             return false;
         }
+
         if (username.length() > USERNAME_NAME_MAX_LENGTH) {
             messageToJSPPage = "Username can be at most " + USERNAME_NAME_MAX_LENGTH + " characters long.";
+            return false;
+        }
+
+        if (username.length() < USERNAME_MIN_LENGTH) {
+            messageToJSPPage = "Username has to be at least " + USERNAME_MIN_LENGTH + " characters long.";
             return false;
         }
 
@@ -46,6 +53,8 @@ public class SignupServlet extends HttpServlet {
             messageToJSPPage = "Password must be at least " + PASSWORD_MIN_LENGTH + " characters long.";
             return false;
         }
+
+        // TODO: add other controls on pwd
 
         if (!password.equals(repeatPassword)) {
             messageToJSPPage = "Passwords do not match.";
@@ -77,7 +86,7 @@ public class SignupServlet extends HttpServlet {
         if (!checkOutcome) {
             request.setAttribute("signupError", true);      // letting signup.jsp know there has been an error with parameters
             request.setAttribute("errorMessage", messageToJSPPage);     // setting error message that will be retrieved by signup page
-            System.out.println("doPost() signup servlet: " + request.getContextPath() + "/WEB-INF/JSP/signup.jsp");
+            System.out.println("doPost() signup servlet: one or more input parameters are invalid");
             request.getRequestDispatcher("/WEB-INF/JSP/signup.jsp").forward(request, response);
             return;
         }
@@ -110,7 +119,8 @@ public class SignupServlet extends HttpServlet {
                 break;
         }
 
-        response.sendRedirect(request.getContextPath() + "/signup.jsp");
+        System.out.println("doPost() signup servlet: signup procedure completed successfully");
+        request.getRequestDispatcher("/WEB-INF/JSP/signup.jsp").forward(request, response);
     }
 
     /**

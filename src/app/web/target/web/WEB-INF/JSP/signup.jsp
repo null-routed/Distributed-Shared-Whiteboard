@@ -6,55 +6,54 @@
 <html>
 <head>
     <title>Signup to Shared Whiteboards</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/login.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common.css">
 </head>
 <body>
 <div>
-    <h1>Welcome to Shared Whiteboards!</h1>
-
+    <div class="custom-header">
+        <div class="text-section">
+            <span> CREATE AN ACCOUNT IN SHARED WHITEBOARDS </span>
+        </div>
+    </div>
     <div>
-        <h2>Register to Shared Whiteboards</h2>
-
+        <div class="form-container">
         <form method="POST" action="${pageContext.request.contextPath}/signup">     <!-- redirect to signup servlet -->
-            <label>
-                Name:
-                <input type="text" name="name" placeholder="Name" required />
-            </label>
-            <br>
-            <label>
-                Surname:
-                <input type="text" name="surname" placeholder="Surname" required />
-            </label>
-            <br>
-            <label>
-                Email address:
-                <input type="email" name="email" placeholder="Email address" required>
-            </label>
-            <br>
-            <label>
-                Choose your username:
-                <input type="text" name="username" placeholder="Username" required>
-            </label>
-            <label>
-                Choose a password:
-                <input type="password" name="password" placeholder="Password" required>
-            </label>
-            <br>
-            <label>
-                Repeat the password:
-                <input type="password" name="password-repeat" placeholder="Repeat password" required>
-            </label>
-            <button type="submit" class="submit-button">LOGIN</button>
+            <div class="form-field">
+                <label> Name: </label>
+                <input type="text" name="name" required />
+            </div>
+            <div class="form-field">
+                <label> Surname: </label>
+                <input type="text" name="surname" required />
+            </div>
+            <div class="form-field">
+                <label> Email address: </label>
+                <input type="text" name="email" required />
+            </div>
+            <div class="form-field">
+                <label> Choose your username: </label>
+                <input type="text" name="username" required />
+            </div>
+            <div class="form-field">
+                <label> Choose a password: </label>
+                <input type="text" name="password" required />
+            </div>
+            <div class="form-field">
+                <label> Repeat the password: </label>
+                <input type="text" name="password-repeat" required />
+            </div>
+            <button type="submit" class="custom-submit-button"> SIGNUP </button>
         </form>
     </div>
-
-    <button onclick="location.href = '${pageContext.request.contextPath}/login'">      <!-- redirect to login page -->
-        Already have an account? Sign in!
-    </button>
+    <div class="form-footer">
+        <a onclick="location.href = '${pageContext.request.contextPath}/login'">      <!-- redirect to login page -->
+            Already have an account? Sign in!
+        </a>
+    </div>
 
     <% // Signup procedure check
 
-        // null = first time visiting page
+        // null = first time visiting page, no error is set
         if (request.getAttribute("signupError") != null) {
             // Getting 'signupError' attribute set by SignupServlet. If success, it'll be false
             boolean failedSignupProcess = (boolean) request.getAttribute("signupError");
@@ -70,7 +69,7 @@
             // show message
             String successMessage = (String) request.getAttribute("successMessage");
     %>
-            <p> <%= successMessage %> </p>
+            <p> suca </p>
     <%
             }
         }
