@@ -19,7 +19,8 @@
 
     <div>
         <h2>Login</h2>
-        <h2>Context path: <%= request.getContextPath() %></h2>
+        <h2>Context path: ${pageContext.request.contextPath} </h2>
+        <h2>Context path: <%= request.getContextPath() %> </h2>
 
         <form method="POST" action="${pageContext.request.contextPath}/login">
             <label>
@@ -37,6 +38,7 @@
     </div>
 
     <button onclick="location.href = '${pageContext.request.contextPath}/signup'">
+        This redirects you to: ${pageContext.request.contextPath}/signup
         You don't have an account? Sign up now!
     </button>
 </div>
@@ -45,6 +47,11 @@
 <%
     // Login failure check
     String outcomeParam = request.getParameter("param");
+%>
+    <script>
+        console.log("outcome param: " + <%= outcomeParam %>);
+    </script>
+<%
     if (outcomeParam != null && outcomeParam.equals("error")) {
 %>
         <script>

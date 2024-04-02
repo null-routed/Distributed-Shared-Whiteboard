@@ -62,7 +62,7 @@ public class SignupServlet extends HttpServlet {
      * @throws IOException if redirection fails
      */
     @Override
-    protected void doPost (HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doPost (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         System.out.println("SignupServlet: called doPost() method...");
 
         // Extract parameters for signup
@@ -77,7 +77,9 @@ public class SignupServlet extends HttpServlet {
         if (!checkOutcome) {
             request.setAttribute("signupError", true);      // letting signup.jsp know there has been an error with parameters
             request.setAttribute("errorMessage", messageToJSPPage);     // setting error message that will be retrieved by signup page
-            response.sendRedirect(request.getContextPath() + "/signup.jsp");
+            System.out.println("doPost() signup servlet: " + request.getContextPath() + "/WEB-INF/JSP/signup.jsp");
+            request.getRequestDispatcher("/WEB-INF/JSP/signup.jsp").forward(request, response);
+            return;
         }
 
         // Execute signup through EJB
@@ -120,8 +122,7 @@ public class SignupServlet extends HttpServlet {
     @Override
     protected void doGet (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         System.out.println("SIGNUPSERVLET: called doGet() method");
-        String targetPage = request.getContextPath() + "/WEB-INF/jsp/signup.jsp";
-        System.out.println("SIGNUPSERVLET: redirecting to " + targetPage);
+        String targetPage = "/WEB-INF/JSP/signup.jsp";
         request.getRequestDispatcher(targetPage).forward(request, response);
     }
 }

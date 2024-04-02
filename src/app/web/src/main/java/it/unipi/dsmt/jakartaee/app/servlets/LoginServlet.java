@@ -45,10 +45,13 @@ public class LoginServlet extends HttpServlet {
 
         System.out.println("LOGINSERVLET: login procedure completed");
 
+        System.out.println(loggedUser);
+
         // Login failed -> sending an 'error' GET parameter
         if (loggedUser == null) {
             System.out.println("LOGINSERVLET: redirecting to " + request.getContextPath() + "/index.jsp?param=error");
-            response.sendRedirect(request.getContextPath() + "/index.jsp?param=error");
+            response.sendRedirect(request.getContextPath() + "/?param=error");
+            return;
         }
 
         //Login successful

@@ -54,22 +54,25 @@
 
     <% // Signup procedure check
 
-        // Getting 'signupError' attribute set by SignupServlet. If success, it'll be false
-        boolean failedSignupProcess = (boolean) request.getAttribute("signupError");
+        // null = first time visiting page
+        if (request.getAttribute("signupError") != null) {
+            // Getting 'signupError' attribute set by SignupServlet. If success, it'll be false
+            boolean failedSignupProcess = (boolean) request.getAttribute("signupError");
 
-        if (failedSignupProcess) { // failed signup procedure for some reason, access to errorMessage to know it
-            String errorMessage = (String) request.getAttribute("errorMessage");
+            if (failedSignupProcess) { // failed signup procedure for some reason, access to errorMessage to know it
+                String errorMessage = (String) request.getAttribute("errorMessage");
     %>
     <script>
         alert("<%= errorMessage %>");
     </script>
     <%
-    } else { // signup procedure successfully completed
-        // show message
-        String successMessage = (String) request.getAttribute("successMessage");
+        } else { // signup procedure successfully completed
+            // show message
+            String successMessage = (String) request.getAttribute("successMessage");
     %>
-    <p> <%= successMessage %> </p>
+            <p> <%= successMessage %> </p>
     <%
+            }
         }
     %>
 
