@@ -1,0 +1,17 @@
+{application, shared_white_board,
+ [{description, "An Erlang shared whiteboard application"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {mod, {shared_white_board, []}},
+  {applications,
+   [kernel,
+    stdlib,
+    cowboy,
+    jwt
+   ]},
+  {env,[]},
+  {modules, []},
+  {maintainers, [""]},
+  {licenses, [""]},
+  {links, []}
+ ]}.
