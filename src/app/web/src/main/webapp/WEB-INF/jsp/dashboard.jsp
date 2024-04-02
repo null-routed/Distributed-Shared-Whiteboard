@@ -26,7 +26,7 @@
 </head>
 <body onload="connect('<%= loggedUserDTO.getUsername() %>', <%= dashboardId %>)" onunload="disconnect()">
 <div id="dashboard-page">
-    <jsp:include page="/WEB-INF/JSP/common/top_bar.jsp" />
+    <jsp:include page="/WEB-INF/jsp/common/top_bar.jsp" />
 
     <div id="dashboard-container">
         <div id="online-user-list-container">

@@ -4,10 +4,12 @@ import it.unipi.dsmt.jakartaee.app.dto.DashboardCreationDTO;
 import it.unipi.dsmt.jakartaee.app.dto.DashboardDTO;
 import it.unipi.dsmt.jakartaee.app.interfaces.DashboardEJB;
 import jakarta.annotation.Resource;
+import jakarta.ejb.Stateless;
 
 import javax.sql.DataSource;
 import java.util.List;
 
+@Stateless
 public class DashboardEJBImplementation implements DashboardEJB {
     // Data source to MySQL database
     @Resource(lookup = "jdbc/SharedWhiteboardsPool")
