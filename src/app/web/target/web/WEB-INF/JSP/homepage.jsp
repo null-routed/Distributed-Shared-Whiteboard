@@ -2,7 +2,7 @@
 <%@ page import="it.unipi.dsmt.jakartaee.app.utility.AccessController" %>
 <%@ page import="it.unipi.dsmt.jakartaee.app.dto.DashboardDTO" %>
 <%@ page import="java.util.List" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8"%>
 <html>
 <%
     LoggedUserDTO loggedUserDTO = AccessController.getLoggedUserWithRedirect(request, response);
@@ -10,22 +10,25 @@
         return;
     }
 
-    List<DashboardDTO> dashboards = (List<DashboardDTO>) request.getAttribute("dashboards");
 
     String isSharedView = "";
 
+    @SuppressWarnings("unchecked")
+    List<DashboardDTO> dashboards = (List<DashboardDTO>) request.getAttribute("dashboards");
+
     if(request.getAttribute("shared") != null){
-        isSharedView = request.getAttribute("starred").toString();
+        isSharedView = request.getAttribute("shared").toString();
         System.out.println(isSharedView);
     }
 %>
+
 <head>
     <title>Homepage</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/homepage.css">
 </head>
 <body>
 <div id="homepage-container">
-    <jsp:include page="/WEB-INF/JSP/common/top_bar.jsp" />
+    <jsp:include page="/WEB-INF/jsp/common/top_bar.jsp" />
 
     <br>
     <h1>Your Dashboards</h1>
@@ -39,20 +42,24 @@
                     <button type="submit" class="homepage-button">Search</button>
                 </form>
             </div>
+
             <div id="dashboard-type">
+                <button type="button" onclick="location.href = '${pageContext.request.contextPath}/create_dashboard'" class="nav-button">
+                    New
+                </button>
                 <form class="search-form" action="${pageContext.request.contextPath}/homepage" method="get">
                     <%
                         if(isSharedView.equals("true")){
                     %>
-                    <button type="submit" name="shared" class="platform-button" value="false">
-                        See Other Dashboards
+                    <button type="submit" name="shared" class="nav-button" value="false">
+                        Other
                     </button>
                     <%
                     }
                     else{
                     %>
-                    <button type="submit" name="starred" class="platform-button" value="true">
-                        See Shared Dashboards
+                    <button type="submit" name="shared" class="nav-button" value="true">
+                        Shared
                     </button>
                     <%
                         }
@@ -60,23 +67,27 @@
                 </form>
             </div>
         </div>
+
         <hr class="hr-style">
+
         <div id="dashboards">
             <script>
                 const dashboardsDiv = document.getElementById("dashboards");
                 dashboardsDiv.innerHTML = "";
             </script>
+
             <%
                 int counter = 0;
-                for (DashboardDTO dashboard : dashboards) {
-                    if(counter == 0){
+                if (dashboards != null) {
+                    for (DashboardDTO dashboard : dashboards) {
+                        if(counter == 0){
             %>
-            <div class="course-row-buttons">
+            <div class="dashboard-row-buttons">
                 <%
                     }
                 %>
-                <button type="button" id="<%= dashboard.getName() %>" class="selected-courses"
-                        onclick="location.href = '${pageContext.request.contextPath}/student/course?id=<%= dashboard.getId() %>'">
+                <button type="button" id="<%= dashboard.getName() %>" class="selected-dashboards"
+                        onclick="location.href = '${pageContext.request.contextPath}/dashboard?id=<%= dashboard.getId() %>'">
                     <%= dashboard.toString() %>
                 </button>
                 <%
@@ -85,9 +96,10 @@
                 %>
             </div>
             <%
-                    }
-                    else{
-                        counter++;
+                        }
+                        else{
+                            counter++;
+                        }
                     }
                 }
             %>
@@ -96,3 +108,7 @@
 </div>
 </body>
 </html>
+
+
+
+

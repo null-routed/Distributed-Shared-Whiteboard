@@ -53,7 +53,7 @@ public class HomepageServlet extends HttpServlet {
         else {
             dashboards = dashboardEJB.getAllDashboards();
         }
-        request.setAttribute("courses", dashboards);
+        request.setAttribute("dashboards", dashboards);
 
         String contextPath = request.getContextPath();
         String relativePath = "/WEB-INF/jsp/homepage.jsp";

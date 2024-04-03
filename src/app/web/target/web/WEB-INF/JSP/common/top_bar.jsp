@@ -1,6 +1,6 @@
 <%@ page import="it.unipi.dsmt.jakartaee.app.utility.AccessController" %>
 <%@ page import="it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO" %>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/top-bar.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/top_bar.css">
 
 <%
     LoggedUserDTO loggedUserDTO = AccessController.getLoggedUserWithRedirect(request, response);
@@ -12,23 +12,17 @@
 <div class="topnav">
 
     <div id="logo">
-        <img src="${pageContext.request.contextPath}/assets/img/logo.svg" alt="Logo"/>
+        <img src="${pageContext.request.contextPath}/assets/images/logo.svg" alt="Logo"/>
     </div>
 
     <div id="left-container">
-        <button onclick="location.href = '${pageContext.request.contextPath}/<%= loggedUserDTO.getRole().name() %>/portal'">
-            Portal
+        <button onclick="location.href = '${pageContext.request.contextPath}/<%= loggedUserDTO.getUsername() %>/portal'">
+            Dashboards
         </button>
 
-        <%
-            if (loggedUserDTO.getRole() == UserRole.student) {
-        %>
-        <button onclick="location.href = '${pageContext.request.contextPath}/<%= loggedUserDTO.getRole().name() %>/profile'">
+        <button onclick="location.href = '${pageContext.request.contextPath}/<%= loggedUserDTO.getUsername() %>/profile'">
             Profile
         </button>
-        <%
-            }
-        %>
     </div>
     <div id="flex-container"></div>
     <div id="right-container">

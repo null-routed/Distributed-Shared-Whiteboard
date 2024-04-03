@@ -1,5 +1,22 @@
+:root {
+    --body-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --chatroom-background-color: #fff;
+    --border: 2px solid #ddd;
+    --received-message-background-color: #ececec;
+    --sent-message-background-color: #579ffb;
+    --base-color: #97c6f2a1;
+}
+
 html {
     scroll-behavior: smooth;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+body {
+    background-image: var(--body-bg);
+    font-family: Helvetica, sans-serif;
+    margin: 0;
 }
 
 .custom-header {
@@ -7,7 +24,7 @@ html {
     justify-content: space-between;
     align-items: center;
     padding: 10px 0;
-    font-size: 13px;
+    font-size: 15px;
     line-height: 20px;
     border-bottom: 1px solid black;
     width: 100%;
@@ -15,6 +32,7 @@ html {
 }
 
 .text-section {
+    font-weight: bold;
     text-align: left;
     flex-grow: 1;
     margin-left: 20px;
@@ -29,7 +47,7 @@ html {
 }
 
 .form-field {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .form-field label {
@@ -51,6 +69,26 @@ html {
 
 .form-field input:focus {
     border: 3px solid black;
+}
+
+.student-platform-button{
+    background: rgb(91 109 246);
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    height: 3vw;
+    width: 15vw;
+    overflow-x: auto;
+    max-width: 15vw;
+    font-size: 1.25vw;
+    box-shadow: 0 6px 6px -3px rgba(0, 0, 0, 0.3);
+    border: 1px solid #ddd;
+    padding: 0 1vw;
+    border-radius: 5px;
+}
+
+.student-platform-button:hover {
+    background: rgb(41, 67, 253);
 }
 
 .custom-submit-button, .custom-generic-button {
@@ -91,12 +129,13 @@ a:hover{
 
 .error-msg {
     color: #dc2a2a;
-    font-size: 12.5px;
+    font-size: 15px;
 }
 
 .success-msg {
+    margin-top: 5px;
     color: #3da20d;
-    font-size: 12.5px;
+    font-size: 15px;
 }
 
 .form-field select {

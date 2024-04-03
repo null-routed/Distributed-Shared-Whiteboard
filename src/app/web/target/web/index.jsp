@@ -11,7 +11,7 @@
 <html>
 <head>
     <title>Shared Whiteboards</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/common.css">
 </head>
 <body>
 <div>

@@ -21,8 +21,8 @@ public class ClientRedirector {
      */
     public static void redirectToMainPage (@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws IOException, ServletException {
         System.out.println("CLIENTREDIRECTOR: forwarding to main page");
-        request.getRequestDispatcher("/WEB-INF/JSP/test.jsp").forward(request, response);
-    }                   // TODO: change 'dashboard' into something else
+        response.sendRedirect(request.getContextPath() + "/homepage");
+    }
 
     /**
      * Redirects the user to the login page.

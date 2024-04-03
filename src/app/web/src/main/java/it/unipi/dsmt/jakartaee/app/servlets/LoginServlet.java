@@ -45,8 +45,9 @@ public class LoginServlet extends HttpServlet {
         );
 
         // Execute login through EJB
-        LoggedUserDTO loggedUser = userEJB.login(new LoginInformationsDTO(username, password));
+        //LoggedUserDTO loggedUser = userEJB.login(new LoginInformationsDTO(username, password));
 
+        LoggedUserDTO loggedUser= new LoggedUserDTO("nico", "password");
         System.out.println("LOGINSERVLET: login procedure completed");
 
         // Login failed -> sending an 'error' GET parameter
