@@ -33,6 +33,8 @@ public class HomepageServlet extends HttpServlet {
 
         List<DashboardDTO> dashboards;
 
+        System.out.println("Homepage Servlet");
+
         LoggedUserDTO loggedUserDTO = AccessController.getLoggedUserWithRedirect(request, response);
         if (loggedUserDTO == null) {
             return;
@@ -53,8 +55,13 @@ public class HomepageServlet extends HttpServlet {
         }
         request.setAttribute("courses", dashboards);
 
-        String targetJSP = "/WEB-INF/jsp/homepage.jsp";
-        RequestDispatcher requestDispatcher = request.getRequestDispatcher(targetJSP);
+        String contextPath = request.getContextPath();
+        String relativePath = "/WEB-INF/jsp/homepage.jsp";
+        String fullPath = contextPath + relativePath;
+
+        System.out.println("Full Path: " + fullPath);
+
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher(relativePath);
         requestDispatcher.forward(request, response);
     }
 
