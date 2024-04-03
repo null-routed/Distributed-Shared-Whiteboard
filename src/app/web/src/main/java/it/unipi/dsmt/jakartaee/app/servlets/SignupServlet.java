@@ -90,7 +90,7 @@ public class SignupServlet extends HttpServlet {
             request.setAttribute("signupError", "paramValidation");      // letting signup.jsp know there has been an error with parameters
             request.setAttribute("errorMessage", messageToJSPPage);     // setting error message that will be retrieved by signup page
             System.out.println("doPost() signup servlet: one or more input parameters are invalid");
-            request.getRequestDispatcher("/WEB-INF/JSP/signup.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/jsp/signup.jsp").forward(request, response);
             return;
         }
 
@@ -123,7 +123,7 @@ public class SignupServlet extends HttpServlet {
         }
 
         System.out.println("doPost() signup servlet: signup procedure completed successfully");
-        request.getRequestDispatcher("/WEB-INF/JSP/signup.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/jsp/signup.jsp").forward(request, response);
     }
 
     /**
@@ -135,7 +135,7 @@ public class SignupServlet extends HttpServlet {
     @Override
     protected void doGet (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         System.out.println("SIGNUPSERVLET: called doGet() method");
-        String targetPage = "/WEB-INF/JSP/signup.jsp";
+        String targetPage = "/WEB-INF/jsp/signup.jsp";
         request.getRequestDispatcher(targetPage).forward(request, response);
     }
 }
