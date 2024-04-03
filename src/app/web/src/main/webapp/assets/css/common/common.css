@@ -38,7 +38,7 @@ body {
     margin-left: 20px;
 }
 
-.form-container {
+.form-container .profile-container{
     width: 100%;
     max-width: 400px; /* Adjust the width as necessary */
     margin: 0 auto;
@@ -50,7 +50,7 @@ body {
     margin-bottom: 15px;
 }
 
-.form-field label {
+.form-field .profile-field label {
     text-transform: uppercase;
     display: block;
     margin-bottom: 5px;

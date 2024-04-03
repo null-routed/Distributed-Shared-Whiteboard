@@ -25,3 +25,4 @@ rebar3.crashdump
 *~
 .DS_Store
 .env
+/src/app/ejb-interfaces/target

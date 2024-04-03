@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 
 /**
- * DTO to store the necessary informations to identify a logged user
+ * DTO to store the necessary information to identify a logged user
  * in the application.
  */
 public class LoggedUserDTO implements Serializable {

@@ -11,5 +11,6 @@ import org.jetbrains.annotations.NotNull;
 @Remote
 public interface UserEJB {
     LoggedUserDTO login (@NotNull LoginInformationsDTO loginInformationDTO);
-    SignupStatus signup(SignupDTO signupDTO);
+    SignupStatus signup(@NotNull SignupDTO signupDTO);
+    AdditionalUserDataDTO getUserDataByUsername(@NotNull String username);
 }

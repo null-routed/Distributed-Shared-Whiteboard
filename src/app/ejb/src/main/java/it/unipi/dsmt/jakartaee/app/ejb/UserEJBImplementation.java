@@ -1,5 +1,6 @@
 package it.unipi.dsmt.jakartaee.app.ejb;
 
+import it.unipi.dsmt.jakartaee.app.dto.AdditionalUserDataDTO;
 import it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO;
 import it.unipi.dsmt.jakartaee.app.dto.LoginInformationsDTO;
 import it.unipi.dsmt.jakartaee.app.dto.SignupDTO;
@@ -93,10 +94,10 @@ public class UserEJBImplementation implements UserEJB {
 
                 System.out.println("UserEJBImplementation signup() query parameters: \n" +
                         "Username:" + signupDTO.getUsername() + "\n" +
-                        "Password:" + signupDTO.getUsername() + "\n" +
-                        "Name:" + signupDTO.getUsername() + "\n" +
-                        "Surname:" + signupDTO.getUsername() + "\n" +
-                        "Email:" + signupDTO.getUsername()
+                        "Password:" + signupDTO.getPassword() + "\n" +
+                        "Name:" + signupDTO.getName() + "\n" +
+                        "Surname:" + signupDTO.getSurname() + "\n" +
+                        "Email:" + signupDTO.getEmail()
                 );
 
                 // Execute query
@@ -127,8 +128,41 @@ public class UserEJBImplementation implements UserEJB {
                 }
             }
 
-            System.out.println("UserEJBImplementation signup(): returning " + SignupStatus.SUCCESS + " after generic SQLException");
+            System.out.println("UserEJBImplementation signup(): returning " + SignupStatus.OTHER_ERROR + " after generic SQLException");
             return SignupStatus.OTHER_ERROR;        // general error
+        }
+    }
+
+    /**
+     * Return an object containing the full set of user information.
+     * @param username: the username for which the other data will be retrieved.
+     * @return AdditionalUserDataDTO object containing the information to show on the profile page.
+     */
+    public AdditionalUserDataDTO getUserDataByUsername(@NotNull String username) {
+        System.out.println("UserEJBImplementation: called method getUserByUsername(), param=" + username);
+
+        try(Connection connection = dataSource.getConnection()) {
+            // Query preparation
+            String query = "SELECT Name, Surname, Email FROM Users WHERE Username = ?;";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, username);
+
+                // Execute query
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        return new AdditionalUserDataDTO(
+                                resultSet.getString("Name"),
+                                resultSet.getString("Surname"),
+                                resultSet.getString("Email"),
+                                username
+                        );
+                    } else
+                        return null;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 }
