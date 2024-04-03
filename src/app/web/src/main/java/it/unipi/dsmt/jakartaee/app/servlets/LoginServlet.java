@@ -49,16 +49,16 @@ public class LoginServlet extends HttpServlet {
 
         System.out.println("LOGINSERVLET: login procedure completed");
 
-        System.out.println(loggedUser);
-
         // Login failed -> sending an 'error' GET parameter
         if (loggedUser == null) {
-            System.out.println("LOGINSERVLET: redirecting to " + request.getContextPath() + "/index.jsp?param=error");
-            response.sendRedirect(request.getContextPath() + "/?param=error");
+            System.out.println("LOGINSERVLET: redirecting to " + request.getContextPath() + "/index.jsp with error attribute set");
+            // request.setAttribute("loginError", true);
+            response.sendRedirect(request.getContextPath() + "/?loginError=error");
             return;
         }
 
         //Login successful
+        System.out.println("LOGINSERVLET: login successful, redirecting to main user page");
         AccessController.setLoggedUser(request, Objects.requireNonNull(loggedUser));    // add logged user info to session var
         ClientRedirector.redirectToMainPage(request, response);     // redirect to main page
     }

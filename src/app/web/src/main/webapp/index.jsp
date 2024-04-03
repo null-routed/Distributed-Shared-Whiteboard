@@ -29,17 +29,12 @@
             <div class="form-field">
                 <label> Password: </label>
                 <input type="password" name="password" required />
-<%
-                    String outcomeParam = request.getParameter("param");
-                    if (outcomeParam != null && outcomeParam.equals("error")) {
-%>
-                        <span class="error-msg"> Wrong username or password. </span>
-<%
-                    }
-%>
+                <% if (request.getParameter("loginError") != null) { %>             <!-- error message span visibility check -->
+                <span class="error-msg"> Wrong username or password. </span>
+                <% } %>
             </div>
+            <button type="submit" class="custom-submit-button"> LOGIN </button>
         </form>
-        <button type="submit" class="custom-submit-button"> LOGIN </button>
     </div>
     <div class="form-footer">
         <a onclick="location.href = '${pageContext.request.contextPath}/signup'">

@@ -7,7 +7,7 @@ html {
     justify-content: space-between;
     align-items: center;
     padding: 10px 0;
-    font-size: 13px;
+    font-size: 15px;
     line-height: 20px;
     border-bottom: 1px solid black;
     width: 100%;
@@ -15,6 +15,7 @@ html {
 }
 
 .text-section {
+    font-weight: bold;
     text-align: left;
     flex-grow: 1;
     margin-left: 20px;
@@ -29,7 +30,7 @@ html {
 }
 
 .form-field {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .form-field label {
@@ -91,12 +92,13 @@ a:hover{
 
 .error-msg {
     color: #dc2a2a;
-    font-size: 12.5px;
+    font-size: 15px;
 }
 
 .success-msg {
+    margin-top: 5px;
     color: #3da20d;
-    font-size: 12.5px;
+    font-size: 15px;
 }
 
 .form-field select {

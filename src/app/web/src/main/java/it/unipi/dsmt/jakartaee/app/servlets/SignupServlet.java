@@ -74,6 +74,9 @@ public class SignupServlet extends HttpServlet {
     protected void doPost (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         System.out.println("SignupServlet: called doPost() method...");
 
+        request.setAttribute("signupError", null);
+        request.setAttribute("errorMsg", null);
+
         // Extract parameters for signup
         String name = Optional.ofNullable(request.getParameter("name")).orElse("");
         String surname = Optional.ofNullable(request.getParameter("surname")).orElse("");
@@ -84,7 +87,7 @@ public class SignupServlet extends HttpServlet {
 
         boolean checkOutcome = checkSignupParameters(name, surname, username, password, repeatPassword);
         if (!checkOutcome) {
-            request.setAttribute("signupError", true);      // letting signup.jsp know there has been an error with parameters
+            request.setAttribute("signupError", "paramValidation");      // letting signup.jsp know there has been an error with parameters
             request.setAttribute("errorMessage", messageToJSPPage);     // setting error message that will be retrieved by signup page
             System.out.println("doPost() signup servlet: one or more input parameters are invalid");
             request.getRequestDispatcher("/WEB-INF/JSP/signup.jsp").forward(request, response);
@@ -99,22 +102,22 @@ public class SignupServlet extends HttpServlet {
         switch (signupOperationOutcome) {
             case DUPLICATE_USERNAME:
                 messageToJSPPage = "The username is already taken. Choose another one.";
-                request.setAttribute("signupError", true);
+                request.setAttribute("signupError", "username");
                 request.setAttribute("errorMessage", messageToJSPPage);
                 break;
             case DUPLICATE_EMAIL:
                 messageToJSPPage = "An account is already registered with this Email address.";
-                request.setAttribute("signupError", true);
+                request.setAttribute("signupError", "email");
                 request.setAttribute("errorMessage", messageToJSPPage);
                 break;
             case OTHER_ERROR:
                 messageToJSPPage = "A problem occurred during the signup procedure. Try again or try in a few minutes.";
-                request.setAttribute("signupError", true);
+                request.setAttribute("signupError", "generic");
                 request.setAttribute("errorMessage", messageToJSPPage);
                 break;
             case SUCCESS:
                 messageToJSPPage = "Your account was successfully created. Login to use the application!";
-                request.setAttribute("signupError", false);
+                request.setAttribute("signupError", "none");
                 request.setAttribute("successMessage", messageToJSPPage);
                 break;
         }
