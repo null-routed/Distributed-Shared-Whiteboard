@@ -1,16 +1,11 @@
 :root {
     --body-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    --chatroom-background-color: #fff;
     --border: 2px solid #ddd;
-    --received-message-background-color: #ececec;
-    --sent-message-background-color: #579ffb;
     --base-color: #97c6f2a1;
 }
 
 html {
     scroll-behavior: smooth;
-    box-sizing: border-box;
-    overflow-x: hidden;
 }
 
 body {
@@ -24,7 +19,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 10px 0;
-    font-size: 15px;
+    font-size: 13px;
     line-height: 20px;
     border-bottom: 1px solid black;
     width: 100%;
@@ -32,13 +27,12 @@ body {
 }
 
 .text-section {
-    font-weight: bold;
     text-align: left;
     flex-grow: 1;
     margin-left: 20px;
 }
 
-.form-container .profile-container{
+.form-container {
     width: 100%;
     max-width: 400px; /* Adjust the width as necessary */
     margin: 0 auto;
@@ -47,10 +41,10 @@ body {
 }
 
 .form-field {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
-.form-field .profile-field label {
+.form-field label {
     text-transform: uppercase;
     display: block;
     margin-bottom: 5px;
@@ -71,27 +65,9 @@ body {
     border: 3px solid black;
 }
 
-.student-platform-button{
-    background: rgb(91 109 246);
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-    height: 3vw;
-    width: 15vw;
-    overflow-x: auto;
-    max-width: 15vw;
-    font-size: 1.25vw;
-    box-shadow: 0 6px 6px -3px rgba(0, 0, 0, 0.3);
-    border: 1px solid #ddd;
-    padding: 0 1vw;
-    border-radius: 5px;
-}
-
-.student-platform-button:hover {
-    background: rgb(41, 67, 253);
-}
-
-.custom-submit-button, .custom-generic-button {
+.custom-submit-button,
+.custom-generic-button {
+    text-transform: uppercase;
     width: 100%;
     padding: 10px;
     color: black;
@@ -103,7 +79,8 @@ body {
     font-size: 13px;
 }
 
-.custom-submit-button:hover {
+.custom-submit-button:hover,
+.custom-generic-button:hover {
     color: white;
     background-color: black;
     transition-duration: 200ms;
@@ -129,13 +106,12 @@ a:hover{
 
 .error-msg {
     color: #dc2a2a;
-    font-size: 15px;
+    font-size: 12.5px;
 }
 
 .success-msg {
-    margin-top: 5px;
     color: #3da20d;
-    font-size: 15px;
+    font-size: 12.5px;
 }
 
 .form-field select {
@@ -155,4 +131,8 @@ a:hover{
 
 .form-field select:focus {
     border: 3px solid black;
+}
+
+.page-header {
+    display: flex;
 }

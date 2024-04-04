@@ -1,8 +1,9 @@
 package it.unipi.dsmt.jakartaee.app.servlets;
 
-import it.unipi.dsmt.jakartaee.app.dto.DashboardDTO;
 import it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO;
-import it.unipi.dsmt.jakartaee.app.interfaces.DashboardEJB;
+import it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO;
+import it.unipi.dsmt.jakartaee.app.dto.WhiteboardCreationDTO;
+import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
 import it.unipi.dsmt.jakartaee.app.utility.AccessController;
 import jakarta.ejb.EJB;
 import jakarta.servlet.RequestDispatcher;
@@ -19,7 +20,7 @@ import java.util.List;
 public class HomepageServlet extends HttpServlet {
 
     @EJB
-    private DashboardEJB dashboardEJB;
+    private WhiteboardEJB whiteboardEJB;
 
     /**
      * function invoked by get and post request to handle them
@@ -31,7 +32,7 @@ public class HomepageServlet extends HttpServlet {
      */
     private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        List<DashboardDTO> dashboards;
+        List<MinimalWhiteboardDTO> whiteboards;
 
         System.out.println("Homepage Servlet");
 
@@ -44,25 +45,51 @@ public class HomepageServlet extends HttpServlet {
 
         if (searchInput != null) {
             request.setAttribute("search_input", searchInput);
-            dashboards = dashboardEJB.searchDashboards(searchInput);
+            whiteboards = whiteboardEJB.searchDashboards(searchInput);
         }
         else if ((shared != null) && (shared.equals("true"))) {
-            dashboards = dashboardEJB.getSharedDashboards(loggedUserDTO.getId());
+            whiteboards = whiteboardEJB.getSharedDashboards(loggedUserDTO.getId());
             request.setAttribute("shared", shared);
         }
         else {
-            dashboards = dashboardEJB.getAllDashboards();
+            whiteboards = whiteboardEJB.getAllDashboards(loggedUserDTO.getId());
         }
-        request.setAttribute("dashboards", dashboards);
+        request.setAttribute("whiteboards", whiteboards);
 
-        String contextPath = request.getContextPath();
         String relativePath = "/WEB-INF/jsp/homepage.jsp";
-        String fullPath = contextPath + relativePath;
-
-        System.out.println("Full Path: " + fullPath);
 
         RequestDispatcher requestDispatcher = request.getRequestDispatcher(relativePath);
         requestDispatcher.forward(request, response);
+    }
+
+    @Override
+    protected void doPost (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        LoggedUserDTO loggedUserDTO = AccessController.getLoggedUserWithRedirect(request, response);
+        if (loggedUserDTO == null) {
+            return;
+        }
+        // Retrieve parameters from the request
+        String whiteboardName = request.getParameter("whiteboardName");
+        String whiteboardDescription = request.getParameter("whiteboardDescription");
+        String readOnlyParam = request.getParameter("readOnly");
+
+        // Convert readOnlyParam to boolean
+        boolean isReadOnly = "on".equals(readOnlyParam);
+
+        WhiteboardCreationDTO newWhiteboard = new WhiteboardCreationDTO(whiteboardName, whiteboardDescription,
+                isReadOnly);
+
+        try {
+            if(!whiteboardEJB.addWhiteboard(loggedUserDTO.getId(), newWhiteboard)) {
+                System.out.println("whiteboard insertion failed");
+                return;
+            }
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
+
+        response.sendRedirect(request.getContextPath() + "/homepage"); // Redirect to the homepage
+
     }
 
     /**
@@ -76,4 +103,6 @@ public class HomepageServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         handleRequest(request, response);
     }
+
+
 }

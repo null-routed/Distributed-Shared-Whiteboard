@@ -16,10 +16,9 @@ import java.io.IOException;
 public class LogoutServlet extends HttpServlet {
 
     private void finalizeLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // Invalidate the session
-        request.getSession().invalidate();
-        // Redirect to login page
-        ClientRedirector.redirectToLogin(request, response);
+        System.out.println("@LogoutServlet: called finalizeLogout() method");
+        request.getSession().invalidate();      // Invalidate the session
+        ClientRedirector.redirectToLogin(request, response);        // Redirect to login page
     }
 
     @Override

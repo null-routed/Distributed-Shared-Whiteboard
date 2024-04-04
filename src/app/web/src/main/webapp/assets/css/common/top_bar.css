@@ -4,60 +4,29 @@
     display: flex;
     background-color: var(--base-color);
     flex-direction: row;
-    align-items: center;
+    justify-content: space-between;
     width: 100%;
-    height: 3vw;
-    box-shadow: 0 5px 15px -5px rgba(0, 0, 0, 0.3);
-    border-bottom: solid #ddd;
-}
-
-.topnav button {
-    display: flex;
-    color: white;
-    background-color: rgb(91 109 246);
-    box-shadow: 0 6px 6px -3px rgba(0, 0, 0, 0.3);
-    cursor: pointer;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-weight: bold;
-    padding: 4px 10px;
-    font-size: 1.25vw;
-}
-
-.topnav button:hover {
-    opacity: 0.6;
-}
-
-#flex-container{
-    display: flex;
-    width: 80%;
 }
 
 #left-container{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width: 12.5%;
-    margin: 0 2vw;
+    width: 20%;
+}
+
+#left-container .custom-generic-button {
+    width: 50%;
+    margin: 10px;
 }
 
 #right-container{
     display: flex;
-    width: 7.5%;
-    flex-direction: row-reverse;
-    margin: 0 2vw;
-}
-
-#logo{
-    display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    width: 3.5%;
-    margin-left: 2vw;
-    height: 100%;
+    width: 10%;
 }
 
-#logo > img {
-    position: relative;
-    top: -0.25vw;
+#right-container .custom-generic-button {
+    width: 100%;
+    margin: 10px;
 }

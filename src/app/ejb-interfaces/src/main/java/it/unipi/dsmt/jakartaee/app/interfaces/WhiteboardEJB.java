@@ -4,6 +4,10 @@ import it.unipi.dsmt.jakartaee.app.dto.WhiteboardCreationDTO;
 import it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO;
 import jakarta.ejb.Remote;
 import jakarta.validation.constraints.NotNull;
+import it.unipi.dsmt.jakartaee.app.dto.AdditionalUserDataDTO;
+import jakarta.ejb.Remote;
+import jakarta.persistence.criteria.CriteriaBuilder;
+
 
 import java.util.List;
 
@@ -15,5 +19,5 @@ public interface WhiteboardEJB {
     boolean addWhiteboard(@NotNull String ownerId, WhiteboardCreationDTO newWhiteboard);
     boolean removeSharedWhiteboard(@NotNull String username, int whiteboardId);
     boolean deleteWhiteboard(int id);
-
+    List<String> getParticipantUsernames(int whiteboardID);
 }

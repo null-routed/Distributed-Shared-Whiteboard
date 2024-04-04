@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  */
 @Remote
 public interface UserEJB {
-    LoggedUserDTO login (@NotNull LoginInformationsDTO loginInformationDTO);
+    LoggedUserDTO login(@NotNull LoginInformationsDTO loginInformationDTO);
     SignupStatus signup(@NotNull SignupDTO signupDTO);
     AdditionalUserDataDTO getUserDataByUsername(@NotNull String username);
 }

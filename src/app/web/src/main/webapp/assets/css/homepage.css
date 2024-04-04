@@ -1,20 +1,20 @@
-dashboard-selection{
+whiteboard-selection{
     display: flex;
     width: 100%;
     justify-content: space-between;
 }
 
-#dashboard-type{
+#whiteboard-type{
     display: flex;
 }
 
-.dashboard-search{
+.whiteboard-search{
     display: flex;
     align-items: center;
     width: 80%;
 }
 
-#dashboards{
+#whiteboards{
     display: flex;
     width: 90%;
     height: 40vh;
@@ -23,13 +23,13 @@ dashboard-selection{
     margin-top: 2vw;
 }
 
-.dashboard-row-buttons{
+.whiteboard-row-buttons{
     margin: 0.5vw 1vw;
     display: flex;
     justify-content: space-around;
 }
 
-#dashboard-selection-container{
+#whiteboard-selection-container{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -87,7 +87,7 @@ dashboard-selection{
     border-radius: 5px;
 }
 
-.selected-dashboards{
+.selected-whiteboards{
     background: rgb(91 109 246);
     color: #fff;
     font-weight: bold;
@@ -102,7 +102,7 @@ dashboard-selection{
     border-radius: 5px;
 }
 
-.selected-dashboards:hover{
+.selected-whiteboards:hover{
     background: rgb(41, 67, 253);
 }
 
@@ -130,6 +130,44 @@ dashboard-selection{
     background: rgb(41, 67, 253);
 }
 
-.normal_dashboards{
+.normal_whiteboards{
     display: flex;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
 }

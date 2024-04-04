@@ -1,12 +1,15 @@
 package it.unipi.dsmt.jakartaee.app.utility;
 
 import it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO;
+import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
+import jakarta.ejb.EJB;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Static class providing methods for controlling user permissions to webapp resources

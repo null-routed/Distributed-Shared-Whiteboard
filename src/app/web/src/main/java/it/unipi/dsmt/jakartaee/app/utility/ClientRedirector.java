@@ -20,7 +20,7 @@ public class ClientRedirector {
      * @throws IOException if redirection fails
      */
     public static void redirectToMainPage (@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws IOException, ServletException {
-        System.out.println("CLIENTREDIRECTOR: forwarding to main page");
+        System.out.println("@ClientRedirector: forwarding to main page");
         response.sendRedirect(request.getContextPath() + "/homepage");
     }
 

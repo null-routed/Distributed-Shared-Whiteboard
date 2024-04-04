@@ -7,15 +7,17 @@
 <html>
 <%
     LoggedUserDTO loggedUserDTO = AccessController.getLoggedUserWithRedirect(request, response);
-    if (loggedUserDTO == null)
+    if (loggedUserDTO == null) {
         return;
+    }
+    System.out.println("@profile.jsp: visiting page with logged user " + loggedUserDTO.getUsername());
 %>
 <head>
     <title><%= loggedUserDTO.getUsername() %>'s Profile</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/common.css">
 </head>
 <body>
-    <jsp:useBean id="userProfileServlet" class="it.unipi.dsmt.jakartaee.app.servlets.UserProfileServlet"  scope="request" />
+    <jsp:useBean id="userProfileServlet" class="it.unipi.dsmt.jakartaee.app.servlets.UserProfileServlet" />
     <jsp:include page="/WEB-INF/jsp/common/top_bar.jsp" />
     <%
         AdditionalUserDataDTO additionalUserDataDTO = userProfileServlet.getUserData(loggedUserDTO.getUsername());
