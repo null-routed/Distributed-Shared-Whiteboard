@@ -33,7 +33,7 @@
                 <span class="error-msg"> Wrong username or password. </span>
                 <% } %>
             </div>
-            <button type="submit" class="custom-submit-button"> LOGIN </button>
+            <button type="submit" class="custom-submit-button"> Login </button>
         </form>
     </div>
     <div class="form-footer">

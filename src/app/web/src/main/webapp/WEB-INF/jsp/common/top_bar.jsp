@@ -10,21 +10,16 @@
 %>
 
 <div class="topnav">
-    <div id="logo">
-        <img src="${pageContext.request.contextPath}/assets/images/logo.svg" alt="Logo"/>
-    </div>
     <div id="left-container">
-        <button onclick="location.href = '${pageContext.request.contextPath}/<%= loggedUserDTO.getUsername() %>/portal'">
-            Back
+        <button class="custom-generic-button" onclick="location.href = '${pageContext.request.contextPath}/homepage'">
+            Homepage
         </button>
-
-        <button onclick="location.href = '${pageContext.request.contextPath}/<%= loggedUserDTO.getUsername() %>/profile'">
+        <button class="custom-generic-button" onclick="location.href = '${pageContext.request.contextPath}/profile'">
             Profile
         </button>
     </div>
-    <div id="flex-container"></div>
     <div id="right-container">
-        <button onclick="location.href = '${pageContext.request.contextPath}/logout'">
+        <button class="custom-generic-button" onclick="location.href = '${pageContext.request.contextPath}/logout'">
             Logout
         </button>
     </div>

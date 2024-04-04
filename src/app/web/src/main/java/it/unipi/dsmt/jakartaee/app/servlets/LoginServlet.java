@@ -39,7 +39,7 @@ public class LoginServlet extends HttpServlet {
         String username = Optional.ofNullable(request.getParameter("username")).orElse("");
         String password = Optional.ofNullable(request.getParameter("password")).orElse("");
 
-        System.out.println("LOGINSERVLET: called 'doPost' method with params:\n" +
+        System.out.println("@LoginServlet: called doPost() method, params:\n" +
                 "Username: " + username + "\n" +
                 "Password: " + password
         );
@@ -47,18 +47,14 @@ public class LoginServlet extends HttpServlet {
         // Execute login through EJB
         LoggedUserDTO loggedUser = userEJB.login(new LoginInformationsDTO(username, password));
 
-        System.out.println("LOGINSERVLET: login procedure completed");
-
         // Login failed -> sending an 'error' GET parameter
         if (loggedUser == null) {
-            System.out.println("LOGINSERVLET: redirecting to " + request.getContextPath() + "/index.jsp with error attribute set");
             // request.setAttribute("loginError", true);
             response.sendRedirect(request.getContextPath() + "/?loginError=error");
             return;
         }
 
         //Login successful
-        System.out.println("LOGINSERVLET: login successful, redirecting to main user page");
         AccessController.setLoggedUser(request, Objects.requireNonNull(loggedUser));    // add logged user info to session var
         ClientRedirector.redirectToMainPage(request, response);     // redirect to main page
     }
