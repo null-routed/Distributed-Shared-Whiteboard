@@ -1,9 +1,5 @@
 @import url("common.css");
 
-div {
-    border: 1px solid red;
-}
-
 .topnav {
     display: flex;
     background-color: var(--base-color);

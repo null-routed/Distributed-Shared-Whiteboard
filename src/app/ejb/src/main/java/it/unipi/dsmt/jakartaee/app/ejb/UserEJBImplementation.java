@@ -34,7 +34,7 @@ public class UserEJBImplementation implements UserEJB {
     @Override
     public @Nullable LoggedUserDTO login(@NotNull LoginInformationsDTO loginInformation) {
 
-        System.out.println("UserEJBImplementation: called 'login' method...");
+        System.out.println("@UserEJBImplementation: called login() method");
 
         try (Connection connection = dataSource.getConnection()) {
             // Check if username and password are correct
@@ -74,7 +74,7 @@ public class UserEJBImplementation implements UserEJB {
      */
     @Override
     public SignupStatus signup(@NotNull SignupDTO signupDTO){
-        System.out.println("UserEJBImplementation: called 'signup' method...");
+        System.out.println("@UserEJBImplementation: called signup() method");
 
         try(Connection connection = dataSource.getConnection()) {
             // Query preparation
@@ -92,25 +92,13 @@ public class UserEJBImplementation implements UserEJB {
                 preparedStatement.setString(4, signupDTO.getSurname());
                 preparedStatement.setString(5, signupDTO.getEmail());
 
-                System.out.println("UserEJBImplementation signup() query parameters: \n" +
-                        "Username:" + signupDTO.getUsername() + "\n" +
-                        "Password:" + signupDTO.getPassword() + "\n" +
-                        "Name:" + signupDTO.getName() + "\n" +
-                        "Surname:" + signupDTO.getSurname() + "\n" +
-                        "Email:" + signupDTO.getEmail()
-                );
-
                 // Execute query
                 int result = preparedStatement.executeUpdate();
 
-                System.out.println("UserEJBImplementation signup() query result: " + result);
-
                 // evaluate the return value
                 if (result == 1) {
-                    System.out.println("UserEJBImplementation signup(): returning " + SignupStatus.SUCCESS);
                     return SignupStatus.SUCCESS;
                 } else {
-                    System.out.println("UserEJBImplementation signup(): returning " + SignupStatus.OTHER_ERROR);
                     return SignupStatus.OTHER_ERROR;            // general error
                 }
             }
@@ -119,16 +107,12 @@ public class UserEJBImplementation implements UserEJB {
             if (e.getSQLState().equals("23000") && e.getErrorCode() == 1062) {      // general violation of uniqueness error
                 String SQLErrorMsg =  e.getMessage().toLowerCase();
                 if(SQLErrorMsg.contains("username")) {
-                    System.out.println("UserEJBImplementation signup(): returning " + SignupStatus.DUPLICATE_USERNAME);
                     return SignupStatus.DUPLICATE_USERNAME;
                 }
                 if (SQLErrorMsg.contains("email")) {
-                    System.out.println("UserEJBImplementation signup(): returning " + SignupStatus.DUPLICATE_EMAIL);
                     return SignupStatus.DUPLICATE_EMAIL;
                 }
             }
-
-            System.out.println("UserEJBImplementation signup(): returning " + SignupStatus.OTHER_ERROR + " after generic SQLException");
             return SignupStatus.OTHER_ERROR;        // general error
         }
     }
@@ -139,7 +123,7 @@ public class UserEJBImplementation implements UserEJB {
      * @return AdditionalUserDataDTO object containing the information to show on the profile page.
      */
     public AdditionalUserDataDTO getUserDataByUsername(@NotNull String username) {
-        System.out.println("UserEJBImplementation: called method getUserByUsername(), param=" + username);
+        System.out.println("@UserEJBImplementation: called method getUserByUsername(), param=" + username);
 
         try(Connection connection = dataSource.getConnection()) {
             // Query preparation
