@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+
 @WebServlet(name = "HomepageServlet", value = "/homepage")
 public class HomepageServlet extends HttpServlet {
 
@@ -31,29 +32,27 @@ public class HomepageServlet extends HttpServlet {
      * @throws IOException if forwarding fails
      */
     private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println("@HomepageServlet: called handleRequest() method");
 
         List<MinimalWhiteboardDTO> whiteboards;
 
-        System.out.println("Homepage Servlet");
-
         LoggedUserDTO loggedUserDTO = AccessController.getLoggedUserWithRedirect(request, response);
-        if (loggedUserDTO == null) {
+        if (loggedUserDTO == null)
             return;
-        }
+
         String shared =  request.getParameter("shared");
         String searchInput = request.getParameter("search_input");
 
         if (searchInput != null) {
             request.setAttribute("search_input", searchInput);
-            whiteboards = whiteboardEJB.searchDashboards(searchInput);
+            whiteboards = whiteboardEJB.searchWhiteboard(searchInput);
         }
         else if ((shared != null) && (shared.equals("true"))) {
-            whiteboards = whiteboardEJB.getSharedDashboards(loggedUserDTO.getId());
+            whiteboards = whiteboardEJB.getSharedWhiteboards(loggedUserDTO.getId());
             request.setAttribute("shared", shared);
-        }
-        else {
-            whiteboards = whiteboardEJB.getAllDashboards(loggedUserDTO.getId());
-        }
+        } else
+            whiteboards = whiteboardEJB.getAllWhiteboards(loggedUserDTO.getId());
+
         request.setAttribute("whiteboards", whiteboards);
 
         String relativePath = "/WEB-INF/jsp/homepage.jsp";
@@ -64,32 +63,36 @@ public class HomepageServlet extends HttpServlet {
 
     @Override
     protected void doPost (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        System.out.println("@HomepageServlet: called doPost() method");
+
         LoggedUserDTO loggedUserDTO = AccessController.getLoggedUserWithRedirect(request, response);
-        if (loggedUserDTO == null) {
+        if (loggedUserDTO == null)
             return;
-        }
-        // Retrieve parameters from the request
+
+        // Retrieving parameters from the request
         String whiteboardName = request.getParameter("whiteboardName");
         String whiteboardDescription = request.getParameter("whiteboardDescription");
         String readOnlyParam = request.getParameter("readOnly");
 
-        // Convert readOnlyParam to boolean
+        // Converting "readOnlyParam" to boolean
         boolean isReadOnly = "on".equals(readOnlyParam);
 
-        WhiteboardCreationDTO newWhiteboard = new WhiteboardCreationDTO(whiteboardName, whiteboardDescription,
-                isReadOnly);
+        WhiteboardCreationDTO newWhiteboard = new WhiteboardCreationDTO(
+                whiteboardName,
+                whiteboardDescription,
+                isReadOnly
+        );
 
         try {
             if(!whiteboardEJB.addWhiteboard(loggedUserDTO.getId(), newWhiteboard)) {
-                System.out.println("whiteboard insertion failed");
+                System.out.println("@HomepageServlet: whiteboard insertion failed");
                 return;
             }
         } catch (RuntimeException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         response.sendRedirect(request.getContextPath() + "/homepage"); // Redirect to the homepage
-
     }
 
     /**
@@ -103,6 +106,4 @@ public class HomepageServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         handleRequest(request, response);
     }
-
-
 }

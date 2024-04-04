@@ -10,16 +10,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
 
 
 /**
- * Servlet handling POST requests for login.
+ * Servlet handling requests for login page.
  */
 @WebServlet(name = "LoginServlet", value = "/login")
 public class LoginServlet extends HttpServlet {
@@ -35,16 +32,13 @@ public class LoginServlet extends HttpServlet {
      */
     @Override
     protected void doPost (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        // Extract parameters for login
+        System.out.println("@LoginServlet: called doPost() method");
+
+        // Extracting parameters for login
         String username = Optional.ofNullable(request.getParameter("username")).orElse("");
         String password = Optional.ofNullable(request.getParameter("password")).orElse("");
 
-        System.out.println("@LoginServlet: called doPost() method, params:\n" +
-                "Username: " + username + "\n" +
-                "Password: " + password
-        );
-
-        // Execute login through EJB
+        // Executing login through EJB
         LoggedUserDTO loggedUser = userEJB.login(new LoginInformationsDTO(username, password));
 
         // Login failed -> sending an 'error' GET parameter

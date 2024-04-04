@@ -1,10 +1,7 @@
 package it.unipi.dsmt.jakartaee.app.servlets;
 
-import it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO;
-import it.unipi.dsmt.jakartaee.app.dto.LoginInformationsDTO;
+import it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO;
 import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
-import it.unipi.dsmt.jakartaee.app.utility.ClientRedirector;
-import it.unipi.dsmt.jakartaee.app.utility.AccessController;
 import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,7 +9,6 @@ import jakarta.servlet.http.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 
 /**
@@ -34,11 +30,14 @@ public class WhiteboardServlet extends HttpServlet {
     protected void doGet (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         System.out.println("@WhiteboardServlet: called doGet() method");
 
+        // Getting the ID of the chosen whiteboard via GET parameter
         int whiteboardID = Integer.parseInt(request.getParameter("whiteboardID"));
 
-        // get participants through EJB
+        // Getting the selected whiteboard data and participants through EJB
+        MinimalWhiteboardDTO selectedWhiteboard = whiteboardEJB.getWhiteboardByID(whiteboardID);
         List<String> whiteboardParticipants = whiteboardEJB.getParticipantUsernames(whiteboardID);
 
+        request.setAttribute("whiteboardData", selectedWhiteboard);
         request.setAttribute("whiteboardParticipants", whiteboardParticipants);
 
         request.getRequestDispatcher("/whiteboard.jsp").forward(request, response);

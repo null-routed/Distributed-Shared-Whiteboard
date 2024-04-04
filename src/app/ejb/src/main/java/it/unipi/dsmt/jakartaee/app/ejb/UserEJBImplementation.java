@@ -33,12 +33,14 @@ public class UserEJBImplementation implements UserEJB {
      */
     @Override
     public @Nullable LoggedUserDTO login(@NotNull LoginInformationsDTO loginInformation) {
-
         System.out.println("@UserEJBImplementation: called login() method");
 
         try (Connection connection = dataSource.getConnection()) {
             // Check if username and password are correct
-            String query = "SELECT UserID FROM Users WHERE username = ? AND password = ?;";
+            final String query =
+                    "SELECT UserID " +
+                    "FROM Users " +
+                    "WHERE Username = ? AND Password = ?;";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 // Set parameters in prepared statement
@@ -78,7 +80,7 @@ public class UserEJBImplementation implements UserEJB {
 
         try(Connection connection = dataSource.getConnection()) {
             // Query preparation
-            String query = "INSERT INTO Users(Username, Password, Name, Surname, Email) VALUES (?, ?, ?, ?, ?);";
+            final String query = "INSERT INTO Users(Username, Password, Name, Surname, Email) VALUES (?, ?, ?, ?, ?);";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 // Set parameters in prepared statement
@@ -127,7 +129,10 @@ public class UserEJBImplementation implements UserEJB {
 
         try(Connection connection = dataSource.getConnection()) {
             // Query preparation
-            String query = "SELECT Name, Surname, Email FROM Users WHERE Username = ?;";
+            final String query =
+                    "SELECT Name, Surname, Email " +
+                    "FROM Users " +
+                    "WHERE Username = ?;";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setString(1, username);

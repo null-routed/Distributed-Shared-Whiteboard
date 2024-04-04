@@ -3,13 +3,13 @@
 <%@ page import="java.util.List" %>
 <%@ page import="it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO" %>
 <%@ page contentType="text/html;charset=UTF-8"%>
+
 <html>
 <%
     LoggedUserDTO loggedUserDTO = AccessController.getLoggedUserWithRedirect(request, response);
     if (loggedUserDTO == null) {
         return;
     }
-
 
     String isSharedView = "";
 
@@ -50,8 +50,8 @@
                     <!-- Modal content -->
                     <div class="modal-content">
                         <span class="close">&times;</span>
-                        <h2>Add New Whiteboard</h2>
-                        <form id="addForm" action="${pageContext.request.contextPath}/homepage" method="post">
+                        <h2>Create a new Whiteboard</h2>
+                        <form id="addForm" action="${pageContext.request.contextPath}/homepage" method="POST">
                             <!-- Your form fields here -->
                             <label for="whiteboardName">Whiteboard Name:</label>
                             <input type="text" id="whiteboardName" name="whiteboardName">
@@ -67,13 +67,13 @@
                 </div>
                 <script>
                     // Get the modal
-                    var modal = document.getElementById("myModal");
+                    let modal = document.getElementById("myModal");
 
                     // Get the button that opens the modal
-                    var btn = document.getElementById("addButton");
+                    let btn = document.getElementById("addButton");
 
                     // Get the <span> element that closes the modal
-                    var span = document.getElementsByClassName("close")[0];
+                    let span = document.getElementsByClassName("close")[0];
 
                     // When the user clicks on the button, open the modal
                     btn.onclick = function() {
@@ -85,14 +85,14 @@
                         modal.style.display = "none";
                     }
 
-                    // When the user clicks anywhere outside of the modal, close it
+                    // When the user clicks anywhere outside the modal, close it
                     window.onclick = function(event) {
                         if (event.target === modal) {
                             modal.style.display = "none";
                         }
                     }
                 </script>
-                <form class="search-form" action="${pageContext.request.contextPath}/homepage" method="get">
+                <form class="search-form" action="${pageContext.request.contextPath}/homepage" method="GET">
                     <%
                         if(isSharedView.equals("true")){
                     %>
@@ -112,15 +112,12 @@
                 </form>
             </div>
         </div>
-
         <hr class="hr-style">
-
         <div id="whiteboards">
             <script>
                 const whiteboardsDiv = document.getElementById("whiteboards");
                 whiteboardsDiv.innerHTML = "";
             </script>
-
             <%
                 int counter = 0;
                 if (whiteboards != null) {
@@ -132,7 +129,7 @@
                     }
                 %>
                 <button type="button" id="<%= whiteboard.getName() %>" class="selected-whiteboards"
-                        onclick="location.href = '${pageContext.request.contextPath}/whiteboard?id=<%= whiteboard.getId() %>'">
+                        onclick="location.href = '${pageContext.request.contextPath}/whiteboard?whiteboardID=<%= whiteboard.getId() %>'">
                     <%= whiteboard.toString() %>
                 </button>
                 <%
@@ -153,7 +150,3 @@
 </div>
 </body>
 </html>
-
-
-
-

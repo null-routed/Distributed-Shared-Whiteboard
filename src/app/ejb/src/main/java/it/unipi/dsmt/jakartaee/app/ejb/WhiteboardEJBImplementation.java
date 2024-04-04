@@ -2,7 +2,6 @@ package it.unipi.dsmt.jakartaee.app.ejb;
 
 import it.unipi.dsmt.jakartaee.app.dto.WhiteboardCreationDTO;
 import it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO;
-
 import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
 import jakarta.annotation.Resource;
 import jakarta.ejb.Stateless;
@@ -15,6 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Stateless
 public class WhiteboardEJBImplementation implements WhiteboardEJB {
 
@@ -23,25 +23,30 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
     private DataSource dataSource;
 
     @Override
-    public List<MinimalWhiteboardDTO> searchDashboards(String whiteboardName) {
+    public List<MinimalWhiteboardDTO> searchWhiteboard(String whiteboardName) {
+        System.out.println("@WhiteboardEJBImplementation: called searchWhiteboard() method");
+
         List<MinimalWhiteboardDTO> whiteboards = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection()) {
-            // Get details of requested course
-            String query =  "SELECT w.whiteboardID, w.name " +
-                    "FROM whiteboards w " +
-                    "JOIN whiteboardparticipants p ON w.whiteboardID = p.whiteboardID " +
-                    "WHERE w.name LIKE ?;";
+            final String query =
+                    "SELECT W.WhiteboardID, W.Namem W.Description " +
+                    "FROM Whiteboards W " +
+                        "INNER JOIN WhiteboardParticipants WP " +
+                            "ON W.WhiteboardID = WP.WhiteboardID " +
+                    "WHERE W.Name LIKE ?;";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setString(1, "%" + whiteboardName + "%");
 
-                // Execute query
+                // Executing query
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     while (resultSet.next()){
-                        whiteboards.add(new MinimalWhiteboardDTO(
-                                        resultSet.getInt("w.whiteboardID"),
-                                        resultSet.getString("w.name")
+                        whiteboards.add(
+                                new MinimalWhiteboardDTO(
+                                        resultSet.getInt("W.WhiteboardID"),
+                                        resultSet.getString("W.Name"),
+                                        resultSet.getString("W.Description")
                                 )
                         );
                     }
@@ -55,15 +60,18 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
     }
 
     @Override
-    public List<MinimalWhiteboardDTO> getAllDashboards(String userId) {
+    public List<MinimalWhiteboardDTO> getAllWhiteboards(String userId) {
+        System.out.println("@WhiteboardEJBImplementation: called getAllWhiteboards() method");
+
         List<MinimalWhiteboardDTO> whiteboards = new ArrayList<>();
 
         // SQL queries
         final String query =
-                "SELECT w.whiteboardID, w.name " +
-                        "FROM whiteboards w " +
-                        "JOIN whiteboardparticipants p ON w.whiteboardID = p.whiteboardID " +
-                        "WHERE p.userID = ?";
+                "SELECT W.WhiteboardID, W.Name, W.Description " +
+                "FROM Whiteboards W " +
+                    "INNER JOIN WhiteboardParticipants WP " +
+                        "ON W.WhiteboardID = WP.WhiteboardID " +
+                "WHERE WP.UserID = ?";
 
 
         try (Connection connection = dataSource.getConnection()) {
@@ -77,8 +85,9 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                     // then wrap it inside a CourseDTO object and return it
                     while (resultSet.next()){
                         whiteboards.add(new MinimalWhiteboardDTO(
-                                        resultSet.getInt("w.whiteboardID"),
-                                        resultSet.getString("w.name")
+                                        resultSet.getInt("W.WhiteboardID"),
+                                        resultSet.getString("W.Name"),
+                                        resultSet.getString("W.Description")
                                 )
                         );
                     }
@@ -92,15 +101,16 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
     }
 
     @Override
-    public List<MinimalWhiteboardDTO> getSharedDashboards(String id) {
+    public List<MinimalWhiteboardDTO> getSharedWhiteboards(String id) {
         List<MinimalWhiteboardDTO> whiteboards = new ArrayList<>();
 
         // SQL query
         final String query =
-                "SELECT w.whiteboardID, w.name " +
-                        "FROM whiteboards w " +
-                        "JOIN whiteboardparticipants p ON w.whiteboardID = p.whiteboardID " +
-                        "WHERE p.userID = ? AND p.IsOwner = FALSE";
+                "SELECT W.WhiteboardID, W.Name, W.Description " +
+                "FROM Whiteboards W " +
+                    "INNER JOIN Whiteboardparticipants WP " +
+                        "ON W.WhiteboardID = WP.WhiteboardID " +
+                "WHERE WP.UserID = ? AND WP.IsOwner = FALSE";
 
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -108,10 +118,13 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
 
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     while (resultSet.next()) {
-                        whiteboards.add(new MinimalWhiteboardDTO(
-                                resultSet.getInt("w.whiteboardID"),
-                                resultSet.getString("w.name")
-                        ));
+                        whiteboards.add(
+                                new MinimalWhiteboardDTO(
+                                    resultSet.getInt("W.WhiteboardID"),
+                                    resultSet.getString("W.Name"),
+                                    resultSet.getString("W.Description")
+                                )
+                        );
                     }
                 }
             }
@@ -127,10 +140,11 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         List<String> participantUsernames = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection()) {
-            String query = "SELECT U.Username AS Username \n" +
-                    "FROM WhiteboardParticipants WP \n" +
-                    "   INNER JOIN Users U \n" +
-                    "   ON WP.UserID = U.UserID \n" +
+            final String query =
+                    "SELECT U.Username AS Username " +
+                    "FROM WhiteboardParticipants WP " +
+                        "INNER JOIN Users U " +
+                            "ON WP.UserID = U.UserID " +
                     "WHERE WP.WhiteboardID = ?;";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -151,11 +165,13 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
 
     @Override
     public boolean addWhiteboard(String ownerId, WhiteboardCreationDTO newWhiteboard) {
+        System.out.println("@WhiteboardEJBImplementation: called addWhiteboard() method");
+
         // SQL query to insert into the whiteboards table
-        String insertWhiteboardQuery = "INSERT INTO whiteboards (Name, Description, ReadOnly) VALUES (?, ?, ?)";
+        final String insertWhiteboardQuery = "INSERT INTO Whiteboards (Name, Description, ReadOnly) VALUES (?, ?, ?)";
 
         // SQL query to insert into the whiteboardparticipants table
-        String insertParticipantQuery = "INSERT INTO whiteboardparticipants (WhiteboardID, UserID, IsOwner) VALUES (?, ?, ?)";
+        final String insertParticipantQuery = "INSERT INTO WhiteboardParticipants (WhiteboardID, UserID, IsOwner) VALUES (?, ?, ?)";
 
         try (Connection connection = dataSource.getConnection()) {
             // Start a transaction
@@ -187,7 +203,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                         participantStatement.setString(2, ownerId);
                         participantStatement.setBoolean(3, true); // Assuming owner is always the owner
 
-                        // Execute insert into whiteboardparticipants table
+                        // Execute insert into whiteboard participants table
                         rowsAffected = participantStatement.executeUpdate();
                         if (rowsAffected == 0) {
                             // Rollback transaction if no rows were affected
@@ -212,11 +228,40 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
     }
 
     @Override
+    public MinimalWhiteboardDTO getWhiteboardByID (int whiteboardID) {
+        System.out.println("@WhiteboardEJBImplementation: called getWhiteboardByID() method");
+
+        try (Connection connection = dataSource.getConnection()) {
+            final String query =
+                    "SELECT W.Name AS Name, W.Description AS Description " +
+                    "FROM Whiteboards W " +
+                    "WHERE W.WhiteboardID = ?;";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, whiteboardID);
+
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        return new MinimalWhiteboardDTO(
+                                whiteboardID,
+                                resultSet.getString("Name"),
+                                resultSet.getString("Description")
+                        );
+                    } else
+                        return null;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override       // TODO
     public boolean removeSharedWhiteboard(String username, int whiteboardId) {
         return false;
     }
 
-    @Override
+    @Override       // TODO
     public boolean deleteWhiteboard(int id) {
         return false;
     }
