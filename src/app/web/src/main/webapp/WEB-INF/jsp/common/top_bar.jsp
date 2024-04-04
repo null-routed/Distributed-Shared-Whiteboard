@@ -14,11 +14,11 @@
         <img src="${pageContext.request.contextPath}/assets/images/logo.svg" alt="Logo"/>
     </div>
     <div id="left-container">
-        <button onclick="location.href = '${pageContext.request.contextPath}/<%= loggedUserDTO.getUsername() %>/portal'">
+        <button onclick="location.href = '${pageContext.request.contextPath}/homepage'">
             Back
         </button>
 
-        <button onclick="location.href = '${pageContext.request.contextPath}/<%= loggedUserDTO.getUsername() %>/profile'">
+        <button onclick="location.href = '${pageContext.request.contextPath}/profile'">
             Profile
         </button>
     </div>
