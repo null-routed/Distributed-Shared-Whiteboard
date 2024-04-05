@@ -152,9 +152,11 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                 preparedStatement.setInt(1, whiteboardID);
 
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
+                    while (resultSet.next()) {
                         participantUsernames.add(resultSet.getString("Username"));
-                    } else
+                    }
+
+                    if (participantUsernames.isEmpty())
                         participantUsernames = null;
                 }
             }

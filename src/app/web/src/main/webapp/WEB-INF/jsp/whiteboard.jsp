@@ -39,24 +39,15 @@
         <div id="right-container">
             <button class="custom-generic-button" id="participants-button">Participants</button>
         </div>
-
-        <%
-            for (int i = 0; i < whiteboardParticipants.size(); i++) {
-        %>
-            <h2><%= i + 1 %>: <%= whiteboardParticipants.get(i)%></h2>
-        <%
-            }
-        %>
-
         <div class="modal" id="participants-modal">
             <div class="modal-content">
                 <span class="close">&times;</span>
                 <h2>Participants to <%=whiteboardData.getName()%></h2>
                 <div class="participants-list">
                 <%
-                    for(String participant : whiteboardParticipants){
+                    for(int i = 0; i < whiteboardParticipants.size(); i++){
                 %>
-                    <div class="whiteboard-participant"><%=participant%></div>
+                    <div class="whiteboard-participant" id="participant-<%=i%>"> &bullet; <%=whiteboardParticipants.get(i)%></div>
                 <%
                     }
                 %>

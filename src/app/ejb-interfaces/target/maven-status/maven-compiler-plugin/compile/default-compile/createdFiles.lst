@@ -1,6 +1,7 @@
 it\unipi\dsmt\jakartaee\app\dto\LoginInformationsDTO.class
 it\unipi\dsmt\jakartaee\app\dto\MinimalWhiteboardDTO.class
 it\unipi\dsmt\jakartaee\app\dto\LoggedUserDTO.class
+it\unipi\dsmt\jakartaee\app\interfaces\UserEJB.class
 it\unipi\dsmt\jakartaee\app\dto\WhiteboardCreationDTO.class
 it\unipi\dsmt\jakartaee\app\enums\SignupStatus.class
 it\unipi\dsmt\jakartaee\app\interfaces\WhiteboardEJB.class

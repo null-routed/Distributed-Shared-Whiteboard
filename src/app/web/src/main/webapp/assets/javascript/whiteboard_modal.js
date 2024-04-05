@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let closeButton = document.getElementsByClassName("close")[0];
 
     button.onclick = function () {
-        modal.style.display = "block";
+        modal.style.display = "inline-block";
     }
 
     closeButton.onclick = function () {
