@@ -31,7 +31,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
 
         try (Connection connection = dataSource.getConnection()) {
             final String query =
-                    "SELECT W.WhiteboardID, W.Namem W.Description " +
+                    "SELECT W.WhiteboardID, W.Name, W.Description " +
                     "FROM Whiteboards W " +
                         "INNER JOIN WhiteboardParticipants WP " +
                             "ON W.WhiteboardID = WP.WhiteboardID " +

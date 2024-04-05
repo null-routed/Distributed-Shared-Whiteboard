@@ -5,23 +5,6 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
 
 <html>
-<%
-    LoggedUserDTO loggedUserDTO = AccessController.getLoggedUserWithRedirect(request, response);
-    if (loggedUserDTO == null) {
-        return;
-    }
-
-    String isSharedView = "";
-
-    @SuppressWarnings("unchecked")
-    List<MinimalWhiteboardDTO> whiteboards = (List<MinimalWhiteboardDTO>) request.getAttribute("whiteboards");
-
-    if(request.getAttribute("shared") != null){
-        isSharedView = request.getAttribute("shared").toString();
-        System.out.println(isSharedView);
-    }
-%>
-
 <head>
     <title>Homepage</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/homepage.css">
@@ -29,6 +12,9 @@
 <body>
 <div id="homepage-container">
     <jsp:include page="/WEB-INF/jsp/common/top_bar.jsp" />
+
+    <% LoggedUserDTO loggedUserDTO = AccessController.getLoggedUserWithRedirect(request, response);
+        if (loggedUserDTO != null) { %>
 
     <br>
     <h1>Your Whiteboards</h1>
@@ -65,90 +51,38 @@
                         </form>
                     </div>
                 </div>
-                <script>
-                    // Get the modal
-                    let modal = document.getElementById("myModal");
-
-                    // Get the button that opens the modal
-                    let btn = document.getElementById("addButton");
-
-                    // Get the <span> element that closes the modal
-                    let span = document.getElementsByClassName("close")[0];
-
-                    // When the user clicks on the button, open the modal
-                    btn.onclick = function() {
-                        modal.style.display = "block";
-                    }
-
-                    // When the user clicks on <span> (x), close the modal
-                    span.onclick = function() {
-                        modal.style.display = "none";
-                    }
-
-                    // When the user clicks anywhere outside the modal, close it
-                    window.onclick = function(event) {
-                        if (event.target === modal) {
-                            modal.style.display = "none";
-                        }
-                    }
-                </script>
                 <form class="search-form" action="${pageContext.request.contextPath}/homepage" method="GET">
-                    <%
-                        if(isSharedView.equals("true")){
-                    %>
-                    <button type="submit" name="shared" class="nav-button" value="false">
-                        Other
-                    </button>
-                    <%
-                    }
-                    else{
-                    %>
-                    <button type="submit" name="shared" class="nav-button" value="true">
-                        Shared
-                    </button>
-                    <%
-                        }
-                    %>
+                    <% String isSharedView = request.getAttribute("shared") != null ? request.getAttribute("shared").toString() : "";
+                        if (isSharedView.equals("true")) { %>
+                    <button type="submit" name="shared" class="nav-button" value="false">Other</button>
+                    <% } else { %>
+                    <button type="submit" name="shared" class="nav-button" value="true">Shared</button>
+                    <% } %>
                 </form>
             </div>
         </div>
         <hr class="hr-style">
         <div id="whiteboards">
-            <script>
-                const whiteboardsDiv = document.getElementById("whiteboards");
-                whiteboardsDiv.innerHTML = "";
-            </script>
-            <%
-                int counter = 0;
+            <% List<MinimalWhiteboardDTO> whiteboards = (List<MinimalWhiteboardDTO>) request.getAttribute("whiteboards");
                 if (whiteboards != null) {
+                    int counter = 0;
                     for (MinimalWhiteboardDTO whiteboard : whiteboards) {
-                        if(counter == 0){
-            %>
+                        if (counter == 0) { %>
             <div class="whiteboard-row-buttons">
-                <%
-                    }
-                %>
+                <% }
+                    counter++; %>
                 <div class="whiteboard-button-container">
-                    <button type="button" id="whiteboard_<%= whiteboard.getId() %>" class="selected-whiteboards">
-                        <%= whiteboard.getName() %>
-                    </button>
+                    <button type="button" id="whiteboard_<%= whiteboard.getId() %>" class="selected-whiteboards"><%= whiteboard.getName() %></button>
                     <button type="button" onclick="confirmDelete(<%= whiteboard.getId() %>)" class="delete-button">X</button>
                 </div>
-                <%
-                    if(counter == 2 || whiteboards.indexOf(whiteboard) == whiteboards.size() - 1){
-                        counter = 0;
-                %>
+                <% if (counter == 3 || whiteboards.indexOf(whiteboard) == whiteboards.size() - 1) { %>
             </div>
-            <%
-                        }
-                        else{
-                            counter++;
-                        }
-                    }
-                }
-            %>
+            <% }
+            }
+            } %>
         </div>
     </div>
+    <% } %>
 </div>
 
 <!-- Form for deleting whiteboard -->
@@ -156,15 +90,7 @@
     <input type="hidden" id="whiteboardIdToDelete" name="whiteboardIdToDelete">
 </form>
 
-<!-- Script to confirm whiteboard deletion -->
-<script>
-    function confirmDelete(whiteboardId) {
-        if (confirm("Are you sure you want to delete this whiteboard?")) {
-            document.getElementById("whiteboardIdToDelete").value = whiteboardId;
-            document.getElementById("deleteWhiteboardForm").submit();
-        }
-    }
-</script>
+<script src="${pageContext.request.contextPath}/assets/javascript/homepage.js"></script>
 
 </body>
 </html>
