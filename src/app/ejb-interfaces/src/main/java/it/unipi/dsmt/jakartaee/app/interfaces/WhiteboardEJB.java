@@ -10,12 +10,13 @@ import java.util.List;
 
 @Remote
 public interface WhiteboardEJB {
-    List<MinimalWhiteboardDTO> searchWhiteboard(String name);
-    List<MinimalWhiteboardDTO> getAllWhiteboards(String userID);
-    List<MinimalWhiteboardDTO> getSharedWhiteboards(String ID);
-    MinimalWhiteboardDTO getWhiteboardByID(int whiteboardID);
+    List<MinimalWhiteboardDTO> searchWhiteboard(@NotNull String name);
+    List<MinimalWhiteboardDTO> getAllWhiteboards(@NotNull String userID);
+    List<MinimalWhiteboardDTO> getSharedWhiteboards(@NotNull String ID);
+    MinimalWhiteboardDTO getWhiteboardByID(@NotNull int whiteboardID);
     boolean addWhiteboard(@NotNull String ownerID, WhiteboardCreationDTO newWhiteboard);
-    boolean removeSharedWhiteboard(@NotNull String username, int whiteboardID);
-    boolean deleteWhiteboard(int ID);
-    List<String> getParticipantUsernames(int whiteboardID);
+    boolean deleteWhiteboard(String whiteboardID);
+    List<String> getParticipantUsernames(@NotNull int whiteboardID);
+    boolean isOwnerOfWhiteboard(@NotNull String userId, @NotNull String whiteboardId);
+    boolean removeParticipant(@NotNull String userId, @NotNull String whiteboardId);
 }

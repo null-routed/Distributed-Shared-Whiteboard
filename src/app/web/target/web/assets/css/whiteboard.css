@@ -1,0 +1,11 @@
+div {
+    border: 2px solid red;
+}
+
+.whiteboard-nav {
+    display: flex;
+    background-color: var(--base-color);
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}

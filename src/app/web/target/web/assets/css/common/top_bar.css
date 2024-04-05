@@ -1,0 +1,32 @@
+@import url("common.css");
+
+.topnav {
+    display: flex;
+    background-color: var(--base-color);
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+#left-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 20%;
+}
+
+#left-container .custom-generic-button {
+    width: 50%;
+    margin: 10px;
+}
+
+#right-container{
+    display: flex;
+    flex-direction: row;
+    width: 10%;
+}
+
+#right-container .custom-generic-button {
+    width: 100%;
+    margin: 10px;
+}

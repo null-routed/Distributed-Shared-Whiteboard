@@ -69,6 +69,29 @@ public class HomepageServlet extends HttpServlet {
         if (loggedUserDTO == null)
             return;
 
+        // Check if the request is for deleting a whiteboard
+        String whiteboardIdToDelete = request.getParameter("whiteboardIdToDelete");
+        if (whiteboardIdToDelete != null) {
+            boolean deletionSuccessful = false;
+            // Call a method to delete the whiteboard
+            if(whiteboardEJB.isOwnerOfWhiteboard(loggedUserDTO.getId(), whiteboardIdToDelete))
+                deletionSuccessful = whiteboardEJB.deleteWhiteboard(whiteboardIdToDelete);
+            else
+                deletionSuccessful = whiteboardEJB.removeParticipant(loggedUserDTO.getId(),
+                        whiteboardIdToDelete);
+
+            if (deletionSuccessful) {
+                // Redirect back to the homepage after successful deletion
+                response.sendRedirect(request.getContextPath() + "/homepage");
+            } else {
+                // Handle deletion failure (optional)
+                // You can display an error message or perform other actions
+                // For example, you can redirect back to the homepage with an error message
+                response.sendRedirect(request.getContextPath() + "/homepage?deletionFailed=true");
+            }
+            return; // Return to prevent further processing
+        }
+
         // Retrieving parameters from the request
         String whiteboardName = request.getParameter("whiteboardName");
         String whiteboardDescription = request.getParameter("whiteboardDescription");
