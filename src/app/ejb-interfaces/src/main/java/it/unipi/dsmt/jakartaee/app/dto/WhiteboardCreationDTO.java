@@ -2,6 +2,7 @@ package it.unipi.dsmt.jakartaee.app.dto;
 
 import java.io.Serializable;
 
+
 public class WhiteboardCreationDTO implements Serializable {
     private String name;
     private String description;

@@ -3,6 +3,7 @@ package it.unipi.dsmt.jakartaee.app.dto;
 import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 
+
 /**
  * DTO used for sending the user's signup information to a remote EJB object.
  */
@@ -60,5 +61,4 @@ public class SignupDTO implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-
 }

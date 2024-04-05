@@ -4,20 +4,18 @@ import it.unipi.dsmt.jakartaee.app.dto.WhiteboardCreationDTO;
 import it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO;
 import jakarta.ejb.Remote;
 import jakarta.validation.constraints.NotNull;
-import it.unipi.dsmt.jakartaee.app.dto.AdditionalUserDataDTO;
-import jakarta.ejb.Remote;
-import jakarta.persistence.criteria.CriteriaBuilder;
 
 
 import java.util.List;
 
 @Remote
 public interface WhiteboardEJB {
-    List<MinimalWhiteboardDTO> searchDashboards(String name);
-    List<MinimalWhiteboardDTO> getAllDashboards(String userId);
-    List<MinimalWhiteboardDTO> getSharedDashboards(String id);
-    boolean addWhiteboard(@NotNull String ownerId, WhiteboardCreationDTO newWhiteboard);
-    boolean removeSharedWhiteboard(@NotNull String username, int whiteboardId);
-    boolean deleteWhiteboard(int id);
+    List<MinimalWhiteboardDTO> searchWhiteboard(String name);
+    List<MinimalWhiteboardDTO> getAllWhiteboards(String userID);
+    List<MinimalWhiteboardDTO> getSharedWhiteboards(String ID);
+    MinimalWhiteboardDTO getWhiteboardByID(int whiteboardID);
+    boolean addWhiteboard(@NotNull String ownerID, WhiteboardCreationDTO newWhiteboard);
+    boolean removeSharedWhiteboard(@NotNull String username, int whiteboardID);
+    boolean deleteWhiteboard(int ID);
     List<String> getParticipantUsernames(int whiteboardID);
 }

@@ -40,5 +40,4 @@ public class LoggedUserDTO implements Serializable {
                 ", username='" + username + '\'' +
                 '}';
     }
-
 }
