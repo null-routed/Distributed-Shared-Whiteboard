@@ -25,8 +25,9 @@
 %>
 <head>
     <title><%= whiteboardData.getName() %></title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/common.css?key=<php echo time(); ?>">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/whiteboard.css?key=<php echo time(); ?>">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/common.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/whiteboard.css">
+    <script type="text/javascript" src="${pageContext.request.contextPath}/assets/javascript/whiteboard_modal.js"></script>
 </head>
 
 <body>
@@ -36,8 +37,34 @@
         </div>
         <h1><%=whiteboardData.getName()%></h1>
         <div id="right-container">
-            <button class="custom-generic-button">Participants</button>     <!-- TODO -->
+            <button class="custom-generic-button" id="participants-button">Participants</button>
         </div>
+
+        <%
+            for (int i = 0; i < whiteboardParticipants.size(); i++) {
+        %>
+            <h2><%= i + 1 %>: <%= whiteboardParticipants.get(i)%></h2>
+        <%
+            }
+        %>
+
+        <div class="modal" id="participants-modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Participants to <%=whiteboardData.getName()%></h2>
+                <div class="participants-list">
+                <%
+                    for(String participant : whiteboardParticipants){
+                %>
+                    <div class="whiteboard-participant"><%=participant%></div>
+                <%
+                    }
+                %>
+                </div>
+            </div>
+
+        </div>
+
     </div>
     <div class="whiteboard-container">
         <div id="canvas-container">
@@ -119,13 +146,17 @@
                 // Draws the line.
                 ctx.stroke();
             }
-        </script>
+        </script>       <!-- drawing code test -->
         <div class="whiteboard-sidebar">
             <div id="tools-container">
                 <div id="tools-name">Tools</div>
                 <div id="sidebar-tools">
-                    <button class="custom-generic-button" id="pen-button">Pen <!-- TODO: pen image --></button>
-                    <button class="custom-generic-button" id="rubber-button">Rubber <!-- TODO: rubber image --> </button>
+                    <button class="custom-generic-button-with-icon" id="pen-button">
+                        <img alt="pen-icon" src="${pageContext.request.contextPath}/assets/images/pen.svg">
+                    </button>
+                    <button class="custom-generic-button-with-icon" id="rubber-button">
+                        <img alt="eraser-icon" src="${pageContext.request.contextPath}/assets/images/eraser.svg">
+                    </button>
                 </div>
             </div>
         </div>

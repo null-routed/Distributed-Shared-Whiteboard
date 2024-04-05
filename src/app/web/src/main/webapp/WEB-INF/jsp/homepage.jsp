@@ -72,7 +72,10 @@
                 <% }
                     counter++; %>
                 <div class="whiteboard-button-container">
-                    <button type="button" id="whiteboard_<%= whiteboard.getId() %>" class="selected-whiteboards"><%= whiteboard.getName() %></button>
+                    <button type="button" id="whiteboard_<%= whiteboard.getId() %>" class="selected-whiteboards"
+                            onclick="location.href = '${pageContext.request.contextPath}/whiteboard?whiteboardID=<%= whiteboard.getId() %>'">
+                        <%= whiteboard.getName() %>
+                    </button>
                     <button type="button" onclick="confirmDelete(<%= whiteboard.getId() %>)" class="delete-button">X</button>
                 </div>
                 <% if (counter == 3 || whiteboards.indexOf(whiteboard) == whiteboards.size() - 1) { %>
