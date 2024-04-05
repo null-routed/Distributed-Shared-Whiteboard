@@ -5,6 +5,7 @@ import it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO;
 import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
 import jakarta.annotation.Resource;
 import jakarta.ejb.Stateless;
+import jakarta.validation.constraints.NotNull;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -60,7 +61,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
     }
 
     @Override
-    public List<MinimalWhiteboardDTO> getAllWhiteboards(String userId) {
+    public List<MinimalWhiteboardDTO> getAllWhiteboards(@NotNull String userId) {
         System.out.println("@WhiteboardEJBImplementation: called getAllWhiteboards() method");
 
         List<MinimalWhiteboardDTO> whiteboards = new ArrayList<>();
@@ -256,13 +257,110 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         }
     }
 
-    @Override       // TODO
-    public boolean removeSharedWhiteboard(String username, int whiteboardId) {
-        return false;
+    @Override
+    public boolean deleteWhiteboard(String whiteboardID) {
+        System.out.println("@WhiteboardEJBImplementation: called deleteWhiteboard() method");
+
+        // SQL query to delete from the whiteboardparticipants table
+        final String deleteParticipantQuery = "DELETE FROM WhiteboardParticipants WHERE WhiteboardID = ?";
+
+        // SQL query to delete from the whiteboards table
+        final String deleteWhiteboardQuery = "DELETE FROM Whiteboards WHERE WhiteboardID = ?";
+
+        try (Connection connection = dataSource.getConnection()) {
+            // Start a transaction
+            connection.setAutoCommit(false);
+
+            try (PreparedStatement participantStatement = connection.prepareStatement(deleteParticipantQuery);
+                 PreparedStatement whiteboardStatement = connection.prepareStatement(deleteWhiteboardQuery)) {
+
+                // Set parameter for whiteboardparticipants table
+                participantStatement.setString(1, whiteboardID);
+
+                // Execute delete from whiteboardparticipants table
+                int rowsAffected = participantStatement.executeUpdate();
+                if (rowsAffected == 0) {
+                    // Rollback transaction if no rows were affected
+                    connection.rollback();
+                    return false;
+                }
+
+                // Set parameter for whiteboards table
+                whiteboardStatement.setString(1, whiteboardID);
+
+                // Execute delete from whiteboards table
+                rowsAffected = whiteboardStatement.executeUpdate();
+                if (rowsAffected == 0) {
+                    // Rollback transaction if no rows were affected
+                    connection.rollback();
+                    return false;
+                }
+
+                // Commit transaction if all operations were successful
+                connection.commit();
+                return true;
+            }
+        } catch (SQLException e) {
+            // Handle SQL exception
+            throw new RuntimeException(e);
+        }
     }
 
-    @Override       // TODO
-    public boolean deleteWhiteboard(int id) {
-        return false;
+    @Override
+    public boolean isOwnerOfWhiteboard(String userId, String whiteboardId) {
+        try (Connection connection = dataSource.getConnection()) {
+            // Prepare the SQL query
+            String query = "SELECT IsOwner FROM whiteboardparticipants WHERE UserID = ? AND WhiteboardID = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                // Set the parameters
+                preparedStatement.setString(1, userId);
+                preparedStatement.setString(2, whiteboardId);
+
+                // Execute the query
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    // Check if there is a result
+                    if (resultSet.next()) {
+                        // Retrieve the value of IsOwner column
+                        return resultSet.getBoolean("IsOwner");
+                    } else {
+                        // No result found, user is not the owner
+                        return false;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            // Handle SQLException
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean removeParticipant(String userId, String whiteboardId) {
+        try (Connection connection = dataSource.getConnection()) {
+            // Prepare the SQL query to delete the entry
+            String query = "DELETE FROM whiteboardparticipants WHERE UserID = ? AND WhiteboardID = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                // Set the parameters
+                preparedStatement.setString(1, userId);
+                preparedStatement.setString(2, whiteboardId);
+
+                // Execute the delete statement
+                int rowsAffected = preparedStatement.executeUpdate();
+
+                // Check if any rows were affected
+                if (rowsAffected > 0) {
+                    // Entry successfully deleted
+                    return true;
+                } else {
+                    // No rows were affected, entry may not exist
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            // Handle SQLException
+            e.printStackTrace();
+            return false;
+        }
     }
 }

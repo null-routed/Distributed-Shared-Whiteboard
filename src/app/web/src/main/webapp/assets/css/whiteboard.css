@@ -1,11 +1,70 @@
-div {
-    border: 2px solid red;
-}
-
+/*  ------ NAVBAR ------  */
 .whiteboard-nav {
     display: flex;
     background-color: var(--base-color);
     flex-direction: row;
     justify-content: space-between;
     width: 100%;
+}
+
+#left-container {
+    margin-left: 15px;
+}
+
+#right-container {
+    margin-right: 15px;
+}
+
+/* ------ CANVAS + SIDEBAR ------ */
+
+.whiteboard-container {
+    display: flex;
+    justify-content: space-around;
+    height: 89%;
+}
+
+.whiteboard-sidebar {
+    display: flex;
+    width: 10%;
+    align-items: flex-start;
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+#tools-container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    height: fit-content;
+    border: 2px solid black;
+}
+
+#sidebar-tools {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin-bottom: 10px;
+}
+
+#tools-name {
+    text-align: center;
+    font-weight: bold;
+    margin: 10px;
+}
+
+#pen-button {
+    margin-top: 0;
+}
+
+#canvas-container {
+    width: 90%;
+    margin: 10px;
+}
+
+#whiteboard {
+    width: 100%;
+    height: 100%;
+    border: 2px solid black;
 }

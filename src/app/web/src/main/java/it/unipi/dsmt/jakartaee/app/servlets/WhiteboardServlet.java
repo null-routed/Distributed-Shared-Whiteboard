@@ -40,6 +40,7 @@ public class WhiteboardServlet extends HttpServlet {
         request.setAttribute("whiteboardData", selectedWhiteboard);
         request.setAttribute("whiteboardParticipants", whiteboardParticipants);
 
-        request.getRequestDispatcher("/whiteboard.jsp").forward(request, response);
+        String targetPage = "/WEB-INF/jsp/whiteboard.jsp";
+        request.getRequestDispatcher(targetPage).forward(request, response);
     }
 }

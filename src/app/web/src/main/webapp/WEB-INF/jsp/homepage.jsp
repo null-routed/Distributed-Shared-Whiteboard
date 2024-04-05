@@ -44,7 +44,7 @@
             </div>
 
             <div id="whiteboard-type">
-                <button type="button" id="addButton" onclick="" class="nav-button">New</button>
+                <button type="button" id="addButton" class="nav-button">New</button>
                 <!-- The modal -->
                 <div id="myModal" class="modal">
                     <!-- Modal content -->
@@ -128,10 +128,12 @@
                 <%
                     }
                 %>
-                <button type="button" id="<%= whiteboard.getName() %>" class="selected-whiteboards"
-                        onclick="location.href = '${pageContext.request.contextPath}/whiteboard?whiteboardID=<%= whiteboard.getId() %>'">
-                    <%= whiteboard.toString() %>
-                </button>
+                <div class="whiteboard-button-container">
+                    <button type="button" id="whiteboard_<%= whiteboard.getId() %>" class="selected-whiteboards">
+                        <%= whiteboard.getName() %>
+                    </button>
+                    <button type="button" onclick="confirmDelete(<%= whiteboard.getId() %>)" class="delete-button">X</button>
+                </div>
                 <%
                     if(counter == 2 || whiteboards.indexOf(whiteboard) == whiteboards.size() - 1){
                         counter = 0;
@@ -148,5 +150,21 @@
         </div>
     </div>
 </div>
+
+<!-- Form for deleting whiteboard -->
+<form id="deleteWhiteboardForm" action="${pageContext.request.contextPath}/homepage" method="POST" style="display: none;">
+    <input type="hidden" id="whiteboardIdToDelete" name="whiteboardIdToDelete">
+</form>
+
+<!-- Script to confirm whiteboard deletion -->
+<script>
+    function confirmDelete(whiteboardId) {
+        if (confirm("Are you sure you want to delete this whiteboard?")) {
+            document.getElementById("whiteboardIdToDelete").value = whiteboardId;
+            document.getElementById("deleteWhiteboardForm").submit();
+        }
+    }
+</script>
+
 </body>
 </html>
