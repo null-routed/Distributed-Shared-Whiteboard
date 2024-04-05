@@ -3,8 +3,9 @@
 
 -include_lib("stdlib/include/assert.hrl").
 
--record(whiteboard_access, {whiteboard_id, username, permission}).
--record(whiteboard_strokes, {stroke_id, whiteboard_id, data, username, timestamp}).
+-record(whiteboard_strokes, {id, whiteboard_id, data, username, timestamp}).
+-record(whiteboard_access, {whiteboard_id_username, whiteboard_id, username, permission}).
+-record(whiteboard_users, {whiteboard_id_username, whiteboard_id, username, join_time, websocket_pid}).
 
 init() ->
     Nodes = application:get_env(shared_white_board, cluster_nodes, []),
@@ -38,7 +39,8 @@ setup_mnesia() ->
 create_tables_if_not_exist() ->
     wait_for_mnesia(),
     create_table_whiteboard_access(),
-    create_table_whiteboard_strokes().
+    create_table_whiteboard_strokes(),
+    create_connected_user_table().
 
 wait_for_mnesia() ->
     case mnesia:wait_for_tables([schema], 10000) of
@@ -67,9 +69,23 @@ create_table_whiteboard_strokes() ->
             {type, set}
         ]) of
         {atomic, ok} ->
-            io:format("Table whiteboard_access created successfully.~n");
+            io:format("Table whiteboard_strokes created successfully.~n");
         {error, {already_exists, whiteboard_strokes}} ->
-            io:format("Table whiteboard_access already exists.~n");
+            io:format("Table whiteboard_strokes already exists.~n");
         Error ->
-            io:format("Failed to create table whiteboard_access: ~p~n", [Error])
+            io:format("Failed to create table whiteboard_strokes: ~p~n", [Error])
+    end.
+
+create_connected_user_table() ->
+    case mnesia:create_table(whiteboard_users, [
+            {attributes, record_info(fields, whiteboard_users)},
+            {disc_copies, [node()]},
+            {type, set}
+        ]) of
+        {atomic, ok} ->
+            io:format("Table whiteboard_users created successfully.~n");
+        {error, {already_exists, whiteboard_users}} ->
+            io:format("Table whiteboard_users already exists.~n");
+        Error ->
+            io:format("Failed to create table whiteboard_users: ~p~n", [Error])
     end.

@@ -1,12 +1,13 @@
 -module(mnesia_queries).
 
--export[get_permissions/2].
+-export([get_permissions/2, update_or_add_user_connection/3, get_connected_users/1, get_user_connection/2, remove_user_connection/2, add_user_access/3, print_all_records/0]).
 
--record(whiteboard_access, {whiteboard_id, username, permission}).
+-record(whiteboard_access, {whiteboard_id_username, whiteboard_id, username, permission}).
+-record(whiteboard_users, {whiteboard_id_username, whiteboard_id, username, join_time, websocket_pid}).
 
 get_permissions(WhiteboardId, Username) ->
     case mnesia:transaction(fun() ->
-            mnesia:match_object(#whiteboard_access{whiteboard_id = WhiteboardId, username = Username, permission = '_'})
+            mnesia:match_object(#whiteboard_access{whiteboard_id_username = '_', whiteboard_id = WhiteboardId, username = Username, permission = '_'})
         end) of
         {atomic, [Record]} ->
             % A match was found, extract the permission
@@ -19,4 +20,58 @@ get_permissions(WhiteboardId, Username) ->
             {error, Reason}
     end.
 
-   
+update_or_add_user_connection(WhiteboardId, Username, Pid) ->
+    Fun = fun() ->
+              Record = #whiteboard_users{whiteboard_id_username =  <<WhiteboardId/binary, Username/binary>>, whiteboard_id = WhiteboardId, username = Username, join_time = erlang:timestamp(), websocket_pid = Pid},
+              mnesia:write(Record)
+          end,
+    mnesia:transaction(Fun).
+
+remove_user_connection(WhiteboardId, Username) ->
+    Fun = fun() ->
+              Records = mnesia:match_object(#whiteboard_users{whiteboard_id = WhiteboardId, username = Username, _ = '_'}),
+              lists:foreach(fun(Record) ->
+                                mnesia:delete_object(Record)
+                            end, Records)
+          end,
+    mnesia:transaction(Fun).
+
+
+get_connected_users(WhiteboardId) ->
+    MatchPattern = #whiteboard_users{whiteboard_id_username = '_', whiteboard_id = WhiteboardId, username = '_', join_time = '_', websocket_pid = '_'},
+    Fun = fun() -> mnesia:match_object(MatchPattern) end,
+    case mnesia:transaction(Fun) of
+        {atomic, Records} ->
+            lists:map(fun(#whiteboard_users{username = Username, websocket_pid = Pid}) -> {Username, Pid} end, Records);
+        {aborted, Reason} ->
+            {error, Reason}
+    end.
+
+get_user_connection(WhiteboardId, Username) ->
+    MatchPattern = #whiteboard_users{whiteboard_id_username = '_', whiteboard_id = WhiteboardId, username = Username, _ = '_'},
+    Fun = fun() -> mnesia:match_object(MatchPattern) end,
+    case mnesia:transaction(Fun) of
+        {atomic, [Record]} ->
+            {ok, Record#whiteboard_users.websocket_pid};
+        {atomic, []} ->
+            {error, not_found};
+        {aborted, Reason} ->
+            {error, Reason}
+    end.
+
+add_user_access(WhiteboardId, Username, Permission) ->
+        Fun = fun() ->
+            Record = #whiteboard_access{whiteboard_id_username = <<WhiteboardId/binary, Username/binary>>, whiteboard_id = WhiteboardId, username = Username, permission = Permission},
+            mnesia:write(Record)
+        end,
+    mnesia:transaction(Fun).
+
+print_all_records() ->
+    Fun = fun() ->
+        FoldFun = fun(Record, Acc) ->
+            io:format("~p~n", [Record]),
+            Acc
+        end,
+        mnesia:foldl(FoldFun, ok, whiteboard_users)
+    end,
+    mnesia:transaction(Fun).

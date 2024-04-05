@@ -9,6 +9,7 @@ NODE_NAME=$1
 COOKIE="shared_whiteboard_app"  
 
 echo "Compiling project..."
+rebar3 get-deps
 rebar3 compile
 
 echo "Starting node ${NODE_NAME}..."

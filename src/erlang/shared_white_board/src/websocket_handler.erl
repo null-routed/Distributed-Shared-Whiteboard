@@ -1,6 +1,5 @@
 -module(websocket_handler).
-
--export([init/2, websocket_init/1, websocket_handle/2, websocket_info/3, terminate/2]).
+-export([init/2, websocket_init/1, websocket_handle/2, websocket_info/2, terminate/3]).
 
 -export([validate_jwt/1]).
 
@@ -12,14 +11,13 @@ init(Req, Opts) ->
                     Req2 = cowboy_req:reply(400, #{}, <<"Missing whiteboard ID">>, Req),
                     {ok, Req2, Opts};
                 WhiteboardId ->
-                    case mnesia_queries:get_permissions(WhiteboardId, Username) of
-                        {ok, Permission} ->
-                            State = #{username => Username,
-                                      whiteboardId => WhiteboardId,
-                                      permission => Permission},
+                    %% Store the whiteboardId and username in the state
+                    Result = business_logic:check_permissions(WhiteboardId, Username),
+                    case Result of
+                        {ok, State, _} ->
                             {cowboy_websocket, Req, State};
-                        {error, _Reason} ->
-                            Req2 = cowboy_req:reply(401, #{}, <<"Unauthorized: No permissions">>, Req),
+                        {error, _, Message} ->
+                            Req2 = cowboy_req:reply(403, #{}, Message, Req),
                             {ok, Req2, Opts}
                     end
             end;
@@ -29,22 +27,30 @@ init(Req, Opts) ->
     end.
 
 websocket_init(State) ->
-    {ok, State}.
-
-websocket_handle({text, Msg}, State) ->
     #{username := Username, whiteboardId := WhiteboardId} = State,
-    io:format("Message from ~s on whiteboard ~s: ~s~n", [Username, WhiteboardId, Msg]),
+    io:format("User ~p connected to whiteboard ~p~n", [Username, WhiteboardId]),
+    business_logic:notify_user_connection(WhiteboardId, Username, node()),
     {ok, State}.
 
-websocket_info(_Info, Req, State) ->
-    {ok, Req, State}.
+websocket_handle({text, _}, State) ->
+    {ok, State}.
 
-terminate(_Reason, _State) ->
+websocket_info({close, Reason}, State) ->
+    {[{close, 1000, Reason}], State};
+websocket_info({send, Message}, State) ->
+    {[{text, Message}], State};
+websocket_info(_, State) -> 
+    io:format("Unknown message received~n"),
+    {ok, State}.
+
+terminate(_Reason, _Req, State) ->
+    #{username := Username, whiteboardId := WhiteboardId} = State,
+    business_logic:notify_user_disconnection(WhiteboardId, Username, node()),
     ok.
 
 validate_jwt(Req) ->
     Cookies = cowboy_req:parse_cookies(Req),
-    case find_jwt_cookie(Cookies) of
+    case jwt_utils:find_jwt_cookie(Cookies) of
         {ok, Token} ->
             case jwt_utils:decode_jwt(Token) of
                 {ok, Payload} ->
@@ -56,6 +62,3 @@ validate_jwt(Req) ->
             error
     end.
 
-find_jwt_cookie([]) -> error;
-find_jwt_cookie([{<<"jwt">>, Token}|_]) -> {ok, Token};
-find_jwt_cookie([_|T]) -> find_jwt_cookie(T).
