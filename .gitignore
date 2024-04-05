@@ -1,5 +1,6 @@
-target 
-*.jar
+/src/app/out
+/src/app/ejb/target
+src/app/web/target/web/WEB-INF/lib/ejb-interfaces-1.0.0-SNAPSHOT.jar*.jar
 *.class
 .rebar3
 _build
