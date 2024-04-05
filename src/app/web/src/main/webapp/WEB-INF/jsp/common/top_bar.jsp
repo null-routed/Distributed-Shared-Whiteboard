@@ -17,7 +17,7 @@
         <button class="custom-generic-button" onclick="location.href = '${pageContext.request.contextPath}/homepage'">
             Homepage
         </button>
-        <button class="custom-generic-button" onclick="location.href = '${pageContext.request.contextPath}/profile'">
+        <button class="custom-generic-button" onclick="location.href = '${pageContext.request.contextPath}/profile?userId=<%= loggedUserDTO.getId()%>'">
             Profile
         </button>
     </div>

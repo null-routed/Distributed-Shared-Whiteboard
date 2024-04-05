@@ -20,14 +20,13 @@ public class UserProfileServlet extends HttpServlet {
     @EJB
     private UserEJB userEJB;
 
-    public AdditionalUserDataDTO getUserData(@NotNull String username) {
-        System.out.println("UserProfileServlet: called getUserData() method, param=" + username);
-        return userEJB.getUserDataByUsername(username);
-    }
-
     @Override
     protected void doGet (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         System.out.println("@UserProfileServlet: called doGet() method");
+        String userId = request.getParameter("userId");
+        AdditionalUserDataDTO userData = userEJB.getUserDataByUserId(userId);
+        // Set the retrieved AdditionalUserDataDTO as an attribute in the request
+        request.setAttribute("userData", userData);
         String targetPage = "/WEB-INF/jsp/profile.jsp";
         request.getRequestDispatcher(targetPage).forward(request, response);
     }

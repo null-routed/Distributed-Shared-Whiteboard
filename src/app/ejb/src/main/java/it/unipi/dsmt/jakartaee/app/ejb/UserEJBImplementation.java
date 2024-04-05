@@ -121,21 +121,21 @@ public class UserEJBImplementation implements UserEJB {
 
     /**
      * Return an object containing the full set of user information.
-     * @param username: the username for which the other data will be retrieved.
+     * @param userId: the userId for which the other data will be retrieved.
      * @return AdditionalUserDataDTO object containing the information to show on the profile page.
      */
-    public AdditionalUserDataDTO getUserDataByUsername(@NotNull String username) {
-        System.out.println("@UserEJBImplementation: called method getUserByUsername(), param=" + username);
+    public AdditionalUserDataDTO getUserDataByUserId(@NotNull String userId) {
+        System.out.println("@UserEJBImplementation: called method getUserByUsername(), param=" + userId);
 
         try(Connection connection = dataSource.getConnection()) {
             // Query preparation
             final String query =
-                    "SELECT Name, Surname, Email " +
+                    "SELECT Name, Surname, Email, Username " +
                     "FROM Users " +
-                    "WHERE Username = ?;";
+                    "WHERE UserId = ?;";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setString(1, username);
+                preparedStatement.setString(1, userId);
 
                 // Execute query
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -144,8 +144,8 @@ public class UserEJBImplementation implements UserEJB {
                                 resultSet.getString("Name"),
                                 resultSet.getString("Surname"),
                                 resultSet.getString("Email"),
-                                username
-                        );
+                                resultSet.getString("Username")
+                                );
                     } else
                         return null;
                 }

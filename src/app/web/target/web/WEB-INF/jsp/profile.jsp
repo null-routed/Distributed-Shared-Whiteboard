@@ -1,7 +1,6 @@
 <%@ page import="it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO" %>
 <%@ page import="it.unipi.dsmt.jakartaee.app.utility.AccessController" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="it.unipi.dsmt.jakartaee.app.servlets.UserProfileServlet" %>
 <%@ page import="it.unipi.dsmt.jakartaee.app.dto.AdditionalUserDataDTO" %>
 
 <html>
@@ -20,24 +19,32 @@
     <jsp:useBean id="userProfileServlet" class="it.unipi.dsmt.jakartaee.app.servlets.UserProfileServlet" />
     <jsp:include page="/WEB-INF/jsp/common/top_bar.jsp" />
     <%
-        AdditionalUserDataDTO additionalUserDataDTO = userProfileServlet.getUserData(loggedUserDTO.getUsername());
+        AdditionalUserDataDTO userData = (AdditionalUserDataDTO) request.getAttribute("userData");
     %>
     <div id="profile-container">
         <div class="profile-field">
             <label> Name: </label>
-            <input type="text" value="<%=additionalUserDataDTO.getName()%>" readonly />
+            <label>
+                <input type="text" value="<%=userData.getName()%>" readonly />
+            </label>
         </div>
         <div class="profile-field">
             <label> Surname: </label>
-            <input type="text" value="<%=additionalUserDataDTO.getSurname()%>" readonly />
+            <label>
+                <input type="text" value="<%=userData.getSurname()%>" readonly />
+            </label>
         </div>
         <div class="profile-field">
             <label> Email: </label>
-            <input type="text" value="<%=additionalUserDataDTO.getEmail()%>" readonly />
+            <label>
+                <input type="text" value="<%=userData.getEmail()%>" readonly />
+            </label>
         </div>
         <div class="profile-field">
             <label> Username: </label>
-            <input type="text" value="<%=additionalUserDataDTO.getUsername()%>" readonly />
+            <label>
+                <input type="text" value="<%=userData.getUsername()%>" readonly />
+            </label>
         </div>
     </div>
 </body>

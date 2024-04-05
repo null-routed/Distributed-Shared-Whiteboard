@@ -12,5 +12,5 @@ import org.jetbrains.annotations.NotNull;
 public interface UserEJB {
     LoggedUserDTO login(@NotNull LoginInformationsDTO loginInformationDTO);
     SignupStatus signup(@NotNull SignupDTO signupDTO);
-    AdditionalUserDataDTO getUserDataByUsername(@NotNull String username);
+    AdditionalUserDataDTO getUserDataByUserId(@NotNull String userId);
 }
