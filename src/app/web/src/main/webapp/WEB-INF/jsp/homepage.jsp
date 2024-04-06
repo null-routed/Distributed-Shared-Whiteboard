@@ -88,7 +88,7 @@
     <% } %>
 </div>
 
-<!-- Form for deleting whiteboard -->
+Form for deleting whiteboard
 <form id="deleteWhiteboardForm" action="${pageContext.request.contextPath}/homepage" method="POST" style="display: none;">
     <input type="hidden" id="whiteboardIdToDelete" name="whiteboardIdToDelete">
 </form>

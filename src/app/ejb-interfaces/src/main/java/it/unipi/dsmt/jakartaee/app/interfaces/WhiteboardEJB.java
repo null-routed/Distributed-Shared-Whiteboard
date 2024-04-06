@@ -14,7 +14,7 @@ public interface WhiteboardEJB {
     List<MinimalWhiteboardDTO> getAllWhiteboards(@NotNull String userID);
     List<MinimalWhiteboardDTO> getSharedWhiteboards(@NotNull String ID);
     MinimalWhiteboardDTO getWhiteboardByID(@NotNull int whiteboardID);
-    boolean addWhiteboard(@NotNull String ownerID, WhiteboardCreationDTO newWhiteboard);
+    int addWhiteboard(@NotNull String ownerID, WhiteboardCreationDTO newWhiteboard);
     boolean deleteWhiteboard(String whiteboardID);
     List<String> getParticipantUsernames(@NotNull int whiteboardID);
     boolean isOwnerOfWhiteboard(@NotNull String userId, @NotNull String whiteboardId);

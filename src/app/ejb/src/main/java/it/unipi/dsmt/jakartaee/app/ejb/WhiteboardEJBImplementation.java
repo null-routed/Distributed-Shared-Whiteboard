@@ -8,10 +8,7 @@ import jakarta.ejb.Stateless;
 import jakarta.validation.constraints.NotNull;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -167,7 +164,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
     }
 
     @Override
-    public boolean addWhiteboard(String ownerId, WhiteboardCreationDTO newWhiteboard) {
+    public int addWhiteboard(String ownerId, WhiteboardCreationDTO newWhiteboard) {
         System.out.println("@WhiteboardEJBImplementation: called addWhiteboard() method");
 
         // SQL query to insert into the whiteboards table
@@ -180,7 +177,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
             // Start a transaction
             connection.setAutoCommit(false);
 
-            try (PreparedStatement whiteboardStatement = connection.prepareStatement(insertWhiteboardQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+            try (PreparedStatement whiteboardStatement = connection.prepareStatement(insertWhiteboardQuery, Statement.RETURN_GENERATED_KEYS);
                  PreparedStatement participantStatement = connection.prepareStatement(insertParticipantQuery)) {
 
                 // Set parameters for whiteboards table
@@ -193,10 +190,10 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                 if (rowsAffected == 0) {
                     // Rollback transaction if no rows were affected
                     connection.rollback();
-                    return false;
+                    return -1; // Return -1 to indicate failure
                 }
 
-                // Get the generated WhiteboardID
+                // Retrieve the generated WhiteboardID
                 try (ResultSet generatedKeys = whiteboardStatement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         int whiteboardId = generatedKeys.getInt(1);
@@ -211,24 +208,26 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                         if (rowsAffected == 0) {
                             // Rollback transaction if no rows were affected
                             connection.rollback();
-                            return false;
+                            return -1; // Return -1 to indicate failure
                         }
+
+                        // Commit transaction if all operations were successful
+                        connection.commit();
+                        return whiteboardId; // Return the generated whiteboardId
                     } else {
                         // Rollback transaction if no keys were generated
                         connection.rollback();
-                        return false;
+                        return -1; // Return -1 to indicate failure
                     }
                 }
-
-                // Commit transaction if all operations were successful
-                connection.commit();
-                return true;
             }
         } catch (SQLException e) {
             // Handle SQL exception
             throw new RuntimeException(e);
         }
     }
+
+
 
     @Override
     public MinimalWhiteboardDTO getWhiteboardByID (int whiteboardID) {

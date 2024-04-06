@@ -17,6 +17,26 @@
     <maven.compiler.target>11</maven.compiler.target>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>gitlab-maven</id>
+      <url>https://mist.dsic.upv.es/git/api/v4/projects/45/packages/maven</url>
+    </repository>
+  </repositories>
+
+
+  <distributionManagement>
+    <repository>
+      <id>gitlab-maven</id>
+      <url>https://mist.dsic.upv.es/git/api/v4/projects/45/packages/maven</url>
+    </repository>
+
+    <snapshotRepository>
+      <id>gitlab-maven</id>
+      <url>https://mist.dsic.upv.es/git/api/v4/projects/45/packages/maven</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <dependencies>
     <dependency>
       <groupId>it.unipi.dsmt.jakartaee.app</groupId>
@@ -35,6 +55,18 @@
       <version>4.0.0</version>
       <scope>provided</scope>
     </dependency>
+
+    <dependency>
+      <groupId>program-slicing</groupId>
+      <artifactId>erlang-jinterface</artifactId>
+      <version>1.14</version>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20240303</version>
+    </dependency>
+
   </dependencies>
 
   <build>
