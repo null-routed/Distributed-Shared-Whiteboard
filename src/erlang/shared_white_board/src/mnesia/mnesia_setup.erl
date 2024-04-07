@@ -3,7 +3,7 @@
 
 -include_lib("stdlib/include/assert.hrl").
 
--record(whiteboard_strokes, {id, whiteboard_id, data, username, timestamp}).
+-record(whiteboard_strokes, {stroke_id, whiteboard_id, data, username, timestamp}).
 -record(whiteboard_access, {whiteboard_id_username, whiteboard_id, username, permission}).
 -record(whiteboard_users, {whiteboard_id_username, whiteboard_id, username, join_time, websocket_pid}).
 

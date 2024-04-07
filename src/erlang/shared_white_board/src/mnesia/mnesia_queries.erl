@@ -1,13 +1,29 @@
 -module(mnesia_queries).
 
--export([get_permissions/2, update_or_add_user_connection/3, get_connected_users/1, get_user_connection/2, remove_user_connection/2, add_user_access/3, print_all_records/0]).
+-export([
+    get_permissions/2,
+    update_or_add_user_connection/3,
+    get_connected_users/1,
+    get_user_connection/2,
+    remove_user_connection/2,
+    add_user_access/3,
+    print_all_records/0,
+    add_stroke/5
+]).
 
 -record(whiteboard_access, {whiteboard_id_username, whiteboard_id, username, permission}).
 -record(whiteboard_users, {whiteboard_id_username, whiteboard_id, username, join_time, websocket_pid}).
+-record(whiteboard_strokes, {stroke_id, whiteboard_id, data, username, timestamp}).
 
 get_permissions(WhiteboardId, Username) ->
     case mnesia:transaction(fun() ->
-            mnesia:match_object(#whiteboard_access{whiteboard_id_username = '_', whiteboard_id = WhiteboardId, username = Username, permission = '_'})
+            mnesia:match_object(
+                #whiteboard_access{
+                    whiteboard_id_username = '_', 
+                    whiteboard_id = WhiteboardId, 
+                    username = Username, 
+                    permission = '_'
+                })
         end) of
         {atomic, [Record]} ->
             % A match was found, extract the permission
@@ -66,6 +82,19 @@ add_user_access(WhiteboardId, Username, Permission) ->
         end,
     mnesia:transaction(Fun).
 
+add_stroke(StrokeId, WhiteboardId, StrokeData, Username, Timestamp) ->
+    Fun = fun() ->
+        Record = #whiteboard_strokes{
+            stroke_id = StrokeId,
+            whiteboard_id = WhiteboardId,
+            data = StrokeData,
+            username = Username,
+            timestamp = Timestamp
+        },
+        mnesia:write(Record)
+    end,
+    mnesia:transaction(Fun).
+
 print_all_records() ->
     Fun = fun() ->
         FoldFun = fun(Record, Acc) ->
@@ -75,3 +104,4 @@ print_all_records() ->
         mnesia:foldl(FoldFun, ok, whiteboard_users)
     end,
     mnesia:transaction(Fun).
+

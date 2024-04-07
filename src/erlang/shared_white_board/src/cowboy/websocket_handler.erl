@@ -12,7 +12,7 @@ init(Req, Opts) ->
                     {ok, Req2, Opts};
                 WhiteboardId ->
                     %% Store the whiteboardId and username in the state
-                    Result = business_logic:check_permissions(WhiteboardId, Username),
+                    Result = whiteboard:check_permissions(WhiteboardId, Username),
                     case Result of
                         {ok, State, _} ->
                             {cowboy_websocket, Req, State};
@@ -29,10 +29,19 @@ init(Req, Opts) ->
 websocket_init(State) ->
     #{username := Username, whiteboardId := WhiteboardId} = State,
     io:format("User ~p connected to whiteboard ~p~n", [Username, WhiteboardId]),
-    business_logic:notify_user_connection(WhiteboardId, Username, node()),
+    whiteboard:notify_user_connection(WhiteboardId, Username, node()),
     {ok, State}.
 
-websocket_handle({text, _}, State) ->
+websocket_handle({text, Msg}, State) ->
+    io:format("Received message: ~p~n", [Msg]),
+    try jsx:decode(Msg, [return_maps]) of
+        Map when is_map(Map) ->
+            io:format("Decoded message: ~p~n", [Map]),
+            whiteboard:handle_websocket_message(Map, State)
+    catch
+        _:_ ->
+            {ok, State}
+    end,
     {ok, State}.
 
 websocket_info({close, Reason}, State) ->
@@ -45,7 +54,7 @@ websocket_info(_, State) ->
 
 terminate(_Reason, _Req, State) ->
     #{username := Username, whiteboardId := WhiteboardId} = State,
-    business_logic:notify_user_disconnection(WhiteboardId, Username, node()),
+    whiteboard:notify_user_disconnection(WhiteboardId, Username, node()),
     ok.
 
 validate_jwt(Req) ->
