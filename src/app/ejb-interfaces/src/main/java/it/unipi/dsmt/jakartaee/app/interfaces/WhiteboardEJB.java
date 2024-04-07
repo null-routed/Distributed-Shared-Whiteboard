@@ -19,4 +19,6 @@ public interface WhiteboardEJB {
     List<String> getParticipantUsernames(@NotNull int whiteboardID);
     boolean isOwnerOfWhiteboard(@NotNull String userId, @NotNull String whiteboardId);
     boolean removeParticipant(@NotNull String userId, @NotNull String whiteboardId);
+    boolean isAlredyPartecipant(String username, String whiteboardID);
+    boolean addNewPartecipant(String username, String whiteboardID);
 }

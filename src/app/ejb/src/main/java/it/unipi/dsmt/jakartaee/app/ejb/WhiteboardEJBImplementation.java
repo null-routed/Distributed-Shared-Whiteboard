@@ -364,4 +364,57 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
             return false;
         }
     }
+
+    @Override
+    public boolean isAlredyPartecipant(String username, String whiteboardId) {
+        try (Connection connection = dataSource.getConnection()) {
+            // Prepare the SQL query to count the matching entries
+            String query = "SELECT COUNT(*) FROM whiteboardparticipants WHERE UserID = ? AND WhiteboardID = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                // Set the parameters
+                preparedStatement.setString(1, username);
+                preparedStatement.setString(2, whiteboardId);
+
+                // Execute the query
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    // Check if any rows were returned
+                    if (resultSet.next()) {
+                        // Get the count of matching entries
+                        int count = resultSet.getInt(1);
+                        return count > 0; // If count > 0, entry exists
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            // Handle SQLException
+            e.printStackTrace();
+        }
+        return false; // Default to false in case of exception or no matching rows
+    }
+
+
+    @Override
+    public boolean addNewPartecipant(String username, String whiteboardId) {
+        try (Connection connection = dataSource.getConnection()) {
+            // Prepare the SQL query to insert a new entry
+            String query = "INSERT INTO whiteboardparticipants (WhiteboardID, UserID, IsOwner) VALUES (?, ?, ?)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                // Set the parameters
+                preparedStatement.setString(1, whiteboardId);
+                preparedStatement.setString(2, username);
+                preparedStatement.setBoolean(3, false); // Assuming IsOwner is always false
+
+                // Execute the insert statement
+                int rowsAffected = preparedStatement.executeUpdate();
+
+                // Check if any rows were affected
+                return rowsAffected > 0;
+            }
+        } catch (SQLException e) {
+            // Handle SQLException
+            e.printStackTrace();
+        }
+        return false; // Default to false in case of exception
+    }
+
 }

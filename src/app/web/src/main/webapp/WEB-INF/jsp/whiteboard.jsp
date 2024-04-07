@@ -11,6 +11,7 @@
 
     // Getting whiteboard data
     MinimalWhiteboardDTO whiteboardData = (MinimalWhiteboardDTO) request.getAttribute("whiteboardData");
+    boolean isOwner = (boolean) request.getAttribute("isOwner");
 
     // Check if user can actually access this whiteboard
     List<String> whiteboardParticipants = (List<String>) request.getAttribute("whiteboardParticipants");
@@ -27,7 +28,7 @@
     <title><%= whiteboardData.getName() %></title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/common.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/whiteboard.css">
-    <script type="text/javascript" src="${pageContext.request.contextPath}/assets/javascript/whiteboard_modal.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/assets/javascript/whiteboard.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/assets/javascript/whiteboard_sketching.js"></script>
 </head>
 
@@ -72,6 +73,24 @@
                     <button class="custom-generic-button-with-icon" id="rubber-button">
                         <img alt="eraser-icon" src="${pageContext.request.contextPath}/assets/images/eraser.svg">
                     </button>
+                </div>
+            </div>
+            <!-- Conditionally show the share button if the user is the owner -->
+            <% if (isOwner) { %>
+            <!-- Button to open modal for sharing -->
+            <button id="share-button">Share</button>
+            <% } %>
+
+            <!-- Modal for sharing -->
+            <div class="modal" id="share-modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Share Whiteboard</h2>
+                    <form id="share-form" class="search-form" action="${pageContext.request.contextPath}/whiteboard" method="GET">
+                        <input type="hidden" id="whiteboardId" name="whiteboardId" value="<%= whiteboardData.getId() %>">
+                        <label for="username"></label><input type="text" id="username" name="username" placeholder="Enter username">
+                        <button type="submit">Submit</button>
+                    </form>
                 </div>
             </div>
         </div>

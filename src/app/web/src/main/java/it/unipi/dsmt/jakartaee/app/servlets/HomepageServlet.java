@@ -6,6 +6,7 @@ import it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO;
 import it.unipi.dsmt.jakartaee.app.dto.WhiteboardCreationDTO;
 import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
 import it.unipi.dsmt.jakartaee.app.utility.AccessController;
+import it.unipi.dsmt.jakartaee.app.utility.RPC;
 import jakarta.ejb.EJB;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -23,7 +24,6 @@ public class HomepageServlet extends HttpServlet {
 
     @EJB
     private WhiteboardEJB whiteboardEJB;
-    private static OtpConnection connection = null;
 
     private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -53,55 +53,6 @@ public class HomepageServlet extends HttpServlet {
         RequestDispatcher requestDispatcher = request.getRequestDispatcher(relativePath);
         requestDispatcher.forward(request, response);
     }
-    private boolean sendErlangWhiteboardUpdateRPC(String command, String whiteboardId, String userId, boolean isOwner) {
-        try {
-            // Establish connection to the Erlang node
-            OtpErlangObject received = getOtpErlangObject(command, whiteboardId, userId, isOwner);
-
-            // Check the received object
-
-            if (received instanceof OtpErlangAtom) {
-                String result = ((OtpErlangAtom) received).atomValue();
-                System.out.println("The erlang message is: " + result);
-                // Process the result accordingly
-                return "ok".equals(result);
-            }
-
-        } catch (Exception e) {
-            // Handle connection failure or other exceptions
-            e.printStackTrace();
-        }
-        return false;
-    }
-    private static OtpConnection getConnection() throws IOException, OtpAuthException {
-        if (connection == null) {
-            OtpSelf self = new OtpSelf("java_client", "XNXTRFGTRHNTNTCISPTB");
-            OtpPeer peer = new OtpPeer("erlang_node@localhost");
-            connection = self.connect(peer);
-        }
-        return connection;
-    }
-
-    private static OtpErlangObject getOtpErlangObject(String command, String whiteboardId, String userId, boolean isOwner)
-            throws IOException, OtpAuthException, OtpErlangExit {
-        OtpConnection conn = getConnection();
-        if (conn == null) {
-            System.err.println("Failed to establish connection.");
-            return null;
-        }
-
-        // Build the message to send to the Erlang node
-        OtpErlangString arg1 = new OtpErlangString(command);
-        OtpErlangString arg2 = new OtpErlangString(whiteboardId);
-        OtpErlangString arg3 = new OtpErlangString(userId);
-        OtpErlangBoolean arg4 = new OtpErlangBoolean(isOwner);
-        OtpErlangObject[] args = new OtpErlangObject[] { arg1, arg2, arg3, arg4 };
-        OtpErlangList argList = new OtpErlangList(args);
-
-        connection.sendRPC("whiteboard_manager", "delete_whiteboard", argList);
-        // Wait for the response to the RPC call
-        return connection.receiveRPC();
-    }
 
     @Override
     protected void doPost (HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -117,7 +68,7 @@ public class HomepageServlet extends HttpServlet {
             // Call a method to delete the whiteboard
             if(whiteboardEJB.isOwnerOfWhiteboard(loggedUserDTO.getId(), whiteboardIdToDelete)) {
                 if(whiteboardEJB.deleteWhiteboard(whiteboardIdToDelete)) {
-                    if (sendErlangWhiteboardUpdateRPC("delete", whiteboardIdToDelete, loggedUserDTO.getId(), true))
+                    if (RPC.sendErlangWhiteboardUpdateRPC("delete", whiteboardIdToDelete, loggedUserDTO.getId(), true))
                         response.sendRedirect(request.getContextPath() + "/homepage");
                     else
                         response.sendRedirect(request.getContextPath() + "/homepage?deletionFailed=true");
@@ -126,7 +77,7 @@ public class HomepageServlet extends HttpServlet {
             }
             else {
                 if (whiteboardEJB.removeParticipant(loggedUserDTO.getId(), whiteboardIdToDelete)) {
-                    if (sendErlangWhiteboardUpdateRPC("delete" ,whiteboardIdToDelete, loggedUserDTO.getId(), false))
+                    if (RPC.sendErlangWhiteboardUpdateRPC("delete" ,whiteboardIdToDelete, loggedUserDTO.getId(), false))
                         response.sendRedirect(request.getContextPath() + "/homepage");
                     else
                         response.sendRedirect(request.getContextPath() + "/homepage?deletionFailed=true");
@@ -154,7 +105,7 @@ public class HomepageServlet extends HttpServlet {
             int newWhiteboardId = whiteboardEJB.addWhiteboard(loggedUserDTO.getId(), newWhiteboard);
             if(newWhiteboardId != -1) {
                 // TODO you can also pass the DTO by serializing it
-                if(sendErlangWhiteboardUpdateRPC("insert", loggedUserDTO.getId(), Integer.toString(newWhiteboardId), isReadOnly))
+                if(RPC.sendErlangWhiteboardUpdateRPC("insert", Integer.toString(newWhiteboardId), loggedUserDTO.getId(), isReadOnly))
                     response.sendRedirect(request.getContextPath() + "/homepage"); // Redirect to the homepage
             } else {
                 System.out.println("@HomepageServlet: whiteboard insertion failed");
