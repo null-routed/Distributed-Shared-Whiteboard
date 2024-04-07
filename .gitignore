@@ -24,3 +24,5 @@ rebar3.crashdump
 *~
 .DS_Store
 .env
+*.lst
+/src/app/web/target

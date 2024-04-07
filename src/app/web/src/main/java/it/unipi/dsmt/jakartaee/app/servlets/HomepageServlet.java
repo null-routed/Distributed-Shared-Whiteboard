@@ -66,7 +66,7 @@ public class HomepageServlet extends HttpServlet {
         String whiteboardIdToDelete = request.getParameter("whiteboardIdToDelete");
         if (whiteboardIdToDelete != null) {
             // Call a method to delete the whiteboard
-            if(whiteboardEJB.isOwnerOfWhiteboard(loggedUserDTO.getId(), whiteboardIdToDelete)) {
+            if(whiteboardEJB.isWhiteboardOwner(loggedUserDTO.getId(), whiteboardIdToDelete)) {
                 if(whiteboardEJB.deleteWhiteboard(whiteboardIdToDelete)) {
                     if (RPC.sendErlangWhiteboardUpdateRPC("delete", whiteboardIdToDelete, loggedUserDTO.getId(), true))
                         response.sendRedirect(request.getContextPath() + "/homepage");

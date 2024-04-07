@@ -2,6 +2,7 @@ package it.unipi.dsmt.jakartaee.app.interfaces;
 
 import it.unipi.dsmt.jakartaee.app.dto.WhiteboardCreationDTO;
 import it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO;
+import it.unipi.dsmt.jakartaee.app.enums.AddParticipantStatus;
 import jakarta.ejb.Remote;
 import jakarta.validation.constraints.NotNull;
 
@@ -17,8 +18,8 @@ public interface WhiteboardEJB {
     int addWhiteboard(@NotNull String ownerID, WhiteboardCreationDTO newWhiteboard);
     boolean deleteWhiteboard(String whiteboardID);
     List<String> getParticipantUsernames(@NotNull int whiteboardID);
-    boolean isOwnerOfWhiteboard(@NotNull String userId, @NotNull String whiteboardId);
+    boolean isWhiteboardOwner(@NotNull String userId, @NotNull String whiteboardId);
     boolean removeParticipant(@NotNull String userId, @NotNull String whiteboardId);
-    boolean isAlredyPartecipant(String username, String whiteboardID);
-    boolean addNewPartecipant(String username, String whiteboardID);
+    boolean isParticipant(String username, String whiteboardID);
+    AddParticipantStatus addParticipant(String username, String whiteboardID);
 }
