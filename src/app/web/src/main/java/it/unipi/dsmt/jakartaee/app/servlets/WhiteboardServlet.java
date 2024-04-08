@@ -3,11 +3,13 @@ package it.unipi.dsmt.jakartaee.app.servlets;
 import it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO;
 import it.unipi.dsmt.jakartaee.app.enums.AddParticipantStatus;
 import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
+import it.unipi.dsmt.jakartaee.app.utility.RPC;
 import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
+import javax.swing.plaf.metal.OceanTheme;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
@@ -55,54 +57,6 @@ public class WhiteboardServlet extends HttpServlet {
         request.getSession().setAttribute("whiteboardParticipants", whiteboardParticipants);
 
         String targetPage = "/WEB-INF/jsp/whiteboard.jsp";
-        request.getRequestDispatcher(targetPage).forward(request, response);
-    }
-
-    public static void printAttributeNames(HttpServletRequest request) {
-        Enumeration<String> attributeNames = request.getAttributeNames();
-        while (attributeNames.hasMoreElements()) {
-            String attributeName = attributeNames.nextElement();
-            System.out.println("Attribute Name: " + attributeName);
-        }
-    }
-
-    @Override
-    protected void doPost (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        // Extracting parameters from the request
-        String whiteboardID = Optional.ofNullable(request.getParameter("whiteboardID")).orElse("");
-        String newParticipantUsername = Optional.ofNullable(request.getParameter("username")).orElse("");
-
-        System.out.println("@WhiteboardServlet: called doPost() method, params=" + whiteboardID + ", " + newParticipantUsername);
-
-        String targetPage = "/WEB-INF/jsp/whiteboard.jsp";
-        request.setAttribute("redirectAfterAddOperation", true);   // needed for the modal display after an add operation
-
-        AddParticipantStatus alreadyParticipantCheck = whiteboardEJB.isParticipant(newParticipantUsername, whiteboardID);
-
-        if (alreadyParticipantCheck == AddParticipantStatus.ALREADY_PARTICIPATING) {
-            request.setAttribute("errorMessage", newParticipantUsername + " is already participating to this whiteboard.");
-            request.getRequestDispatcher(targetPage).forward(request, response);
-            return;
-        } else if (alreadyParticipantCheck == AddParticipantStatus.OTHER_ERROR) {
-            request.setAttribute("errorMessage", "An error occurred. Try again or try in a few minutes.");
-            request.getRequestDispatcher(targetPage).forward(request, response);
-            return;
-        }
-
-        AddParticipantStatus insertOutcome = whiteboardEJB.addParticipant(newParticipantUsername, whiteboardID);
-        switch (insertOutcome) {
-            case SUCCESS:
-                request.setAttribute("successMessage", newParticipantUsername + " has been added to this whiteboard!");
-                break;
-            case UNREGISTERED_USER:
-                request.setAttribute("errorMessage", "The username you have provided doesn't seem to belong to any user. Try again.");
-                break;
-            case OTHER_ERROR:
-                request.setAttribute("errorMessage", "An error occurred. Try again or try in a few minutes.");
-                break;
-        }
-
-        request.setAttribute("newlyInsertedParticipant", newParticipantUsername);
         request.getRequestDispatcher(targetPage).forward(request, response);
     }
 }

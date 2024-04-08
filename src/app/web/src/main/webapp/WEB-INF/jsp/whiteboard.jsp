@@ -10,11 +10,11 @@
         return;
 
     /*
+        Getting whiteboard data: id, name, description, owner
         WhiteboardData and whiteboardParticipants have to be set in the session because if the owner of the whiteboard
         decides to add a new participant doPost() gets called from WhiteboardServlet.java, which erases the old attributes
         when redirecting to whiteboard.jsp after the add operation.
      */
-    // Getting whiteboard data: id, name, description, owner
     MinimalWhiteboardDTO whiteboardData = (MinimalWhiteboardDTO) session.getAttribute("whiteboardData");
 
     // Getting if the user who's visiting this whiteboard is its owner or not
@@ -51,19 +51,19 @@
         <div id="left-container">
             <button class="custom-generic-button" onclick="location.href = '${pageContext.request.contextPath}/homepage'">Back</button>
         </div>
-        <h1><%=whiteboardData.getName()%></h1>
+        <h1><%= whiteboardData.getName() %></h1>
         <div id="right-container">
             <button class="custom-generic-button" id="participants-button">Participants</button>
         </div>
         <div class="modal" id="participants-modal">
             <div class="modal-content">
                 <span class="close">&times;</span>
-                <h2>Participants to <%=whiteboardData.getName()%></h2>
+                <h2>Participants to <%= whiteboardData.getName() %></h2>
                 <div class="participants-list">
                 <%
                     for(int i = 0; i < whiteboardParticipants.size(); i++){
                 %>
-                    <div class="whiteboard-participant" id="participant-<%=i%>"> &bullet; <%=whiteboardParticipants.get(i)%></div>
+                    <div class="whiteboard-participant" id="participant-<%= i %>"> &bullet; <%= whiteboardParticipants.get(i) %></div>
                 <%
                     }
                 %>
@@ -109,7 +109,8 @@
                 <div class="modal-content">
                     <span class="close">&times;</span>
                     <h2>Add a participant to <%= whiteboardData.getName() %></h2>
-                    <form id="share-form" class="search-form" action="${pageContext.request.contextPath}/whiteboard" method="POST">
+<%--                    <form id="share-form" class="search-form" action="${pageContext.request.contextPath}/whiteboard" method="POST">--%>
+                    <form id="share-form" class="search-form" action="${pageContext.request.contextPath}/share_whiteboard" method="POST">
                         <input type="hidden" id="whiteboardID" name="whiteboardID" value="<%= whiteboardData.getId() %>">
                         <label for="username"></label>
                         <input type="text" id="username" name="username" placeholder="Enter a username" required>

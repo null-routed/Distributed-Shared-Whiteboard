@@ -16,6 +16,16 @@
         <% LoggedUserDTO loggedUserDTO = AccessController.getLoggedUserWithRedirect(request, response);
             if (loggedUserDTO != null) { %>
 
+        <%
+            if (request.getParameter("insertionFailed") != null) {
+        %>
+            <script>
+                alert("Failed to add a new whiteboard. Try again or try in a few minutes.");
+            </script>
+        <%
+            }
+        %>
+
         <br>
         <h1>Your Whiteboards</h1>
         <br>
@@ -31,14 +41,13 @@
 
                 <div id="whiteboard-type">
                     <button type="button" id="addButton" class="nav-button">New</button>
-                    <!-- The modal -->
+
                     <div id="myModal" class="modal">
-                        <!-- Modal content -->
                         <div class="modal-content">
                             <span class="close">&times;</span>
                             <h2>Create a new Whiteboard</h2>
-                            <form id="addForm" action="${pageContext.request.contextPath}/homepage" method="POST">
-                                <!-- Your form fields here -->
+<%--                            <form id="addForm" action="${pageContext.request.contextPath}/homepage" method="POST">--%>
+                                <form id="addForm" action="${pageContext.request.contextPath}/delete_whiteboard" method="POST">
                                 <label for="whiteboardName">Whiteboard Name:</label>
                                 <input type="text" id="whiteboardName" name="whiteboardName">
 
@@ -47,6 +56,7 @@
 
                                 <label for="readOnly">Read-only:</label>
                                 <input type="checkbox" id="readOnly" name="readOnly">
+
                                 <button type="submit">Submit</button>
                             </form>
                         </div>
@@ -54,10 +64,11 @@
                     <form class="search-form" action="${pageContext.request.contextPath}/homepage" method="GET">
                         <% String isSharedView = request.getAttribute("shared") != null ? request.getAttribute("shared").toString() : "";
                             if (isSharedView.equals("true")) { %>
-                        <button type="submit" name="shared" class="nav-button" value="false">Other</button>
-                        <% } else { %>
-                        <button type="submit" name="shared" class="nav-button" value="true">Shared</button>
-                        <% } %>
+                                <button type="submit" name="shared" class="nav-button" value="false">Other</button>
+                            <% } else { %>
+                                <button type="submit" name="shared" class="nav-button" value="true">Shared with me</button>
+                            <% }
+                        %>
                     </form>
                 </div>
             </div>
@@ -89,7 +100,7 @@
     </div>
 
     Form for deleting whiteboard
-    <form id="deleteWhiteboardForm" action="${pageContext.request.contextPath}/homepage" method="POST" style="display: none;">
+    <form id="deleteWhiteboardForm" action="${pageContext.request.contextPath}/delete_whiteboard" method="POST" style="display: none;">
         <input type="hidden" id="whiteboardIdToDelete" name="whiteboardIdToDelete">
     </form>
 

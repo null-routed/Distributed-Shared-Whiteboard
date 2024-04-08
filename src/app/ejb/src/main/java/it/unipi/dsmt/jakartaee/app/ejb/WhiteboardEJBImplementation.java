@@ -169,10 +169,10 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         System.out.println("@WhiteboardEJBImplementation: called addWhiteboard() method");
 
         // SQL query to insert into the whiteboards table
-        final String insertWhiteboardQuery = "INSERT INTO Whiteboards (Name, Description, ReadOnly) VALUES (?, ?, ?)";
+        final String insertWhiteboardQuery = "INSERT INTO Whiteboards(Name, Description, ReadOnly) VALUES (?, ?, ?)";
 
         // SQL query to insert into the whiteboardparticipants table
-        final String insertParticipantQuery = "INSERT INTO WhiteboardParticipants (WhiteboardID, UserID, IsOwner) VALUES (?, ?, ?)";
+        final String insertParticipantQuery = "INSERT INTO WhiteboardParticipants(WhiteboardID, UserID, IsOwner) VALUES (?, ?, ?)";
 
         try (Connection connection = dataSource.getConnection()) {
             // Start a transaction
@@ -453,7 +453,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
 
                 // Check if any rows were affected
                 if (rowsAffected > 0)
-                   return AddParticipantStatus.SUCCESS;             // all good
+                   return AddParticipantStatus.SQL_SUCCESS;             // all good
             }
         } catch (SQLException e) {
             return AddParticipantStatus.OTHER_ERROR;            // an exception occurred
