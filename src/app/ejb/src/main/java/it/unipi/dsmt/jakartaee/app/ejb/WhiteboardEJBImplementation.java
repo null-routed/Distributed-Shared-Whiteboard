@@ -169,10 +169,10 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         System.out.println("@WhiteboardEJBImplementation: called addWhiteboard() method");
 
         // SQL query to insert into the whiteboards table
-        final String insertWhiteboardQuery = "INSERT INTO Whiteboards (Name, Description, ReadOnly) VALUES (?, ?, ?)";
+        final String insertWhiteboardQuery = "INSERT INTO Whiteboards(Name, Description, ReadOnly) VALUES (?, ?, ?)";
 
         // SQL query to insert into the whiteboardparticipants table
-        final String insertParticipantQuery = "INSERT INTO WhiteboardParticipants (WhiteboardID, UserID, IsOwner) VALUES (?, ?, ?)";
+        final String insertParticipantQuery = "INSERT INTO WhiteboardParticipants(WhiteboardID, UserID, IsOwner) VALUES (?, ?, ?)";
 
         try (Connection connection = dataSource.getConnection()) {
             // Start a transaction
@@ -372,32 +372,49 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
     }
 
     @Override
-    public boolean isParticipant(String username, String whiteboardId) {
-        System.out.println("@WhiteboardEJBImplementation: called isParticipant() method");
+    public AddParticipantStatus isParticipant(String username, String whiteboardId) {
+        System.out.println("@WhiteboardEJBImplementation: called isParticipant() method, params=" + username + ", " + whiteboardId);
 
+        String userIDToBeChecked = "";
+
+        // getting the ID of the user to which the username belongs
         try (Connection connection = dataSource.getConnection()) {
-            // Prepare the SQL query to count the matching entries
-            final String query = "SELECT COUNT(*) FROM WhiteboardParticipants WHERE UserID = ? AND WhiteboardID = ?";
+            final String query = "SELECT UserID FROM Users WHERE Username = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                // Set the parameters
                 preparedStatement.setString(1, username);
-                preparedStatement.setString(2, whiteboardId);
-
-                // Execute the query
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    // Check if any rows were returned
                     if (resultSet.next()) {
-                        // Get the count of matching entries
-                        int count = resultSet.getInt(1);
-                        return count > 0; // If count > 0, entry exists
+                        userIDToBeChecked = resultSet.getString("UserID");
                     }
                 }
             }
         } catch (SQLException e) {
-            // Handle SQLException
+            return AddParticipantStatus.OTHER_ERROR;            // an exception occurred
+        }
+
+        try (Connection connection = dataSource.getConnection()) {
+            // Prepare the SQL query to count the matching entries
+            final String query = "SELECT COUNT(*) AS Counter FROM WhiteboardParticipants WHERE UserID = ? AND WhiteboardID = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                // Set the parameters
+                preparedStatement.setString(1, userIDToBeChecked);
+                preparedStatement.setString(2, whiteboardId);
+
+                // Execute the query
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        if (resultSet.getInt("Counter") == 1)
+                            return AddParticipantStatus.ALREADY_PARTICIPATING;   // Entry exists, user is participating
+                        else
+                            return AddParticipantStatus.NOT_PARTICIPATING;
+                    }
+                }
+            }
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return false; // Default to false in case of exception or no matching rows
+
+        return AddParticipantStatus.OTHER_ERROR;        // Default to error
     }
 
     @Override
@@ -412,9 +429,10 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setString(1, username);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
+                    if (resultSet.next())
                         userIDToBeAdded = resultSet.getString("UserID");
-                    }
+                    else
+                        return AddParticipantStatus.UNREGISTERED_USER;      // the provided username is not present in the DB
                 }
             }
         } catch (SQLException e) {
@@ -423,7 +441,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
 
         try (Connection connection = dataSource.getConnection()) {
             // Prepare the SQL query to insert a new entry
-            final String query = "INSERT INTO WhiteboardParticipants (WhiteboardID, UserID, IsOwner) VALUES (?, ?, ?)";
+            final String query = "INSERT INTO WhiteboardParticipants(WhiteboardID, UserID, IsOwner) VALUES (?, ?, ?)";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 // Set the parameters
                 preparedStatement.setString(1, whiteboardId);
@@ -435,12 +453,12 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
 
                 // Check if any rows were affected
                 if (rowsAffected > 0)
-                   return AddParticipantStatus.SUCCESS;             // all good
-                else
-                    return AddParticipantStatus.UNREGISTERED_USER;      // the provided username is not present in the DB
+                   return AddParticipantStatus.SQL_SUCCESS;             // all good
             }
         } catch (SQLException e) {
             return AddParticipantStatus.OTHER_ERROR;            // an exception occurred
         }
+
+        return AddParticipantStatus.OTHER_ERROR;        // Default to error
     }
 }

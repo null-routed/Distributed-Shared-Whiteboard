@@ -8,9 +8,10 @@ public class RPC {
 
     private static OtpConnection connection = null;
 
-    public static boolean sendErlangWhiteboardUpdateRPC(String command, String whiteboardId, String userId, boolean isOwner) {
+    public static boolean sendErlangWhiteboardUpdateRPC(String command, String whiteboardId, String userId, Boolean isOwner) {
+        System.out.println("@RPC: called sendErlangWhiteboardUpdateRPC() method, params=" + command + ", " + whiteboardId + ", " + userId + ", " + isOwner);
         try {
-            OtpErlangObject received = getOtpErlangObject(command, whiteboardId, userId, isOwner);
+            OtpErlangObject received = executeErlangCommand(command, whiteboardId, userId, isOwner);
             if (received instanceof OtpErlangAtom) {
                 String result = ((OtpErlangAtom) received).atomValue();
                 System.out.println("The erlang message is: " + result);
@@ -31,11 +32,11 @@ public class RPC {
         return connection;
     }
 
-    public static OtpErlangObject getOtpErlangObject(String command, String whiteboardId, String userId, boolean isOwner)
+    public static OtpErlangObject executeErlangCommand(String command, String whiteboardId, String userId, boolean isOwner)
             throws IOException, OtpAuthException, OtpErlangExit {
-        OtpConnection conn = getConnection();
+        OtpConnection conn = getConnection();           // Connecting to Erlang node
         if (conn == null) {
-            System.err.println("Failed to establish connection.");
+            System.err.println("@RPC: executeErlangCommand() method -> failed to establish connection.");
             return null;
         }
 
@@ -47,6 +48,7 @@ public class RPC {
         OtpErlangList argList = new OtpErlangList(args);
 
         connection.sendRPC("whiteboard_manager", "delete_whiteboard", argList);
-        return connection.receiveRPC();
+
+        return connection.receiveRPC();             // Return the received responses
     }
 }

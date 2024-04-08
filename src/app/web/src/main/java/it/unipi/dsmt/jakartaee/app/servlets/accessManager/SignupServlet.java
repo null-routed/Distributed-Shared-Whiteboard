@@ -1,4 +1,4 @@
-package it.unipi.dsmt.jakartaee.app.servlets;
+package it.unipi.dsmt.jakartaee.app.servlets.accessManager;
 
 import it.unipi.dsmt.jakartaee.app.dto.SignupDTO;
 import it.unipi.dsmt.jakartaee.app.enums.SignupStatus;
