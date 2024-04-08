@@ -3,9 +3,11 @@
 
 -include_lib("stdlib/include/assert.hrl").
 
--record(whiteboard_strokes, {stroke_id, whiteboard_id, data, username, timestamp}).
 -record(whiteboard_access, {whiteboard_id_username, whiteboard_id, username, permission}).
 -record(whiteboard_users, {whiteboard_id_username, whiteboard_id, username, join_time, websocket_pid}).
+-record(whiteboard_strokes_log, {id, whiteboard_id, username, action, stroke_id, data, timestamp}).
+-record(redo_stack, {id, stroke_id, whiteboard_id, data, action, username, timestamp}).
+
 
 init() ->
     Nodes = application:get_env(shared_white_board, cluster_nodes, []),
@@ -64,7 +66,7 @@ create_table_whiteboard_access() ->
 
 create_table_whiteboard_strokes() ->
     case mnesia:create_table(whiteboard_strokes, [
-            {attributes, record_info(fields, whiteboard_strokes)},
+            {attributes, record_info(fields, whiteboard_strokes_log)},
             {disc_copies, [node()]},
             {type, set}
         ]) of
