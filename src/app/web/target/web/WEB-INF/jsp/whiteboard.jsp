@@ -9,11 +9,19 @@
     if (loggedUserDTO == null)
         return;
 
-    // Getting whiteboard data
-    MinimalWhiteboardDTO whiteboardData = (MinimalWhiteboardDTO) request.getAttribute("whiteboardData");
+    /*
+        WhiteboardData and whiteboardParticipants have to be set in the session because if the owner of the whiteboard
+        decides to add a new participant doPost() gets called from WhiteboardServlet.java, which erases the old attributes
+        when redirecting to whiteboard.jsp after the add operation.
+     */
+    // Getting whiteboard data: id, name, description, owner
+    MinimalWhiteboardDTO whiteboardData = (MinimalWhiteboardDTO) session.getAttribute("whiteboardData");
+
+    // Getting if the user who's visiting this whiteboard is its owner or not
+    boolean isLoggedUserOwner = whiteboardData.getOwner().equals(loggedUserDTO.getUsername());
 
     // Check if user can actually access this whiteboard
-    List<String> whiteboardParticipants = (List<String>) request.getAttribute("whiteboardParticipants");
+    List<String> whiteboardParticipants = (List<String>) session.getAttribute("whiteboardParticipants");
     if (!whiteboardParticipants.contains(loggedUserDTO.getUsername())) {
 %>
 <script>
@@ -22,12 +30,19 @@
 </script>
 <%
     }
+
+    // Check if this page is loaded as a response to an add participant operation or not
+    boolean redirectedAfterAddOperation = request.getAttribute("redirectAfterAddOperation") != null;
+    if (redirectedAfterAddOperation && request.getAttribute("newlyInsertedParticipant") != null) {      // update the list of participants after an add operation
+        whiteboardParticipants.add((String) request.getAttribute("newlyInsertedParticipant"));
+        request.getSession().setAttribute("whiteboardParticipants", whiteboardParticipants);
+    }
 %>
 <head>
     <title><%= whiteboardData.getName() %></title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/common.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/whiteboard.css">
-    <script type="text/javascript" src="${pageContext.request.contextPath}/assets/javascript/whiteboard_modal.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/assets/javascript/whiteboard.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/assets/javascript/whiteboard_sketching.js"></script>
 </head>
 
@@ -72,6 +87,43 @@
                     <button class="custom-generic-button-with-icon" id="rubber-button">
                         <img alt="eraser-icon" src="${pageContext.request.contextPath}/assets/images/eraser.svg">
                     </button>
+                </div>
+            </div>
+
+            <!-- Conditionally show the share button if the user is the owner -->
+            <% if (isLoggedUserOwner) { %>
+                <!-- Button to open modal for sharing -->
+                <button class="custom-generic-button" id="share-button">Share</button>
+            <% } %>
+
+
+            <!-- Modal for sharing -->
+            <script>
+                // Show the modal if the page is being visited right after an add participant operation to show success or error msg
+                let redirectedAfterAddOperation = <%= redirectedAfterAddOperation %>;       // making var available in JS
+                document.addEventListener("DOMContentLoaded", function() {
+                    if (redirectedAfterAddOperation)     // Show the modal if the attribute is set
+                        document.getElementById("share-modal").style.display = "block";
+                });
+            </script>
+            <div class="modal" id="share-modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Add a participant to <%= whiteboardData.getName() %></h2>
+                    <form id="share-form" class="search-form" action="${pageContext.request.contextPath}/whiteboard" method="POST">
+                        <input type="hidden" id="whiteboardID" name="whiteboardID" value="<%= whiteboardData.getId() %>">
+                        <label for="username"></label>
+                        <input type="text" id="username" name="username" placeholder="Enter a username" required>
+                        <button type="submit">Submit</button>
+                    </form>
+                    <% if (request.getAttribute("errorMessage") != null) { %>
+                        <span class="error-msg"><%= request.getAttribute("errorMessage") %></span>
+                        <% request.removeAttribute("errorMessage"); %>
+                    <% } %>
+                    <% if (request.getAttribute("successMessage") != null) { %>
+                        <span class="success-msg"><%= request.getAttribute("successMessage") %></span>
+                        <% request.removeAttribute("successMessage"); %>
+                    <% } %>
                 </div>
             </div>
         </div>

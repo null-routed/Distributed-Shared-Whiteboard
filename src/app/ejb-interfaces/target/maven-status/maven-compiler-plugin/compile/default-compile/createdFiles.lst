@@ -4,6 +4,7 @@ it\unipi\dsmt\jakartaee\app\dto\LoggedUserDTO.class
 it\unipi\dsmt\jakartaee\app\interfaces\UserEJB.class
 it\unipi\dsmt\jakartaee\app\dto\WhiteboardCreationDTO.class
 it\unipi\dsmt\jakartaee\app\enums\SignupStatus.class
+it\unipi\dsmt\jakartaee\app\enums\AddParticipantStatus.class
 it\unipi\dsmt\jakartaee\app\interfaces\WhiteboardEJB.class
 it\unipi\dsmt\jakartaee\app\dto\AdditionalUserDataDTO.class
 it\unipi\dsmt\jakartaee\app\dto\SignupDTO.class

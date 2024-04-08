@@ -51,9 +51,6 @@ public class WhiteboardServlet extends HttpServlet {
         MinimalWhiteboardDTO selectedWhiteboard = whiteboardEJB.getWhiteboardByID(whiteboardID);
         List<String> whiteboardParticipants = whiteboardEJB.getParticipantUsernames(whiteboardID);
 
-        // request.setAttribute("whiteboardData", selectedWhiteboard);
-        // request.setAttribute("whiteboardParticipants", whiteboardParticipants);
-
         request.getSession().setAttribute("whiteboardData", selectedWhiteboard);
         request.getSession().setAttribute("whiteboardParticipants", whiteboardParticipants);
 
@@ -78,32 +75,34 @@ public class WhiteboardServlet extends HttpServlet {
         System.out.println("@WhiteboardServlet: called doPost() method, params=" + whiteboardID + ", " + newParticipantUsername);
 
         String targetPage = "/WEB-INF/jsp/whiteboard.jsp";
+        request.setAttribute("redirectAfterAddOperation", true);   // needed for the modal display after an add operation
 
-        boolean userIsAlreadyParticipant = whiteboardEJB.isParticipant(newParticipantUsername, whiteboardID);
+        AddParticipantStatus alreadyParticipantCheck = whiteboardEJB.isParticipant(newParticipantUsername, whiteboardID);
 
-        if (userIsAlreadyParticipant) {
+        if (alreadyParticipantCheck == AddParticipantStatus.ALREADY_PARTICIPATING) {
             request.setAttribute("errorMessage", newParticipantUsername + " is already participating to this whiteboard.");
             request.getRequestDispatcher(targetPage).forward(request, response);
+            return;
+        } else if (alreadyParticipantCheck == AddParticipantStatus.OTHER_ERROR) {
+            request.setAttribute("errorMessage", "An error occurred. Try again or try in a few minutes.");
+            request.getRequestDispatcher(targetPage).forward(request, response);
+            return;
         }
 
         AddParticipantStatus insertOutcome = whiteboardEJB.addParticipant(newParticipantUsername, whiteboardID);
         switch (insertOutcome) {
             case SUCCESS:
                 request.setAttribute("successMessage", newParticipantUsername + " has been added to this whiteboard!");
-                request.setAttribute("errorMessage", null);
                 break;
             case UNREGISTERED_USER:
                 request.setAttribute("errorMessage", "The username you have provided doesn't seem to belong to any user. Try again.");
-                request.setAttribute("successMessage", null);
                 break;
             case OTHER_ERROR:
                 request.setAttribute("errorMessage", "An error occurred. Try again or try in a few minutes.");
-                request.setAttribute("successMessage", null);
                 break;
         }
 
-        printAttributeNames(request);
-
+        request.setAttribute("newlyInsertedParticipant", newParticipantUsername);
         request.getRequestDispatcher(targetPage).forward(request, response);
     }
 }
