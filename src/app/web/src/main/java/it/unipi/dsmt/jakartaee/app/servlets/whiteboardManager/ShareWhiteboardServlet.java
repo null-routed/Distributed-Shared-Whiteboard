@@ -44,6 +44,7 @@ public class ShareWhiteboardServlet extends HttpServlet {
             return;
         }
 
+        // TODO: transaction, if erlang fails the also SQL has to be rolled back
         AddParticipantStatus insertOutcome = whiteboardEJB.addParticipant(newParticipantUsername, whiteboardID);
         switch (insertOutcome) {
             case SQL_SUCCESS:

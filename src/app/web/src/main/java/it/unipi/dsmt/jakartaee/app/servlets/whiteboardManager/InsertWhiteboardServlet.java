@@ -40,7 +40,7 @@ public class InsertWhiteboardServlet extends HttpServlet {
         );
 
         // Erlang communication
-        try {
+        try {       // TODO: transaction, if erlang fails the also SQL has to be rolled back
             int newWhiteboardId = whiteboardEJB.addWhiteboard(loggedUserDTO.getId(), newWhiteboard);
             if (newWhiteboardId != -1) {                 // Proceed with Erlang synchronization only if the operation was ok in MySQL DB
                 boolean erlangOperationOutcome = RPC.sendErlangWhiteboardUpdateRPC(

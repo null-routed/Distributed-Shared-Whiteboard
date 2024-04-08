@@ -33,7 +33,7 @@ public class DeleteWhiteboardServlet extends HttpServlet {
             boolean clientIsOwner = whiteboardEJB.isWhiteboardOwner(loggedUserDTO.getId(), whiteboardIdToDelete);
             if (clientIsOwner) {
                 boolean deleteOperationOutcome = whiteboardEJB.deleteWhiteboard(whiteboardIdToDelete);
-                if (deleteOperationOutcome) {
+                if (deleteOperationOutcome) {           // TODO: transaction, if erlang fails the also SQL has to be rolled back
                     boolean erlangDeleteOperationOutcome = RPC.sendErlangWhiteboardUpdateRPC(
                             "delete",
                             whiteboardIdToDelete,
@@ -52,7 +52,7 @@ public class DeleteWhiteboardServlet extends HttpServlet {
 
             // If here, the user requesting a DELETE is not the owner -> remove him from the whiteboard participants
             boolean participantRemovalOutcome = whiteboardEJB.removeParticipant(loggedUserDTO.getId(), whiteboardIdToDelete);
-            try {
+            try {       // TODO: transaction, if erlang fails the also SQL has to be rolled back
                 if (participantRemovalOutcome) {
                     boolean erlangDeleteOperationOutcome = RPC.sendErlangWhiteboardUpdateRPC(
                             "delete",
