@@ -1,19 +1,16 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // wait for the content of the window element
-    // to load, then performs the operations.
-    // This is considered best practice.
     window.addEventListener('load', ()=>{
         resize(); // Resizes the canvas once the window loads
-        document.addEventListener('mousedown', startPainting);
-        document.addEventListener('mouseup', stopPainting);
-        document.addEventListener('mousemove', sketch);
-        window.addEventListener('resize', resize);
     });
-
-
-    const canvas = document.getElementById('whiteboard');
-
-    // Context for the canvas for 2 dimensional operations
+    let isPenToggled = true;
+    let isRubberToggled = false;
+    let lastPosition;
+    // Drawing and erasing functionality
+    let isDrawing = false;
+    let isErasing = false;
+    const penButton = document.getElementById("pen-button");
+    const rubberButton = document.getElementById("rubber-button");
+    const canvas = document.getElementById("whiteboard");
     const ctx = canvas.getContext('2d');
 
     // Resizes the canvas to the available size of the window.
@@ -22,63 +19,97 @@ document.addEventListener("DOMContentLoaded", function() {
         ctx.canvas.height = window.innerHeight;
     }
 
+    // Initial state: Pen button is selected
+    penButton.classList.add("button-selected");
 
-    // Stores the initial position of the cursor
-    let coords = {x:0 , y:0};
+    penButton.addEventListener("click", function () {
+        if (!isPenToggled) {
+            isPenToggled = true;
+            penButton.classList.add("button-selected");
+            isRubberToggled = false; // Ensure rubber button is deselected
+            rubberButton.classList.remove("button-selected");
+            canvas.style.cursor = "url(/web/assets/images/pen.png), auto";
+        }
+    });
 
-    // This is the flag that we are going to use to
-    // trigger drawing
-    let paint = false;
+    rubberButton.addEventListener("click", function () {
+        if (!isRubberToggled) {
+            isRubberToggled = true;
+            rubberButton.classList.add("button-selected");
+            isPenToggled = false; // Ensure pen button is deselected
+            penButton.classList.remove("button-selected");
+            canvas.style.cursor = "url(/web/assets/images/eraser.png), auto";
+        }
+    });
 
-    // Updates the coordinates of the cursor when
-    // an event e is triggered to the coordinates where
-    // the said event is triggered.
-    function getPosition(event){
-        var canvasRect = canvas.getBoundingClientRect();
+    canvas.addEventListener("mouseenter", function() {
+        if (isPenToggled) {
+            canvas.style.cursor = "url(/web/assets/images/pen.png), auto";
+        } else if (isRubberToggled) {
+            canvas.style.cursor = "url(/web/assets/images/eraser.png), auto";
+        }
+    });
 
-        // Calculate the relative position
-        coords.x = event.clientX - canvasRect.left;
-        coords.y = event.clientY - canvasRect.top;
-        //coords.x = event.clientX; // - canvas.offsetLeft;
-        //coords.y = event.clientY; //- canvas.offsetTop;
+    canvas.addEventListener("mouseleave", function() {
+        canvas.style.cursor = "default"; // Restore default cursor when leaving canvas
+    });
+
+    canvas.addEventListener("mousedown", startAction);
+    canvas.addEventListener("mousemove", performAction);
+    document.addEventListener("mouseup", stopAction);
+
+    function startAction(event) {
+        if (isPenToggled) { // Left mouse button for drawing
+            isDrawing = true;
+        } else if (isRubberToggled) { // Ctrl key for erasing
+            isErasing = true;
+        }
+        performAction(event);
     }
 
-    // The following functions toggle the flag to start
-    // and stop drawing
-    function startPainting(event){
-        paint = true;
-        getPosition(event);
-    }
-    function stopPainting(){
-        paint = false;
+    function stopAction() {
+        isDrawing = false;
+        isErasing = false;
     }
 
-    function sketch(event) {
-        if (!paint) return;
+    function performAction(event) {
+        if (isDrawing && isPenToggled) {
+            draw(event);
+        } else if (isErasing && isRubberToggled) {
+            erase(event);
+        }
+    }
+
+    function draw(event) {
+        let position = getPosition(event);
+        if (!lastPosition) {
+            lastPosition = position;
+            return;
+        }
         ctx.beginPath();
-
         ctx.lineWidth = 5;
-
-        // Sets the end of the lines drawn
-        // to a round shape.
         ctx.lineCap = 'round';
-
         ctx.strokeStyle = 'black';
-
-        // The cursor to start drawing
-        // moves to this coordinate
-        ctx.moveTo(coords.x, coords.y);
-
-        // The position of the cursor
-        // gets updated as we move the
-        // mouse around.
-        getPosition(event);
-
-        // A line is traced from start
-        // coordinate to this coordinate
-        ctx.lineTo(coords.x, coords.y);
-
-        // Draws the line.
+        ctx.moveTo(lastPosition.x, lastPosition.y);
+        ctx.lineTo(position.x, position.y);
         ctx.stroke();
+        lastPosition = position;
+    }
+
+    function erase(event) {
+        let position = getPosition(event);
+        // Define the size of the erased area
+        let eraseWidth = 20;
+        let eraseHeight = 20;
+        // Clear a larger region centered around the cursor position
+        ctx.clearRect(position.x - eraseWidth / 2, position.y - eraseHeight / 2, eraseWidth, eraseHeight);
+    }
+
+    function getPosition(event) {
+        const canvasRect = canvas.getBoundingClientRect();
+        return {
+            x: event.clientX - canvasRect.left,
+            y: event.clientY - canvasRect.top
+        };
     }
 });

@@ -52,11 +52,13 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
-document.addEventListener("DOMContentLoaded", function() {
+/*document.addEventListener("DOMContentLoaded", function() {
     let isPenToggled = true;
     let isRubberToggled = false;
     const penButton = document.getElementById("pen-button");
     const rubberButton = document.getElementById("rubber-button");
+    const canvas = document.getElementById("whiteboard");
+
 
     // Initial state: Pen button is selected
     penButton.classList.add("button-selected");
@@ -78,7 +80,19 @@ document.addEventListener("DOMContentLoaded", function() {
             penButton.classList.remove("button-selected");
         }
     });
-});
+
+    canvas.addEventListener("mouseenter", function() {
+        if (isPenToggled) {
+            canvas.style.cursor = "url(/web/assets/images/pen.png), auto";
+        } else if (isRubberToggled) {
+            canvas.style.cursor = "url(/web/assets/images/eraser.png), auto";
+        }
+    });
+
+    canvas.addEventListener("mouseleave", function() {
+        canvas.style.cursor = "default"; // Restore default cursor when leaving canvas
+    });
+});*/
 
 
 
