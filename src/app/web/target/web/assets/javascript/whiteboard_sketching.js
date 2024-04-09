@@ -34,8 +34,13 @@ document.addEventListener("DOMContentLoaded", function() {
     // an event e is triggered to the coordinates where
     // the said event is triggered.
     function getPosition(event){
-        coords.x = event.clientX; // - canvas.offsetLeft;
-        coords.y = event.clientY; //- canvas.offsetTop;
+        var canvasRect = canvas.getBoundingClientRect();
+
+        // Calculate the relative position
+        coords.x = event.clientX - canvasRect.left;
+        coords.y = event.clientY - canvasRect.top;
+        //coords.x = event.clientX; // - canvas.offsetLeft;
+        //coords.y = event.clientY; //- canvas.offsetTop;
     }
 
     // The following functions toggle the flag to start

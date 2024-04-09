@@ -5,11 +5,13 @@ import it.unipi.dsmt.jakartaee.app.dto.WhiteboardCreationDTO;
 import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
 import it.unipi.dsmt.jakartaee.app.utility.AccessController;
 import it.unipi.dsmt.jakartaee.app.utility.RPC;
+import jakarta.annotation.Resource;
 import jakarta.ejb.EJB;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.*;
 
 import java.io.IOException;
 
@@ -18,6 +20,9 @@ public class InsertWhiteboardServlet extends HttpServlet {
 
     @EJB
     private WhiteboardEJB whiteboardEJB;
+
+    @Resource
+    private UserTransaction userTransaction;
 
     @Override
     protected void doPost (HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -39,21 +44,36 @@ public class InsertWhiteboardServlet extends HttpServlet {
                 isReadOnly
         );
 
-        // Erlang communication
-        try {       // TODO: transaction, if erlang fails the also SQL has to be rolled back
-            int newWhiteboardId = whiteboardEJB.addWhiteboard(loggedUserDTO.getId(), newWhiteboard);
-            if (newWhiteboardId != -1) {                 // Proceed with Erlang synchronization only if the operation was ok in MySQL DB
-                boolean erlangOperationOutcome = RPC.sendErlangWhiteboardUpdateRPC(
+        try {               // MySQL + Erlang operations transaction
+            userTransaction.begin();
+
+            int mySQLNewWhiteboardID = whiteboardEJB.addWhiteboard(loggedUserDTO.getId(), newWhiteboard);  // MySQL operation
+
+            if (mySQLNewWhiteboardID != -1) {
+                boolean erlangInsertOperationOutcome = RPC.sendErlangWhiteboardUpdateRPC(
                         "insert",
-                        Integer.toString(newWhiteboardId),
+                        Integer.toString(mySQLNewWhiteboardID),
                         loggedUserDTO.getUsername(),
                         isReadOnly
                 );
-                if (erlangOperationOutcome)
-                    response.sendRedirect(request.getContextPath() + "/homepage"); // Redirect to the homepage
-            } else
-                response.sendRedirect(request.getContextPath() + "/homepage?insertionFailed=true");
-        } catch (RuntimeException e) {
+
+                if (erlangInsertOperationOutcome) {
+                    userTransaction.commit();
+                    response.sendRedirect(request.getContextPath() + "/homepage");
+                    return;
+                }
+            }
+
+            System.out.println("Before rolling back");
+            userTransaction.rollback();
+            System.out.println("After rolling back");
+            response.sendRedirect(request.getContextPath() + "/homepage?insertionFailed=true");
+        } catch (Exception e) {
+            try {
+                userTransaction.rollback();     // rollback if any exception occurs
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
             throw new RuntimeException(e);
         }
     }

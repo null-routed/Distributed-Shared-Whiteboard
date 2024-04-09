@@ -3,12 +3,14 @@ package it.unipi.dsmt.jakartaee.app.servlets.whiteboardManager;
 import it.unipi.dsmt.jakartaee.app.enums.AddParticipantStatus;
 import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
 import it.unipi.dsmt.jakartaee.app.utility.RPC;
+import jakarta.annotation.Resource;
 import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.UserTransaction;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -19,6 +21,9 @@ public class ShareWhiteboardServlet extends HttpServlet {
 
     @EJB
     private WhiteboardEJB whiteboardEJB;
+
+    @Resource
+    private UserTransaction userTransaction;
 
     @Override
     protected void doPost (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -44,38 +49,52 @@ public class ShareWhiteboardServlet extends HttpServlet {
             return;
         }
 
-        // TODO: transaction, if erlang fails the also SQL has to be rolled back
-        AddParticipantStatus insertOutcome = whiteboardEJB.addParticipant(newParticipantUsername, whiteboardID);
-        switch (insertOutcome) {
-            case SQL_SUCCESS:
-                //Erlang communication -> Proceed with Erlang synchronization only if the operation was ok in MySQL DB
-                try {
-                    boolean erlangOperationOutcome = RPC.sendErlangWhiteboardUpdateRPC(
+        // Erlang + MySQL operations transaction
+        try {
+            userTransaction.begin();
+
+            AddParticipantStatus insertOutcome = whiteboardEJB.addParticipant(newParticipantUsername, whiteboardID);
+
+            switch (insertOutcome) {
+                case SQL_SUCCESS:
+                    boolean erlangShareOperationOutcome = RPC.sendErlangWhiteboardUpdateRPC(
                             "insert",
                             whiteboardID,
                             newParticipantUsername,
                             false
                     );
-                    if(erlangOperationOutcome) {
+
+                    if (erlangShareOperationOutcome) {
+                        userTransaction.commit();
                         request.setAttribute("newlyInsertedParticipant", newParticipantUsername);
                         request.setAttribute("successMessage", newParticipantUsername + " has been added to this whiteboard!");
                         request.getRequestDispatcher(targetPage).forward(request, response);    // redirect to whiteboard
                     } else {
+                        userTransaction.rollback();
                         request.setAttribute("errorMessage", "An error occurred. Try again or try in a few minutes.");
                         request.getRequestDispatcher(targetPage).forward(request, response);
                     }
-                } catch (RuntimeException e) {
-                    throw new RuntimeException(e);
-                }
-                break;
-            case UNREGISTERED_USER:
-                request.setAttribute("errorMessage", "The username you have provided doesn't seem to belong to any user. Try again.");
-                request.getRequestDispatcher(targetPage).forward(request, response);
-                break;
-            case OTHER_ERROR:
+                    break;
+                case UNREGISTERED_USER:
+                    request.setAttribute("errorMessage", "The username you have provided doesn't seem to belong to any user. Try again.");
+                    request.getRequestDispatcher(targetPage).forward(request, response);
+                    break;
+                case OTHER_ERROR:
+                    request.setAttribute("errorMessage", "An error occurred. Try again or try in a few minutes.");
+                    request.getRequestDispatcher(targetPage).forward(request, response);
+                    break;
+            }
+        } catch (Exception e) {
+            try {
+                userTransaction.rollback();
+            } catch (Exception ex) {
+                // throw new RuntimeException(ex);
                 request.setAttribute("errorMessage", "An error occurred. Try again or try in a few minutes.");
                 request.getRequestDispatcher(targetPage).forward(request, response);
-                break;
+            }
+            // throw new RuntimeException(e);
+            request.setAttribute("errorMessage", "An error occurred. Try again or try in a few minutes.");
+            request.getRequestDispatcher(targetPage).forward(request, response);
         }
     }
 }

@@ -18,7 +18,8 @@ public class RPC {
                 return "ok".equals(result);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("@RPC: failed to execute remote call");
+            return false;
         }
         return false;
     }
@@ -36,7 +37,7 @@ public class RPC {
             throws IOException, OtpAuthException, OtpErlangExit {
         OtpConnection conn = getConnection();           // Connecting to Erlang node
         if (conn == null) {
-            System.err.println("@RPC: executeErlangCommand() method -> failed to establish connection.");
+            System.err.println("@RPC: called executeErlangCommand() method, failed to establish connection.");
             return null;
         }
 
