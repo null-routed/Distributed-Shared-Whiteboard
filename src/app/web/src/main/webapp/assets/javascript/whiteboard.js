@@ -51,3 +51,35 @@ document.addEventListener("DOMContentLoaded", function() {
             successMessageElement.remove();
     }
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+    let isPenToggled = true;
+    let isRubberToggled = false;
+    const penButton = document.getElementById("pen-button");
+    const rubberButton = document.getElementById("rubber-button");
+
+    // Initial state: Pen button is selected
+    penButton.classList.add("button-selected");
+
+    penButton.addEventListener("click", function () {
+        if (!isPenToggled) {
+            isPenToggled = true;
+            penButton.classList.add("button-selected");
+            isRubberToggled = false; // Ensure rubber button is deselected
+            rubberButton.classList.remove("button-selected");
+        }
+    });
+
+    rubberButton.addEventListener("click", function () {
+        if (!isRubberToggled) {
+            isRubberToggled = true;
+            rubberButton.classList.add("button-selected");
+            isPenToggled = false; // Ensure pen button is deselected
+            penButton.classList.remove("button-selected");
+        }
+    });
+});
+
+
+
+
