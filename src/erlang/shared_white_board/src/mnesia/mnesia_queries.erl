@@ -42,14 +42,23 @@ get_permissions(WhiteboardId, Username) ->
 update_or_add_user_connection(WhiteboardId, Username, Pid) ->
     Fun = fun() ->
               Record = #whiteboard_users{
-                whiteboard_id_username =  <<WhiteboardId/binary, Username/binary>>, whiteboard_id = WhiteboardId, username = Username, join_time = erlang:timestamp(), websocket_pid = Pid},
+                whiteboard_id_username =  <<WhiteboardId/binary, Username/binary>>, 
+                whiteboard_id = WhiteboardId, 
+                username = Username, 
+                join_time = erlang:timestamp(), 
+                websocket_pid = Pid
+            },
               mnesia:write(Record)
           end,
     mnesia:transaction(Fun).
 
 remove_user_connection(WhiteboardId, Username) ->
     Fun = fun() ->
-              Records = mnesia:match_object(#whiteboard_users{whiteboard_id = WhiteboardId, username = Username, _ = '_'}),
+              Records = mnesia:match_object(
+                #whiteboard_users{
+                    whiteboard_id = WhiteboardId, 
+                    username = Username, _ = '_'
+                }),
               lists:foreach(fun(Record) ->
                                 mnesia:delete_object(Record)
                             end, Records)
@@ -68,13 +77,22 @@ get_connected_users(WhiteboardId) ->
     Fun = fun() -> mnesia:match_object(MatchPattern) end,
     case mnesia:transaction(Fun) of
         {atomic, Records} ->
-            lists:map(fun(#whiteboard_users{username = Username, websocket_pid = Pid}) -> {Username, Pid} end, Records);
+            lists:map(
+                fun(
+                    #whiteboard_users{
+                        username = Username, 
+                        websocket_pid = Pid}) -> {Username, Pid} 
+                end, Records);
         {aborted, Reason} ->
             {error, Reason}
     end.
 
 get_user_connection(WhiteboardId, Username) ->
-    MatchPattern = #whiteboard_users{whiteboard_id_username = '_', whiteboard_id = WhiteboardId, username = Username, _ = '_'},
+    MatchPattern = #whiteboard_users{
+        whiteboard_id_username = '_', 
+        whiteboard_id = WhiteboardId, 
+        username = Username, 
+        _ = '_'},
     Fun = fun() -> mnesia:match_object(MatchPattern) end,
     case mnesia:transaction(Fun) of
         {atomic, [Record]} ->
@@ -111,7 +129,11 @@ log_stroke(StrokeId, WhiteboardId, Action, StrokeData, Username, Timestamp) ->
         },
         mnesia:write(LogRecord),
         
-        RedoStackEntries = mnesia:match_object(#redo_stack{whiteboard_id = WhiteboardId, username = Username, _ = '_'}, read),
+        RedoStackEntries = mnesia:match_object(
+            #redo_stack{
+                whiteboard_id = WhiteboardId, 
+                username = Username, 
+                _ = '_'}, read),
         lists:foreach(fun(RedoEntry) ->
             mnesia:delete_object(RedoEntry)
         end, RedoStackEntries)
@@ -120,8 +142,14 @@ log_stroke(StrokeId, WhiteboardId, Action, StrokeData, Username, Timestamp) ->
 
 undo_stroke(WhiteboardId, Username) ->
     Fun = fun() ->
-        StrokeLogs = mnesia:match_object(#whiteboard_strokes_log{whiteboard_id = WhiteboardId, username = Username, _ = '_'}, read),
-        SortedLogs = lists:sort(fun(A, B) -> A#whiteboard_strokes_log.timestamp > B#whiteboard_strokes_log.timestamp end, StrokeLogs),
+        StrokeLogs = mnesia:match_object(#whiteboard_strokes_log{
+            whiteboard_id = WhiteboardId, 
+            username = Username, _ = '_'}, 
+            read),
+        SortedLogs = lists:sort(
+            fun(A, B) -> 
+                A#whiteboard_strokes_log.timestamp > B#whiteboard_strokes_log.timestamp end, 
+                StrokeLogs),
         case SortedLogs of
             [LatestLog | _Rest] ->
                 % Create a redo_stack record
@@ -145,8 +173,14 @@ undo_stroke(WhiteboardId, Username) ->
 
 redo_stroke(WhiteboardId, Username) ->
     Fun = fun() ->
-        RedoEntries = mnesia:match_object(#redo_stack{whiteboard_id = WhiteboardId, username = Username, _ = '_'}, read),
-        SortedEntries = lists:sort(fun(A, B) -> A#redo_stack.timestamp < B#redo_stack.timestamp end, RedoEntries),
+        RedoEntries = mnesia:match_object(
+            #redo_stack{
+                whiteboard_id = WhiteboardId, 
+                username = Username, 
+                _ = '_'}, read),
+        SortedEntries = lists:sort(
+            fun(A, B) -> A#redo_stack.timestamp < B#redo_stack.timestamp 
+            end, RedoEntries),
         case SortedEntries of
             [EarliestEntry | _Rest] ->
                 LogRecord = #whiteboard_strokes_log{
