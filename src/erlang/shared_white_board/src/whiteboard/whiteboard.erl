@@ -1,211 +1,190 @@
 -module(whiteboard).
 
 -export([
-    notify_user_connection/3, 
+    handle_stroke_operation/5,
+    notify_user_connection/3,
     notify_user_disconnection/3,
-    check_permissions/2, 
-    handle_websocket_message/2, 
-    manage_whiteboard_access/4
+    check_permissions/2,
+    regenerate_strokes/2,
+    handle_whiteboard_change/4
 ]).
 
 -record(whiteboard_strokes_log, {id, whiteboard_id, username, action, stroke_id, data, timestamp}).
--record(redo_stack, {id, stroke_id, whiteboard_id, data, action, username, timestamp}).
 
-% Broadcast a message to all nodes except the origin and current node.
-broadcast_message_to_nodes(Func, Params, OriginNode) ->
-    case OriginNode == node() of
-        false ->
-            ok;
-        true ->
-            Nodes = [Node || Node <- nodes(), Node /= node(), Node /= OriginNode],
-            lists:foreach(fun(Node) ->
-                              rpc:call(Node, whiteboard, Func ++ OriginNode, Params)
-                          end, Nodes)
+%%% Helper Functions
+%%% These functions are used to manage the whiteboard strokes and user connections.
+
+send_message(Pid, Message) ->
+    EncodedMessage = jsx:encode(Message),
+    Pid ! {send, EncodedMessage},
+    ok.
+
+broadcast_to_other_nodes(Func, Params, OriginNode) ->
+    Nodes = [Node || Node <- nodes(), Node /= node(), Node /= OriginNode],
+    lists:foreach(fun(Node) ->
+                      rpc:call(Node, ?MODULE, Func, Params ++ [OriginNode])
+                  end, Nodes),
+    ok.
+
+%%% User connection / disconnection notifications
+%%% These functions are used to notify all users connected to a whiteboard when a new user connects or disconnects.
+
+notify_all_users(WhiteboardId, Action, ExtraProps) ->
+    Users = mnesia_queries:get_connected_users(WhiteboardId),
+    lists:foreach(fun({_, Pid}) ->
+                      send_message(Pid, #{action => Action} ++ ExtraProps)
+                  end, Users),
+    ok.
+
+handle_user_connection(IsNewConnection, WhiteboardId, Username, WebSocketPid) ->
+    ExistingConnection = mnesia_queries:get_user_connection(WhiteboardId, Username),
+    case ExistingConnection of
+        {ok, OldPid} when is_pid(OldPid) -> OldPid ! {close, <<"Connected from another location">>};
+        _ -> ok
+    end,
+    case IsNewConnection of
+        true -> mnesia_queries:update_or_add_user_connection(WhiteboardId, Username, WebSocketPid);
+        false -> ok
+    end,
+    notify_all_users(
+        WhiteboardId, <<"updateUserList">>, 
+        #{users => [User || {User, _} <- mnesia_queries:get_connected_users(WhiteboardId)]}),
+
+    ok.
+
+check_permissions(WhiteboardId, Username) ->
+    case mnesia_queries:get_permissions(WhiteboardId, Username) of
+        {ok, Permission} -> 
+            {ok, #{username => Username, whiteboard_id => WhiteboardId, permission => Permission}};
+        {error, _} -> 
+            {error, <<"No permission to access whiteboard">>}
     end.
+
+notify_user_connection(WhiteboardId, Username, OriginNode) ->
+    WebSocketPid = if node() == OriginNode -> self(); true -> undefined end,
+    handle_user_connection(true, WhiteboardId, Username, WebSocketPid),
+    broadcast_to_other_nodes(notify_user_connection, [WhiteboardId, Username], OriginNode).
 
 notify_user_disconnection(WhiteboardId, Username, OriginNode) ->
     mnesia_queries:remove_user_connection(WhiteboardId, Username),
-    notify_existing_users(WhiteboardId),
-    broadcast_message_to_nodes(notify_user_disconnection, [WhiteboardId, Username], OriginNode).
+    notify_all_users(
+        WhiteboardId, <<"updateUserList">>, #{users => [User || {User, _} <- mnesia_queries:get_connected_users(WhiteboardId)]}),
+    broadcast_to_other_nodes(notify_user_disconnection, [WhiteboardId, Username], OriginNode).
 
-% Handle permissions for a new user connection
-check_permissions(WhiteboardId, Username) ->
-    PermissionsResult = mnesia_queries:get_permissions(WhiteboardId, Username),
-    case PermissionsResult of 
-        {ok, Permission} -> 
-            {ok, #{username => Username, whiteboardId => WhiteboardId, permission => Permission}, <<>>};
-        {error, _} -> 
-            {error, {}, <<"No permission to access whiteboard">>}
+regenerate_strokes(WhiteboardId, Username) ->
+    case mnesia_queries:get_user_connection(WhiteboardId, Username) of
+        {ok, Pid} ->
+            ActiveStrokes = mnesia_queries:get_active_strokes(WhiteboardId),
+            lists:foreach(fun({StrokeId, Data}) ->
+                              send_message(Pid, 
+                                #{action => <<"addStroke">>, strokeId => StrokeId, data => Data, tempId => undefined})
+                          end, ActiveStrokes);
+        _ -> ok
     end.
 
-% Notify about a user connection
-notify_user_connection(WhiteboardId, Username, OriginNode) ->
-    ExistingConnection = mnesia_queries:get_user_connection(WhiteboardId, Username),
-    io:format("Existing connection: ~p~n", [ExistingConnection]),
-    handle_existing_connection(ExistingConnection),
-    WebSocketPid = case node() == OriginNode of
-        true -> self();
-        false -> undefined
-    end,
-    mnesia_queries:update_or_add_user_connection(WhiteboardId, Username, WebSocketPid),
-    notify_existing_users(WhiteboardId),
-    broadcast_message_to_nodes(notify_user_connection, [WhiteboardId, Username], OriginNode).
+%%% Managing whiteboard access and changes
 
-% Handle an existing user connection
-handle_existing_connection({ok, OldPid}) when is_pid(OldPid) ->
-    io:format("Closing old connection for user ~p~n", [OldPid]),
-    OldPid ! {close, <<"Connected from another location">>},
-    ok;
-handle_existing_connection(_) ->
-    ok.
-
-notify_existing_users(WhiteboardId) ->
-    ExistingUsers = mnesia_queries:get_connected_users(WhiteboardId),
-    UsernamesList = [Username || {Username, _Pid} <- ExistingUsers],
-    EncodedMessage = jsx:encode(#{action => <<"updateUserList">>, users => UsernamesList}),
-    lists:foreach(fun({_, Pid}) ->
-                      Pid ! {send, EncodedMessage}
-                  end, ExistingUsers).
-
-notify_stroke(StrokeId, Action, WhiteboardId, StrokeData, TempId) ->
-    ExistingUsers = mnesia_queries:get_connected_users(WhiteboardId),
-    EncodedMessage =
+handle_whiteboard_change(Action, WhiteboardId, Username, Permission) ->
     case Action of
-        add ->
-            jsx:encode(#{
-                action => <<"addStroke">>,
-                strokeId => StrokeId,
-                data => StrokeData,
-                tempId => TempId
-            });
+        insert ->
+            new_whiteboard(WhiteboardId, Username, Permission, node());
         delete ->
-            jsx:encode(#{
-                action => <<"deleteStroke">>,
-                strokeId => StrokeId
-            })
-    end,
-    lists:foreach(fun({_, Pid}) ->
-                    Pid ! {send, EncodedMessage}
-                end, ExistingUsers).
+            remove_whiteboard(WhiteboardId, node());
+        removeParticipant ->
+            remove_participant(WhiteboardId, Username, node())
+    end.
 
-handle_stroke(StrokeId, Action, WhiteboardId, Username, StrokeData, TempId, Timestamp, OriginNode) ->
-    mnesia_queries:log_stroke(StrokeId, WhiteboardId, Action, Username, StrokeData, Timestamp),
-    notify_stroke(StrokeId, Action, WhiteboardId, StrokeData, TempId),
-    broadcast_message_to_nodes(
-        handle_add_stroke, 
-        [StrokeId, WhiteboardId, Action, Username, StrokeData, TempId, Timestamp], 
-        OriginNode).
-
-handle_cursor_position_update(WhiteboardId, Username, Data, OriginNode) -> 
-    ExistingUsers = mnesia_queries:get_connected_users(WhiteboardId),
-    EncodedMessage = jsx:encode(#{
-        action => <<"updateCursorPosition">>, 
-        username => Username,
-        data => Data
-    }),
-    lists:foreach(fun({_, Pid}) ->
-                    Pid ! {send, EncodedMessage}
-                end, ExistingUsers),
-    broadcast_message_to_nodes(
-        handle_cursor_position_update, [WhiteboardId, Username, Data], OriginNode).
-
-
-handle_new_whiteboard_access(WhiteboardId, Username, Permission, OriginNode) ->
+new_whiteboard(WhiteboardId, Username, Permission, OriginNode) ->
     mnesia_queries:add_whiteboard_access(WhiteboardId, Username, Permission),
-    broadcast_message_to_nodes(
-        handle_new_whiteboard_access, [WhiteboardId, Username, Permission], OriginNode).
+    broadcast_to_other_nodes(new_whiteboard, [WhiteboardId, Username, Permission], OriginNode).
 
-handle_whiteboard_removal(WhiteboardId, OriginNode) ->
+remove_whiteboard(WhiteboardId, OriginNode) ->
     ConnectedUsers = mnesia_queries:get_connected_users(WhiteboardId),
-        lists:foreach(fun({_, Pid}) ->
-                    Pid ! {close, <<"This whiteboard has been deleted.">>}
-                end, ConnectedUsers),
+    lists:foreach(fun({_, Pid}) -> Pid ! {close, <<"This whiteboard has been deleted.">>} end, ConnectedUsers),
     mnesia_queries:remove_whiteboard(WhiteboardId),
-    broadcast_message_to_nodes(handle_whiteboard_removal, [WhiteboardId], OriginNode).
+    broadcast_to_other_nodes(remove_whiteboard, [WhiteboardId], OriginNode).
 
-handle_participant_removal(WhiteboardId, Username, OriginNode) ->
+remove_participant(WhiteboardId, Username, OriginNode) ->
     case mnesia_queries:get_user_connection(WhiteboardId, Username) of 
-        {ok, Pid} ->
-            Pid ! {close, <<"You have been removed from this whiteboard.">>};
-        _ ->
-            ok
+        {ok, Pid} -> Pid ! {close, <<"You have been removed from this whiteboard.">>};
+        _ -> ok
     end,
     mnesia_queries:remove_participant(WhiteboardId, Username),
-    broadcast_message_to_nodes(handle_participant_removal, [WhiteboardId, Username], OriginNode).
+    broadcast_to_other_nodes(remove_participant, [WhiteboardId, Username], OriginNode).
 
-manage_whiteboard_access(Action, WhiteboardId, Username, Permission) ->
-    % Action -> Insert
+%%% Stroke handling (Undo/Redo and Websocket Message Processing)
+handle_stroke(StrokeId, Action, WhiteboardId, Username, Data, TempId, Timestamp, OriginNode) ->
+    mnesia_queries:log_stroke(StrokeId, WhiteboardId, Action, Username, Data, Timestamp),
+    notify_stroke(StrokeId, Action, WhiteboardId, Data, TempId),
+    broadcast_to_other_nodes(
+        handle_stroke, [StrokeId, Action, WhiteboardId, Username, Data, TempId, Timestamp], OriginNode).
+
+notify_stroke(StrokeId, Action, WhiteboardId, Data, TempId) ->
+    ExtraProps = #{strokeId => StrokeId, action => Action, data => Data, tempId => TempId},
+    notify_all_users(WhiteboardId, Action, ExtraProps).
+
+handle_cursor_position_update(WhiteboardId, Username, Data, OriginNode) ->
+    %% Assuming there's a function to log the cursor position, if needed
+    %% mnesia_queries:log_cursor_position(WhiteboardId, Username, Data),
+    notify_all_users(WhiteboardId, <<"updateCursorPosition">>, #{username => Username, data => Data}),
+    broadcast_to_other_nodes(handle_cursor_position_update, [WhiteboardId, Username, Data], OriginNode).
+
+handle_stroke_operation(WhiteboardId, Username, Action, Map, OriginNode) ->
     case Action of
-        insert -> % 
-            handle_new_whiteboard_access(WhiteboardId, Username, Permission, node());
-        delete -> 
-            handle_whiteboard_removal(WhiteboardId, node());
-        removeParticipant ->  
-            handle_participant_removal(WhiteboardId, Username, node())
+        undo ->
+            case mnesia_queries:undo_stroke(WhiteboardId, Username) of
+                {ok, StrokeLog} -> process_stroke_log(StrokeLog, OriginNode);
+                {error, no_strokes_found} -> io:format("No strokes found to undo.~n")
+            end;
+        redo ->
+            case mnesia_queries:redo_stroke(WhiteboardId, Username) of
+                {ok, RedoLog} -> process_stroke_log(RedoLog, OriginNode);
+                {error, no_strokes_found} -> io:format("No strokes found to redo.~n")
+            end;
+        _ ->
+            process_websocket_message(Map, #{username => Username, whiteboard_id => WhiteboardId}, OriginNode)
     end.
 
-handle_undo(WhiteboardId, Username, OriginNode) ->
-    case mnesia_queries:undo_stroke(WhiteboardId, Username) of
-        {ok, #whiteboard_strokes_log{
-            stroke_id = StrokeId, 
-            whiteboard_id = WhiteboardId, 
-            data = StrokeData, 
-            action = Action, 
-            username = Username, 
-            timestamp = Timestamp
-        }} ->
-            InvertedAction = case Action of
-                add -> delete;
-                delete -> add
-            end,
-            notify_stroke(StrokeId, InvertedAction, WhiteboardId, StrokeData, undefined),
-            broadcast_message_to_nodes(
-                handle_undo, 
-                [StrokeId, WhiteboardId, Action, Username, StrokeData, undefined, Timestamp], 
-                OriginNode);
-        {error, no_strokes_found} ->
-            io:format("No strokes found to undo.~n")
-end.
+process_stroke_log(StrokeLog, OriginNode) ->
+    InvertedAction = case StrokeLog#whiteboard_strokes_log.action of
+                         add -> delete;
+                         delete -> add
+                     end,
+    notify_stroke(
+        StrokeLog#whiteboard_strokes_log.stroke_id, 
+        InvertedAction, 
+        StrokeLog#whiteboard_strokes_log.whiteboard_id, 
+        StrokeLog#whiteboard_strokes_log.data, undefined),
+    broadcast_to_other_nodes(
+        handle_stroke_operation, 
+        [
+            StrokeLog#whiteboard_strokes_log.stroke_id, 
+            StrokeLog#whiteboard_strokes_log.whiteboard_id, 
+            InvertedAction, StrokeLog#whiteboard_strokes_log.username, 
+            StrokeLog#whiteboard_strokes_log.data, 
+            undefined, 
+            StrokeLog#whiteboard_strokes_log.timestamp
+        ], 
+        OriginNode).
 
-handle_redo(WhiteboardId, Username, OriginNode) ->
-    case mnesia_queries:redo_stroke(WhiteboardId, Username) of
-        {ok, #redo_stack{
-            stroke_id = StrokeId, 
-            whiteboard_id = WhiteboardId,
-            data = StrokeData,
-            action = Action, 
-            username = Username, 
-            timestamp = Timestamp
-        }} ->
-            notify_stroke(StrokeId, Action, WhiteboardId, StrokeData, undefined),
-            broadcast_message_to_nodes(
-                handle_redo,
-                [StrokeId, WhiteboardId, Action, Username, StrokeData, undefined, Timestamp], 
-                OriginNode
-            );
-        {error, no_strokes_found} ->
-            io:format("No strokes found to redo.~n")
-end.
-
-handle_websocket_message(Map, State) ->
-    #{username := Username, whiteboardId := WhiteboardId} = State,
-    case maps:get(<<"action">>, Map) of
+process_websocket_message(Map, #{username := Username, whiteboardId := WhiteboardId}, OriginNode) ->
+    Action = maps:get(<<"action">>, Map),
+    case Action of
         <<"addStroke">> ->
             StrokeId = unique_id_gen:generate_unique_id(),
             Timestamp = erlang:timestamp(),
-            #{data := Data, tempId := TempId} = Map,
-            handle_stroke(StrokeId, add, WhiteboardId, Username, Data, TempId, Timestamp, node());
+            Data = maps:get(<<"data">>, Map, undefined),
+            TempId = maps:get(<<"tempId">>, Map, undefined),
+            handle_stroke(StrokeId, add, WhiteboardId, Username, Data, TempId, Timestamp, OriginNode);
         <<"deleteStroke">> ->
-            #{strokeId := StrokeId} = Map,
+            StrokeId = maps:get(<<"strokeId">>, Map, undefined),
             Timestamp = erlang:timestamp(),
-            handle_stroke(StrokeId, delete, WhiteboardId, Username, undefined, undefined, Timestamp, node());
+            handle_stroke(StrokeId, delete, WhiteboardId, Username, undefined, undefined, Timestamp, OriginNode);
         <<"updateCursorPosition">> ->
-            #{data := Data} = Map,
-            handle_cursor_position_update(WhiteboardId, Username, Data, node());
-        <<"undoStroke">> ->
-            handle_undo(WhiteboardId, Username, node());
-        <<"redoStroke">> ->
-            handle_redo(WhiteboardId, Username, node());
+            Data = maps:get(<<"data">>, Map),
+            handle_cursor_position_update(WhiteboardId, Username, Data, OriginNode);
         _ ->
             ok
     end.
+
+

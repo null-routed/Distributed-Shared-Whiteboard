@@ -10,13 +10,32 @@
     print_all_records/0,
     log_stroke/6,
     undo_stroke/2,
-    redo_stroke/2
+    redo_stroke/2,
+    get_active_strokes/1
 ]).
 
 -record(whiteboard_access, {whiteboard_id_username, whiteboard_id, username, permission}).
 -record(whiteboard_users, {whiteboard_id_username, whiteboard_id, username, join_time, websocket_pid}).
 -record(whiteboard_strokes_log, {id, whiteboard_id, username, action, stroke_id, data, timestamp}).
 -record(redo_stack, {id, stroke_id, whiteboard_id, data, action, username, timestamp}).
+
+get_active_strokes(WhiteboardId) ->
+    mnesia:transaction(fun() ->
+        AddActions = mnesia:match_object(
+            #whiteboard_strokes_log{whiteboard_id = WhiteboardId, action = add, _ = '_'}, read),
+        
+        DeleteActions = mnesia:match_object(
+            #whiteboard_strokes_log{whiteboard_id = WhiteboardId, action = delete, _ = '_'}, read),
+        DeleteStrokeIds = [Stroke#whiteboard_strokes_log.stroke_id || Stroke <- DeleteActions],
+        
+        ActiveStrokes = lists:filter(fun(Stroke) ->
+            not lists:member(Stroke#whiteboard_strokes_log.stroke_id, DeleteStrokeIds)
+        end, AddActions),
+        
+        Result = [{Stroke#whiteboard_strokes_log.stroke_id, Stroke#whiteboard_strokes_log.data} || Stroke <- ActiveStrokes],
+        
+        Result
+    end).
 
 get_permissions(WhiteboardId, Username) ->
     case mnesia:transaction(fun() ->
