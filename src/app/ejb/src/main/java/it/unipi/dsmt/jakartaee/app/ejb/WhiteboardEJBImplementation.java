@@ -1,11 +1,12 @@
 package it.unipi.dsmt.jakartaee.app.ejb;
 
-import it.unipi.dsmt.jakartaee.app.dto.WhiteboardCreationDTO;
 import it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO;
+import it.unipi.dsmt.jakartaee.app.dto.WhiteboardCreationDTO;
 import it.unipi.dsmt.jakartaee.app.enums.AddParticipantStatus;
 import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
 import jakarta.annotation.Resource;
 import jakarta.ejb.Stateless;
+import jakarta.transaction.*;
 import jakarta.validation.constraints.NotNull;
 
 import javax.sql.DataSource;
@@ -16,6 +17,8 @@ import java.util.List;
 
 @Stateless
 public class WhiteboardEJBImplementation implements WhiteboardEJB {
+    //@Resource
+    //private UserTransaction userTransaction;
 
     // Data source to MySQL database
     @Resource(lookup = "jdbc/SharedWhiteboardsPool")
@@ -176,7 +179,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
 
         try (Connection connection = dataSource.getConnection()) {
             // Start a transaction
-            connection.setAutoCommit(false);
+            //connection.setAutoCommit(false);
 
             try (PreparedStatement whiteboardStatement = connection.prepareStatement(insertWhiteboardQuery, Statement.RETURN_GENERATED_KEYS);
                  PreparedStatement participantStatement = connection.prepareStatement(insertParticipantQuery)) {
@@ -190,7 +193,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                 int rowsAffected = whiteboardStatement.executeUpdate();
                 if (rowsAffected == 0) {
                     // Rollback transaction if no rows were affected
-                    connection.rollback();
+                    //connection.rollback();
                     return -1; // Return -1 to indicate failure
                 }
 
@@ -208,16 +211,16 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                         rowsAffected = participantStatement.executeUpdate();
                         if (rowsAffected == 0) {
                             // Rollback transaction if no rows were affected
-                            connection.rollback();
+                            //connection.rollback();
                             return -1; // Return -1 to indicate failure
                         }
 
                         // Commit transaction if all operations were successful
-                        connection.commit();
+                        //connection.commit();
                         return whiteboardId; // Return the generated whiteboardId
                     } else {
                         // Rollback transaction if no keys were generated
-                        connection.rollback();
+                        //connection.rollback();
                         return -1; // Return -1 to indicate failure
                     }
                 }
@@ -275,7 +278,8 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
 
         try (Connection connection = dataSource.getConnection()) {
             // Start a transaction
-            connection.setAutoCommit(false);
+            //connection.setAutoCommit(false);
+            //userTransaction.begin();
 
             try (PreparedStatement participantStatement = connection.prepareStatement(deleteParticipantQuery);
                  PreparedStatement whiteboardStatement = connection.prepareStatement(deleteWhiteboardQuery)) {
@@ -287,7 +291,8 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                 int rowsAffected = participantStatement.executeUpdate();
                 if (rowsAffected == 0) {
                     // Rollback transaction if no rows were affected
-                    connection.rollback();
+                    //connection.rollback();
+                    //userTransaction.rollback();
                     return false;
                 }
 
@@ -298,12 +303,14 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                 rowsAffected = whiteboardStatement.executeUpdate();
                 if (rowsAffected == 0) {
                     // Rollback transaction if no rows were affected
-                    connection.rollback();
+                    //connection.rollback();
+                    //userTransaction.rollback();
                     return false;
                 }
 
                 // Commit transaction if all operations were successful
-                connection.commit();
+                //connection.commit();
+                //userTransaction.commit();
                 return true;
             }
         } catch (SQLException e) {
