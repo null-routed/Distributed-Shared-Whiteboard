@@ -4,6 +4,7 @@ import com.ericsson.otp.erlang.*;
 
 import java.io.IOException;
 
+
 public class RPC {
 
     private static OtpConnection connection = null;

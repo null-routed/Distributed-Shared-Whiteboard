@@ -1,28 +1,43 @@
-// Get the modal
-let modal = document.getElementById("myModal");
+/* ------ ERROR DISPLAYING MODAL ------ */
+let error_X_span = document.getElementsByClassName("close")[0];
 
-// Get the button that opens the modal
-let btn = document.getElementById("addButton");
+error_X_span.onclick = function () {
+    let error_modal = document.getElementById("error-display-modal");
+    error_modal.style.display = "none";
+}
 
-// Get the <span> element that closes the modal
-let span = document.getElementsByClassName("close")[0];
+window.onclick = function(event) {
+    let error_modal = document.getElementById("error-display-modal");
+    if (event.target === error_modal) {
+        insert_modal.style.display = "none";
+    }
+}
+
+
+/* ------ INSERT NEW WHITEBOARD MODAL ------ */
+let insert_modal = document.getElementById("insert-whiteboard-modal");
+let insert_btn = document.getElementById("add-button");
+let insert_X_span = document.getElementsByClassName("close")[1];
 
 // When the user clicks on the button, open the modal
-btn.onclick = function() {
-    modal.style.display = "block";
+insert_btn.onclick = function() {
+    insert_modal.style.display = "block";
 }
 
 // When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-    modal.style.display = "none";
+insert_X_span.onclick = function() {
+    insert_modal.style.display = "none";
 }
 
 // When the user clicks anywhere outside the modal, close it
 window.onclick = function(event) {
-    if (event.target === modal) {
-        modal.style.display = "none";
+    if (event.target === insert_modal) {
+        insert_modal.style.display = "none";
     }
 }
+
+
+
 
 function confirmDelete(whiteboardId) {
     if (confirm("Are you sure you want to delete this whiteboard? \n" +
