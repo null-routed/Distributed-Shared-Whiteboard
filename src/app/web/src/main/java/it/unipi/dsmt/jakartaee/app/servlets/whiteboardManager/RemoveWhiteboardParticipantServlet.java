@@ -33,7 +33,7 @@ public class RemoveWhiteboardParticipantServlet extends HttpServlet {
     private UserTransaction userTransaction;
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
 
         String whiteboardID = Optional.ofNullable(request.getParameter("whiteboardID")).orElse("");
