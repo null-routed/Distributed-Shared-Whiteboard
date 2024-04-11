@@ -145,10 +145,10 @@ public class ShareWhiteboardServlet extends HttpServlet {
 
         switch (insertOutcome) {
             case SQL_SUCCESS:
-//                jsonResponse = Json.createObjectBuilder()
-//                        .add("success", true)
-//                        .add("message", newParticipantUsername + " has been added to this whiteboard!")
-//                        .build();
+                jsonResponse = Json.createObjectBuilder()
+                        .add("success", true)
+                        .add("message", newParticipantUsername + " has been added to this whiteboard!")
+                        .build();
                 request.setAttribute("newlyInsertedUsername", newParticipantUsername);
                 response.setStatus(HttpServletResponse.SC_OK);
                 break;

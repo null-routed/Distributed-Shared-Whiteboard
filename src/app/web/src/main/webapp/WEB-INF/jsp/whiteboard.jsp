@@ -31,11 +31,11 @@
 <%--    }--%>
 <%--%>--%>
 
-<%
-    if (request.getAttribute("newlyInsertedUsername") != null) {
-%>
-    <h1><%=request.getAttribute("newlyInsertedUsername")%></h1>
-<% } %>
+<%--<%--%>
+<%--    if (request.getAttribute("newlyInsertedUsername") != null) {--%>
+<%--%>--%>
+<%--    <h1><%=request.getAttribute("newlyInsertedUsername")%></h1>--%>
+<%--<% } %>--%>
 
 <head>
     <title><%= whiteboardData.getName() %></title>
@@ -126,7 +126,11 @@
                         xhttp.onreadystatechange = function () {
                             if (this.readyState === 4 && this.status === 200) {
                                 console.log("Response: " + this.responseText);
-
+                                <%
+                                    System.out.println(request.getAttribute("newlyInsertedParticipant"));
+                                    whiteboardParticipants.add((String) request.getAttribute("newlyInsertedParticipant"));
+                                    request.getSession().setAttribute("whiteboardParticipants", whiteboardParticipants);
+                                %>
                             }
                         }
 
@@ -142,8 +146,8 @@
 
                 <%--    boolean redirectedAfterAddOperation = request.getAttribute("redirectAfterAddOperation") != null;--%>
                 <%--    if (redirectedAfterAddOperation && request.getAttribute("newlyInsertedParticipant") != null) {--%>
-                <%--        whiteboardParticipants.add((String) request.getAttribute("newlyInsertedParticipant"));--%>
-                <%--        request.getSession().setAttribute("whiteboardParticipants", whiteboardParticipants);--%>
+                //         whiteboardParticipants.add((String) request.getAttribute("newlyInsertedParticipant"));
+                //         request.getSession().setAttribute("whiteboardParticipants", whiteboardParticipants);
                 <%--    }--%>
                 <%--%>--%>
             </script>
