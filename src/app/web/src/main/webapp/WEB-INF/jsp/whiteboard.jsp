@@ -13,29 +13,14 @@
 
     boolean isLoggedUserOwner = whiteboardData.getOwner().equals(loggedUserDTO.getUsername());
 
-    List<String> whiteboardParticipants = (List<String>) session.getAttribute("whiteboardParticipants");
-    if (!whiteboardParticipants.contains(loggedUserDTO.getUsername())) {
+    List<String> participantsOnWhiteboardOpen = (List<String>) session.getAttribute("whiteboardParticipants");
+    if (!participantsOnWhiteboardOpen.contains(loggedUserDTO.getUsername())) {
 %>
-<script>
-    alert("You are not allowed to perform any operation on this whiteboard.");
-    location.href = "${pageContext.request.contextPath}/homepage";
-</script>
-
-<%
-    }
-%>
-<%--    boolean redirectedAfterAddOperation = request.getAttribute("redirectAfterAddOperation") != null;--%>
-<%--    if (redirectedAfterAddOperation && request.getAttribute("newlyInsertedParticipant") != null) {--%>
-<%--        whiteboardParticipants.add((String) request.getAttribute("newlyInsertedParticipant"));--%>
-<%--        request.getSession().setAttribute("whiteboardParticipants", whiteboardParticipants);--%>
-<%--    }--%>
-<%--%>--%>
-
-<%--<%--%>
-<%--    if (request.getAttribute("newlyInsertedUsername") != null) {--%>
-<%--%>--%>
-<%--    <h1><%=request.getAttribute("newlyInsertedUsername")%></h1>--%>
-<%--<% } %>--%>
+        <script>
+            alert("You are not allowed to perform any operation on this whiteboard.");
+            location.href = "${pageContext.request.contextPath}/homepage";
+        </script>
+<% } %>
 
 <head>
     <title><%= whiteboardData.getName() %></title>
@@ -60,9 +45,9 @@
             <h2>Participants to <%= whiteboardData.getName() %></h2>
             <div class="participants-list">
                 <%
-                    for(int i = 0; i < whiteboardParticipants.size(); i++){
+                    for(int i = 0; i < participantsOnWhiteboardOpen.size(); i++){
                 %>
-                <div class="whiteboard-participant" id="participant-<%= i %>"> &bullet; <%= whiteboardParticipants.get(i) %></div>
+                <div class="whiteboard-participant"> &bullet; <%= participantsOnWhiteboardOpen.get(i) %></div>
                 <%
                     }
                 %>
@@ -94,14 +79,6 @@
         <button class="custom-generic-button" id="share-button">Share</button>
         <% } %>
 
-        <!-- Modal for sharing -->
-<%--        <script>--%>
-<%--            let redirectedAfterAddOperation = <%= redirectedAfterAddOperation %>;--%>
-<%--            document.addEventListener("DOMContentLoaded", function() {--%>
-<%--                if (redirectedAfterAddOperation)--%>
-<%--                    document.getElementById("share-modal").style.display = "block";--%>
-<%--            });--%>
-<%--        </script>--%>
         <div class="modal" id="share-modal">
             <div class="modal-content">
                 <span class="close">&times;</span>
@@ -112,9 +89,6 @@
                 <button class="custom-generic-button" id="share-button-modal" type="button">Add participant</button>
             </div>
             <script>
-                let newlyInsertedUsername = undefined;
-                let redirectedAfterAddOperation = undefined;
-
                 document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("share-button-modal").addEventListener("click", function (event) {
                         event.preventDefault();
@@ -125,12 +99,31 @@
                         let xhttp = new XMLHttpRequest();
                         xhttp.onreadystatechange = function () {
                             if (this.readyState === 4 && this.status === 200) {
-                                console.log("Response: " + this.responseText);
-                                <%
-                                    System.out.println(request.getAttribute("newlyInsertedParticipant"));
-                                    whiteboardParticipants.add((String) request.getAttribute("newlyInsertedParticipant"));
-                                    request.getSession().setAttribute("whiteboardParticipants", whiteboardParticipants);
-                                %>
+                                console.log("AJAX response: " + this.responseText)
+
+                                const jsonResponse = JSON.parse(this.responseText);
+
+                                if (jsonResponse.success === true) {        // adding new participant to list
+                                    let participantsListDiv = document.getElementsByClassName("participants-list")[0];
+
+                                    let newlyInsertedParticipantDiv = document.createElement("div");
+                                    newlyInsertedParticipantDiv.setAttribute("class", "whiteboard-participant");
+                                    newlyInsertedParticipantDiv.textContent = "• " + username;
+
+                                    participantsListDiv.append(newlyInsertedParticipantDiv);
+                                }
+
+                                // displaying error or success message
+                                let usernameTextBox = document.getElementsByClassName("modal-content")[1];
+                                let outcomeMessageDiv = document.createElement("div");
+                                outcomeMessageDiv.setAttribute("id", "add-outcome-message");
+                                outcomeMessageDiv.style.marginTop = "10px";
+                                if (jsonResponse.success)
+                                    outcomeMessageDiv.setAttribute("class", "success-msg");
+                                else
+                                    outcomeMessageDiv.setAttribute("class", "error-msg");
+                                outcomeMessageDiv.textContent = jsonResponse.message;
+                                usernameTextBox.append(outcomeMessageDiv);
                             }
                         }
 
@@ -140,16 +133,6 @@
                         xhttp.send("whiteboardID=" + whiteboardID + "&" + "username=" + username);
                     });
                 });
-
-                <%--<%--%>
-                <%--    }--%>
-
-                <%--    boolean redirectedAfterAddOperation = request.getAttribute("redirectAfterAddOperation") != null;--%>
-                <%--    if (redirectedAfterAddOperation && request.getAttribute("newlyInsertedParticipant") != null) {--%>
-                //         whiteboardParticipants.add((String) request.getAttribute("newlyInsertedParticipant"));
-                //         request.getSession().setAttribute("whiteboardParticipants", whiteboardParticipants);
-                <%--    }--%>
-                <%--%>--%>
             </script>
         </div>
     </div>

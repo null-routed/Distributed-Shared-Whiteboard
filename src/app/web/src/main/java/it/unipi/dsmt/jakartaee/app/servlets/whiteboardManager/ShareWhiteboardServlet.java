@@ -27,93 +27,6 @@ public class ShareWhiteboardServlet extends HttpServlet {
 
     @Resource
     private UserTransaction userTransaction;
-//
-//    @Override
-//    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-//        response.setContentType("application/json");
-//
-//        // Extracting parameters from the request
-//        String whiteboardID = Optional.ofNullable(request.getParameter("whiteboardID")).orElse("");
-//        String newParticipantUsername = Optional.ofNullable(request.getParameter("username")).orElse("");
-//
-//        System.out.println("@WhiteboardServlet: called doPost() method, params=" + whiteboardID + ", " + newParticipantUsername);
-//
-//        JsonObject jsonResponse = Json.createObjectBuilder().build();
-//
-//        AddParticipantStatus alreadyParticipantCheck = whiteboardEJB.isParticipant(newParticipantUsername, whiteboardID);
-//
-//        if (alreadyParticipantCheck == AddParticipantStatus.ALREADY_PARTICIPATING) {
-//            jsonResponse = Json.createObjectBuilder()
-//                    .add("success", false)
-//                    .add("message", newParticipantUsername + " is already participating to this whiteboard.")
-//                    .build();
-//        } else if (alreadyParticipantCheck == AddParticipantStatus.OTHER_ERROR) {
-//            jsonResponse = Json.createObjectBuilder()
-//                    .add("success", false)
-//                    .add("message", "An error occurred. Try again or try in a few minutes.")
-//                    .build();
-//        } else {
-//            // Erlang + MySQL operations transaction
-//            try {
-//                userTransaction.begin();
-//
-//                AddParticipantStatus insertOutcome = whiteboardEJB.addParticipant(newParticipantUsername, whiteboardID);
-//
-//                switch (insertOutcome) {
-//                    case SQL_SUCCESS:
-//                        boolean erlangShareOperationOutcome = RPC.sendErlangWhiteboardUpdateRPC(
-//                                "insert",
-//                                whiteboardID,
-//                                newParticipantUsername,
-//                                false
-//                        );
-//
-//                        if (erlangShareOperationOutcome) {
-//                            userTransaction.commit();
-//                            jsonResponse = Json.createObjectBuilder()
-//                                    .add("success", true)
-//                                    .add("message", newParticipantUsername + " has been added to this whiteboard!")
-//                                    .build();
-//                            // request.setAttribute("newlyInsertedParticipant", newParticipantUsername);
-//                        } else {
-//                            userTransaction.rollback();
-//                            jsonResponse = Json.createObjectBuilder()
-//                                    .add("success", false)
-//                                    .add("message", "An error occurred. Try again or try in a few minutes.")
-//                                    .build();
-//                        }
-//                        break;
-//                    case UNREGISTERED_USER:
-//                        jsonResponse = Json.createObjectBuilder()
-//                                .add("success", false)
-//                                .add("message", "The username you have provided doesn't seem to belong to any user. Try again.")
-//                                .build();
-//                        break;
-//                    case OTHER_ERROR:
-//                        jsonResponse = Json.createObjectBuilder()
-//                                .add("success", false)
-//                                .add("message", "An error occurred. Try again or try in a few minutes.")
-//                                .build();
-//                        break;
-//                }
-//            } catch (Exception e) {
-//                try {
-//                    userTransaction.rollback();
-//                } catch (Exception ex) {
-//                    // Handle rollback exception
-//                }
-//                jsonResponse = Json.createObjectBuilder()
-//                        .add("success", false)
-//                        .add("message", "An error occurred. Try again or try in a few minutes.")
-//                        .build();
-//            }
-//        }
-//
-//        PrintWriter out = response.getWriter();
-//        out.print(jsonResponse);
-//        out.flush();
-//    }
-
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -139,35 +52,124 @@ public class ShareWhiteboardServlet extends HttpServlet {
                     .add("success", false)
                     .add("message", "An error occurred. Try again or try in a few minutes.")
                     .build();
-        }
+        } else {
+            // Erlang + MySQL operations transaction
+            try {
+                userTransaction.begin();
 
-        AddParticipantStatus insertOutcome = whiteboardEJB.addParticipant(newParticipantUsername, whiteboardID);
+                AddParticipantStatus insertOutcome = whiteboardEJB.addParticipant(newParticipantUsername, whiteboardID);
 
-        switch (insertOutcome) {
-            case SQL_SUCCESS:
-                jsonResponse = Json.createObjectBuilder()
-                        .add("success", true)
-                        .add("message", newParticipantUsername + " has been added to this whiteboard!")
-                        .build();
-                request.setAttribute("newlyInsertedUsername", newParticipantUsername);
-                response.setStatus(HttpServletResponse.SC_OK);
-                break;
-            case UNREGISTERED_USER:
-                jsonResponse = Json.createObjectBuilder()
-                        .add("success", false)
-                        .add("message", "The username you have provided doesn't seem to belong to any user. Try again.")
-                        .build();
-                break;
-            case OTHER_ERROR:
+                switch (insertOutcome) {
+                    case SQL_SUCCESS:
+                        boolean erlangShareOperationOutcome = RPC.sendErlangWhiteboardUpdateRPC(
+                                "insert",
+                                whiteboardID,
+                                newParticipantUsername,
+                                false
+                        );
+
+                        if (erlangShareOperationOutcome) {
+                            userTransaction.commit();
+                            jsonResponse = Json.createObjectBuilder()
+                                    .add("success", true)
+                                    .add("message", newParticipantUsername + " has been added to this whiteboard!")
+                                    .build();
+                        } else {
+                            userTransaction.rollback();
+                            jsonResponse = Json.createObjectBuilder()
+                                    .add("success", false)
+                                    .add("message", "An error occurred. Try again or try in a few minutes.")
+                                    .build();
+                        }
+                        break;
+                    case UNREGISTERED_USER:
+                        jsonResponse = Json.createObjectBuilder()
+                                .add("success", false)
+                                .add("message", "The username you have provided doesn't seem to belong to any user. Try again.")
+                                .build();
+                        break;
+                    case OTHER_ERROR:
+                        jsonResponse = Json.createObjectBuilder()
+                                .add("success", false)
+                                .add("message", "An error occurred. Try again or try in a few minutes.")
+                                .build();
+                        break;
+                }
+            } catch (Exception e) {
+                try {
+                    userTransaction.rollback();
+                } catch (Exception ex) {
+                    jsonResponse = Json.createObjectBuilder()
+                            .add("success", false)
+                            .add("message", "An error occurred. Try again or try in a few minutes.")
+                            .build();
+                }
                 jsonResponse = Json.createObjectBuilder()
                         .add("success", false)
                         .add("message", "An error occurred. Try again or try in a few minutes.")
                         .build();
-                break;
+            }
         }
 
+        response.setStatus(HttpServletResponse.SC_OK);      // Always send success, JSP behavior is determined by the JSON response content
         PrintWriter out = response.getWriter();
         out.print(jsonResponse);
         out.flush();
     }
+
+    /* ------ TEST METHOD FOR AJAX CALL ------ */
+//    @Override
+//    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+//        response.setContentType("application/json");
+//
+//        // Extracting parameters from the request
+//        String whiteboardID = Optional.ofNullable(request.getParameter("whiteboardID")).orElse("");
+//        String newParticipantUsername = Optional.ofNullable(request.getParameter("username")).orElse("");
+//
+//        System.out.println("@WhiteboardServlet: called doPost() method, params=" + whiteboardID + ", " + newParticipantUsername);
+//
+//        JsonObject jsonResponse = Json.createObjectBuilder().build();
+//
+//        AddParticipantStatus alreadyParticipantCheck = whiteboardEJB.isParticipant(newParticipantUsername, whiteboardID);
+//
+//        if (alreadyParticipantCheck == AddParticipantStatus.ALREADY_PARTICIPATING) {
+//            jsonResponse = Json.createObjectBuilder()
+//                    .add("success", false)
+//                    .add("message", newParticipantUsername + " is already participating to this whiteboard.")
+//                    .build();
+//        } else if (alreadyParticipantCheck == AddParticipantStatus.OTHER_ERROR) {
+//            jsonResponse = Json.createObjectBuilder()
+//                    .add("success", false)
+//                    .add("message", "An error occurred. Try again or try in a few minutes.")
+//                    .build();
+//        }
+//
+//        AddParticipantStatus insertOutcome = whiteboardEJB.addParticipant(newParticipantUsername, whiteboardID);
+//
+//        switch (insertOutcome) {
+//            case SQL_SUCCESS:
+//                jsonResponse = Json.createObjectBuilder()
+//                        .add("success", true)
+//                        .add("message", newParticipantUsername + " has been added to this whiteboard!")
+//                        .build();
+//                response.setStatus(HttpServletResponse.SC_OK);
+//                break;
+//            case UNREGISTERED_USER:
+//                jsonResponse = Json.createObjectBuilder()
+//                        .add("success", false)
+//                        .add("message", "The username you have provided doesn't seem to belong to any user. Try again.")
+//                        .build();
+//                break;
+//            case OTHER_ERROR:
+//                jsonResponse = Json.createObjectBuilder()
+//                        .add("success", false)
+//                        .add("message", "An error occurred. Try again or try in a few minutes.")
+//                        .build();
+//                break;
+//        }
+//
+//        PrintWriter out = response.getWriter();
+//        out.print(jsonResponse);
+//        out.flush();
+//    }
 }
