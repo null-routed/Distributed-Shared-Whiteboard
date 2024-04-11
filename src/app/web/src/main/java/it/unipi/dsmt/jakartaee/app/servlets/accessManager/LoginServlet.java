@@ -9,6 +9,7 @@ import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+// import it.unipi.dsmt.jakartaee.app.utility.JWT;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -49,6 +50,7 @@ public class LoginServlet extends HttpServlet {
         }
 
         //Login successful
+        // JWT.generateTokenAndSetCookie(response, loggedUser.getUsername());      // Generate JWT token and set it as a cookie in the response
         AccessController.setLoggedUser(request, Objects.requireNonNull(loggedUser));    // add logged user info to session var
         ClientRedirector.redirectToMainPage(request, response);     // redirect to main page
     }

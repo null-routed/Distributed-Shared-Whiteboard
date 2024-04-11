@@ -20,15 +20,23 @@
     alert("You are not allowed to perform any operation on this whiteboard.");
     location.href = "${pageContext.request.contextPath}/homepage";
 </script>
+
 <%
     }
-
-    boolean redirectedAfterAddOperation = request.getAttribute("redirectAfterAddOperation") != null;
-    if (redirectedAfterAddOperation && request.getAttribute("newlyInsertedParticipant") != null) {
-        whiteboardParticipants.add((String) request.getAttribute("newlyInsertedParticipant"));
-        request.getSession().setAttribute("whiteboardParticipants", whiteboardParticipants);
-    }
 %>
+<%--    boolean redirectedAfterAddOperation = request.getAttribute("redirectAfterAddOperation") != null;--%>
+<%--    if (redirectedAfterAddOperation && request.getAttribute("newlyInsertedParticipant") != null) {--%>
+<%--        whiteboardParticipants.add((String) request.getAttribute("newlyInsertedParticipant"));--%>
+<%--        request.getSession().setAttribute("whiteboardParticipants", whiteboardParticipants);--%>
+<%--    }--%>
+<%--%>--%>
+
+<%
+    if (request.getAttribute("newlyInsertedUsername") != null) {
+%>
+    <h1><%=request.getAttribute("newlyInsertedUsername")%></h1>
+<% } %>
+
 <head>
     <title><%= whiteboardData.getName() %></title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/common.css">
@@ -87,13 +95,13 @@
         <% } %>
 
         <!-- Modal for sharing -->
-        <script>
-            let redirectedAfterAddOperation = <%= redirectedAfterAddOperation %>;
-            document.addEventListener("DOMContentLoaded", function() {
-                if (redirectedAfterAddOperation)
-                    document.getElementById("share-modal").style.display = "block";
-            });
-        </script>
+<%--        <script>--%>
+<%--            let redirectedAfterAddOperation = <%= redirectedAfterAddOperation %>;--%>
+<%--            document.addEventListener("DOMContentLoaded", function() {--%>
+<%--                if (redirectedAfterAddOperation)--%>
+<%--                    document.getElementById("share-modal").style.display = "block";--%>
+<%--            });--%>
+<%--        </script>--%>
         <div class="modal" id="share-modal">
             <div class="modal-content">
                 <span class="close">&times;</span>
@@ -101,9 +109,12 @@
                 <input type="hidden" id="whiteboardID" name="whiteboardID" value="<%= whiteboardData.getId() %>">
                 <label for="username"></label>
                 <input type="text" id="username" name="username" placeholder="Enter a username" required>
-                <button class="custom-generic-button" id="share-button-modal">Add participant</button>
+                <button class="custom-generic-button" id="share-button-modal" type="button">Add participant</button>
             </div>
             <script>
+                let newlyInsertedUsername = undefined;
+                let redirectedAfterAddOperation = undefined;
+
                 document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("share-button-modal").addEventListener("click", function (event) {
                         event.preventDefault();
@@ -111,56 +122,33 @@
                         let whiteboardID = document.getElementById("whiteboardID").value;
                         let username = document.getElementById("username").value;
 
-                        let shareData = new FormData();
-                        shareData.append('whiteboardID', whiteboardID);
-                        shareData.append('username', username);
+                        let xhttp = new XMLHttpRequest();
+                        xhttp.onreadystatechange = function () {
+                            if (this.readyState === 4 && this.status === 200) {
+                                console.log("Response: " + this.responseText);
 
-                        // AJAX request
-                        let xhr = new XMLHttpRequest();
-                        xhr.open("POST", "${pageContext.request.contextPath}/share_whiteboard", true);
-                        xhr.onreadystatechange = function () {
-                            if (xhr.status === 200) {
-                                if (xhr.readyState === XMLHttpRequest.DONE) {
-                                    let response = JSON.parse(xhr.responseText);
-                                    if (response.success)
-                                        console.log("success");
-                                        // document.querySelector(".success-msg").innerText = response.message;
-                                    else
-                                        console.log("failed");
-                                        // document.querySelector(".error-msg").innerText = response.message;
-                                } else
-                                    console.error("Failed to share whiteboard. Status: " + xhr.status);
                             }
-                        };
-                        xhr.send(shareData);
+                        }
+
+                        xhttp.open("POST", "${pageContext.request.contextPath}/share_whiteboard", true);
+                        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+                        xhttp.send("whiteboardID=" + whiteboardID + "&" + "username=" + username);
                     });
                 });
+
+                <%--<%--%>
+                <%--    }--%>
+
+                <%--    boolean redirectedAfterAddOperation = request.getAttribute("redirectAfterAddOperation") != null;--%>
+                <%--    if (redirectedAfterAddOperation && request.getAttribute("newlyInsertedParticipant") != null) {--%>
+                <%--        whiteboardParticipants.add((String) request.getAttribute("newlyInsertedParticipant"));--%>
+                <%--        request.getSession().setAttribute("whiteboardParticipants", whiteboardParticipants);--%>
+                <%--    }--%>
+                <%--%>--%>
             </script>
         </div>
     </div>
 </div>
 </body>
 </html>
-
-
-
-<%--        <div class="modal" id="share-modal">--%>
-<%--            <div class="modal-content">--%>
-<%--                <span class="close">&times;</span>--%>
-<%--                <h2>Add a participant to <%= whiteboardData.getName() %></h2>--%>
-<%--                <form id="share-form" class="search-form" action="${pageContext.request.contextPath}/share_whiteboard" method="POST">--%>
-<%--                    <input type="hidden" id="whiteboardID" name="whiteboardID" value="<%= whiteboardData.getId() %>">--%>
-<%--                    <label for="username"></label>--%>
-<%--                    <input type="text" id="username" name="username" placeholder="Enter a username" required>--%>
-<%--                    <button type="submit">Submit</button>--%>
-<%--                </form>--%>
-<%--                <% if (request.getAttribute("errorMessage") != null) { %>--%>
-<%--                <span class="error-msg"><%= request.getAttribute("errorMessage") %></span>--%>
-<%--                <% request.removeAttribute("errorMessage"); %>--%>
-<%--                <% } %>--%>
-<%--                <% if (request.getAttribute("successMessage") != null) { %>--%>
-<%--                <span class="success-msg"><%= request.getAttribute("successMessage") %></span>--%>
-<%--                <% request.removeAttribute("successMessage"); %>--%>
-<%--                <% } %>--%>
-<%--            </div>--%>
-<%--        </div>--%>
