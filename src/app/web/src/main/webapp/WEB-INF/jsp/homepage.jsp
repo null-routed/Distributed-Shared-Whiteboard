@@ -8,6 +8,7 @@
 <head>
     <title>Homepage</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/homepage.css">
+    <script type="text/javascript" src="${pageContext.request.contextPath}/assets/javascript/whiteboardWebSocket.js"></script>
 </head>
 <body>
 <div id="homepage-container">
@@ -109,7 +110,8 @@
             } %>
         </div>
     </div>
-    <% } %>
+    <% }
+        assert loggedUserDTO != null;%>
 </div>
 
 <form id="deleteWhiteboardForm" action="${pageContext.request.contextPath}/delete_whiteboard" method="POST" style="display: none;">
@@ -117,6 +119,12 @@
 </form>
 
 <script src="${pageContext.request.contextPath}/assets/javascript/homepage.js"></script>
+<script>
+    window.addEventListener('load', function() {
+        establishWebSocketConnection('<%= loggedUserDTO.getUsername() %>');
+    });
+</script>
+
 
 </body>
 </html>

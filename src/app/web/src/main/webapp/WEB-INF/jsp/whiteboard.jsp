@@ -98,6 +98,7 @@
                 <span class="close">&times;</span>
                 <h2>Add a participant to <%= whiteboardData.getName() %></h2>
                 <input type="hidden" id="whiteboardID" name="whiteboardID" value="<%= whiteboardData.getId() %>">
+                <input type="hidden" id="whiteboardName" value="<%= whiteboardData.getName() %>">
                 <label for="username"></label>
                 <input type="text" id="username" name="username" placeholder="Enter a username" required>
                 <button class="custom-generic-button" id="share-button-modal" type="button">Add participant</button>

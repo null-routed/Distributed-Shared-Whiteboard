@@ -45,6 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         let whiteboardID = document.getElementById("whiteboardID").value;
         let username = document.getElementById("username").value;
+        let whiteboardName = document.getElementById("whiteboardName").value;
 
         let xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
@@ -62,6 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     newlyInsertedParticipantDiv.textContent = "• " + username;
 
                     participantsListDiv.append(newlyInsertedParticipantDiv);
+                    sendMessageToWebSocket(whiteboardName, username);
                 }
 
                 // displaying error or success message
