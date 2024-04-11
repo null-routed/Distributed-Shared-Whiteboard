@@ -154,4 +154,31 @@ public class UserEJBImplementation implements UserEJB {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public String getUserIdByUsername(@NotNull String username) {
+        System.out.println("@UserEJBImplementation: called method getUserIdByUsername(), param=" + username);
+
+        try(Connection connection = dataSource.getConnection()) {
+            // Query preparation
+            final String query =
+                    "SELECT UserID " +
+                    "FROM Users " +
+                    "WHERE Username = ?;";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, username);
+
+                // Execute query
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        return resultSet.getString("UserID");
+                    } else
+                        return null;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -1,19 +1,14 @@
 package it.unipi.dsmt.jakartaee.app.servlets;
 
 import it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO;
-import it.unipi.dsmt.jakartaee.app.enums.AddParticipantStatus;
 import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
-import it.unipi.dsmt.jakartaee.app.utility.RPC;
 import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
-import javax.swing.plaf.metal.OceanTheme;
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Optional;
 
 
 /**

@@ -1,6 +1,6 @@
 package it.unipi.dsmt.jakartaee.app.enums;
 
-public enum AddParticipantStatus {
+public enum ParticipantOperationStatus {
     SQL_SUCCESS,
     UNREGISTERED_USER,
     ALREADY_PARTICIPATING,

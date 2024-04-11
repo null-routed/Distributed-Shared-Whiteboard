@@ -2,7 +2,7 @@ package it.unipi.dsmt.jakartaee.app.ejb;
 
 import it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO;
 import it.unipi.dsmt.jakartaee.app.dto.WhiteboardCreationDTO;
-import it.unipi.dsmt.jakartaee.app.enums.AddParticipantStatus;
+import it.unipi.dsmt.jakartaee.app.enums.ParticipantOperationStatus;
 import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
 import jakarta.annotation.Resource;
 import jakarta.ejb.Stateless;
@@ -295,7 +295,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
     }
 
     @Override
-    public boolean removeParticipant(String userId, String whiteboardId) {
+    public ParticipantOperationStatus removeParticipant(String userId, String whiteboardId) {
         System.out.println("@WhiteboardEJBImplementation: called removeParticipant() method");
 
         try (Connection connection = dataSource.getConnection()) {
@@ -309,9 +309,9 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                 int rowsAffected = preparedStatement.executeUpdate();
 
                 if (rowsAffected > 0)          // Entry successfully deleted
-                    return true;
+                    return ParticipantOperationStatus.SQL_SUCCESS;
                 else                    // No rows were affected, entry may not exist
-                    return false;
+                    return ParticipantOperationStatus.UNREGISTERED_USER;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -319,7 +319,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
     }
 
     @Override
-    public AddParticipantStatus isParticipant(String username, String whiteboardId) {
+    public ParticipantOperationStatus isParticipant(String username, String whiteboardId) {
         System.out.println("@WhiteboardEJBImplementation: called isParticipant() method, params=" + username + ", " + whiteboardId);
 
         String userIDToBeChecked = "";
@@ -339,7 +339,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                 }
             }
         } catch (SQLException e) {
-            return AddParticipantStatus.OTHER_ERROR;            // an exception occurred
+            return ParticipantOperationStatus.OTHER_ERROR;            // an exception occurred
         }
 
         try (Connection connection = dataSource.getConnection()) {
@@ -353,9 +353,9 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
                         if (resultSet.getInt("Counter") == 1)
-                            return AddParticipantStatus.ALREADY_PARTICIPATING;   // Entry exists, user is participating
+                            return ParticipantOperationStatus.ALREADY_PARTICIPATING;   // Entry exists, user is participating
                         else
-                            return AddParticipantStatus.NOT_PARTICIPATING;
+                            return ParticipantOperationStatus.NOT_PARTICIPATING;
                     }
                 }
             }
@@ -363,11 +363,11 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
             throw new RuntimeException(e);
         }
 
-        return AddParticipantStatus.OTHER_ERROR;        // Default to error
+        return ParticipantOperationStatus.OTHER_ERROR;        // Default to error
     }
 
     @Override
-    public AddParticipantStatus addParticipant(String username, String whiteboardId) {
+    public ParticipantOperationStatus addParticipant(String username, String whiteboardId) {
         System.out.println("@WhiteboardEJBImplementation: called addParticipant() method, params=" + username + ", " + whiteboardId);
 
         String userIDToBeAdded = "";
@@ -384,11 +384,11 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                     if (resultSet.next())
                         userIDToBeAdded = resultSet.getString("UserID");
                     else
-                        return AddParticipantStatus.UNREGISTERED_USER;      // the provided username is not present in the DB
+                        return ParticipantOperationStatus.UNREGISTERED_USER;      // the provided username is not present in the DB
                 }
             }
         } catch (SQLException e) {
-            return AddParticipantStatus.OTHER_ERROR;            // an exception occurred
+            return ParticipantOperationStatus.OTHER_ERROR;            // an exception occurred
         }
 
         try (Connection connection = dataSource.getConnection()) {
@@ -404,12 +404,12 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                 int rowsAffected = preparedStatement.executeUpdate();
 
                 if (rowsAffected > 0)
-                   return AddParticipantStatus.SQL_SUCCESS;             // all good
+                   return ParticipantOperationStatus.SQL_SUCCESS;             // all good
             }
         } catch (SQLException e) {
-            return AddParticipantStatus.OTHER_ERROR;            // an exception occurred
+            return ParticipantOperationStatus.OTHER_ERROR;            // an exception occurred
         }
 
-        return AddParticipantStatus.OTHER_ERROR;        // Default to error
+        return ParticipantOperationStatus.OTHER_ERROR;        // Default to error
     }
 }

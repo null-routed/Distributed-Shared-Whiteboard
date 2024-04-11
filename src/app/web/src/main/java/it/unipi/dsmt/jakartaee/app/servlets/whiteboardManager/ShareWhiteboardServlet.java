@@ -1,6 +1,6 @@
 package it.unipi.dsmt.jakartaee.app.servlets.whiteboardManager;
 
-import it.unipi.dsmt.jakartaee.app.enums.AddParticipantStatus;
+import it.unipi.dsmt.jakartaee.app.enums.ParticipantOperationStatus;
 import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
 import it.unipi.dsmt.jakartaee.app.utility.RPC;
 import jakarta.annotation.Resource;
@@ -40,14 +40,14 @@ public class ShareWhiteboardServlet extends HttpServlet {
 
         JsonObject jsonResponse = Json.createObjectBuilder().build();
 
-        AddParticipantStatus alreadyParticipantCheck = whiteboardEJB.isParticipant(newParticipantUsername, whiteboardID);
+        ParticipantOperationStatus alreadyParticipantCheck = whiteboardEJB.isParticipant(newParticipantUsername, whiteboardID);
 
-        if (alreadyParticipantCheck == AddParticipantStatus.ALREADY_PARTICIPATING) {
+        if (alreadyParticipantCheck == ParticipantOperationStatus.ALREADY_PARTICIPATING) {
             jsonResponse = Json.createObjectBuilder()
                     .add("success", false)
                     .add("message", newParticipantUsername + " is already participating to this whiteboard.")
                     .build();
-        } else if (alreadyParticipantCheck == AddParticipantStatus.OTHER_ERROR) {
+        } else if (alreadyParticipantCheck == ParticipantOperationStatus.OTHER_ERROR) {
             jsonResponse = Json.createObjectBuilder()
                     .add("success", false)
                     .add("message", "An error occurred. Try again or try in a few minutes.")
@@ -57,7 +57,7 @@ public class ShareWhiteboardServlet extends HttpServlet {
             try {
                 userTransaction.begin();
 
-                AddParticipantStatus insertOutcome = whiteboardEJB.addParticipant(newParticipantUsername, whiteboardID);
+                ParticipantOperationStatus insertOutcome = whiteboardEJB.addParticipant(newParticipantUsername, whiteboardID);
 
                 switch (insertOutcome) {
                     case SQL_SUCCESS:
@@ -112,6 +112,7 @@ public class ShareWhiteboardServlet extends HttpServlet {
         }
 
         response.setStatus(HttpServletResponse.SC_OK);      // Always send success, JSP behavior is determined by the JSON response content
+
         PrintWriter out = response.getWriter();
         out.print(jsonResponse);
         out.flush();

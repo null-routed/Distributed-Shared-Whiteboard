@@ -1,6 +1,7 @@
 package it.unipi.dsmt.jakartaee.app.servlets.whiteboardManager;
 
 import it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO;
+import it.unipi.dsmt.jakartaee.app.enums.ParticipantOperationStatus;
 import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
 import it.unipi.dsmt.jakartaee.app.utility.AccessController;
 import it.unipi.dsmt.jakartaee.app.utility.RPC;
@@ -79,9 +80,9 @@ public class DeleteWhiteboardServlet extends HttpServlet {
             try{
                 userTransaction.begin();
 
-                boolean mySQLParticipantRemovalOutcome = whiteboardEJB.removeParticipant(loggedUserDTO.getId(), whiteboardIdToDelete);
+                ParticipantOperationStatus mySQLParticipantRemovalOutcome = whiteboardEJB.removeParticipant(loggedUserDTO.getId(), whiteboardIdToDelete);
 
-                if (mySQLParticipantRemovalOutcome) {
+                if (mySQLParticipantRemovalOutcome == ParticipantOperationStatus.SQL_SUCCESS) {
                     boolean erlangParticipantRemovalOutcome = RPC.sendErlangWhiteboardUpdateRPC(
                             "delete",
                             whiteboardIdToDelete,

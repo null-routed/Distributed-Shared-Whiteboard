@@ -154,11 +154,32 @@
 .participants-list {
     display: flex;
     flex-direction: column;
-    width: 50%;
+    width: 100%;
     margin: 10px;
 }
 
 .whiteboard-participant {
-    margin: 5px;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.participant-username {
+    display: flex;
     font-size: 18px;
+    align-items: center;
+}
+
+.participant-remove-button > .custom-generic-button {
+    margin-top: 0;
+    height: 30px;
+}
+
+.even-participant {
+    background-color: #e7eaf6;
+}
+
+.odd-participant {
+    background-color: white;
 }

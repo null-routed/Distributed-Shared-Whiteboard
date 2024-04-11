@@ -2,6 +2,7 @@
 <%@ page import="it.unipi.dsmt.jakartaee.app.utility.AccessController" %>
 <%@ page import="java.util.List" %>
 <%@ page import="it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO" %>
+<%@ page import="java.util.Objects" %>
 <%@ page contentType="text/html;charset=UTF-8"%>
 <html>
 <%
@@ -45,17 +46,70 @@
             <span class="close">&times;</span>
             <h2>Participants to <%= whiteboardData.getName() %></h2>
             <div class="participants-list">
-                <%
-                    for(int i = 0; i < participantsOnWhiteboardOpen.size(); i++){
-                %>
-                <div class="whiteboard-participant"> &bullet; <%= participantsOnWhiteboardOpen.get(i) %></div>
-                <%
-                    }
-                %>
+                    <% for(int i = 0; i < participantsOnWhiteboardOpen.size(); i++) { %>
+                    <div class="whiteboard-participant <%= i % 2 == 0 ? "even-participant" : "odd-participant" %>" id="<%=participantsOnWhiteboardOpen.get(i)%>">
+                        <div class="participant-username"> &bullet; <%= participantsOnWhiteboardOpen.get(i) %></div>
+                        <% if (isLoggedUserOwner) { %>
+                        <div class="participant-remove-button">
+                            <button
+                                    class="custom-generic-button"
+                                    id="remove-participant-button"
+                                    value="<%= participantsOnWhiteboardOpen.get(i) %>"
+                                    <% if (loggedUserDTO.getUsername().equals(participantsOnWhiteboardOpen.get(i))) {%>
+                                        disabled>
+                                    <% } else { %> > <% } %>
+                                Remove
+                            </button>
+                        </div>
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function () {
+                                document.getElementById("remove-participant-button").addEventListener("click", function (event) {
+                                    event.preventDefault();
+
+                                    let userToBeRemoved = document.getElementById("remove-participant-button").value;
+                                    let whiteboardID = document.getElementById("whiteboardID").value;
+
+                                    let xhttp = new XMLHttpRequest();
+                                    xhttp.onreadystatechange = function () {
+                                        if (this.readyState === 4 && this.status === 200) {
+                                            console.log("AJAX response: " + this.responseText)
+
+                                            const jsonResponse = JSON.parse(this.responseText);
+
+                                            if (jsonResponse.success === true) {      // removing participant from the list
+                                                let removedParticipantDiv = document.getElementById(userToBeRemoved);
+                                                removedParticipantDiv.remove();
+                                            }
+
+                                            // displaying error or success message
+                                            let participantsListDiv = document.getElementsByClassName("participants-list")[0];
+                                            let outcomeMessageDiv = document.createElement("div");
+                                            outcomeMessageDiv.style.marginTop = "10px";
+                                            if (jsonResponse.success)
+                                                outcomeMessageDiv.setAttribute("class", "success-msg");
+                                            else
+                                                outcomeMessageDiv.setAttribute("class", "error-msg");
+                                            outcomeMessageDiv.textContent = jsonResponse.message;
+                                            participantsListDiv.append(outcomeMessageDiv);
+
+                                            // if he's connected to the whiteboard make him go back to homepage with message
+                                            // + send notification ?
+                                        }
+                                    }
+
+                                    xhttp.open("POST", "${pageContext.request.contextPath}/remove_participant", true);
+                                    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+                                    xhttp.send("whiteboardID=" + whiteboardID + "&" + "username=" + userToBeRemoved);
+                                });
+                            });
+                        </script>
+                        <% } %>
+                    </div>
+                <% } %>
             </div>
         </div>
     </div>
-
 </div>
 <div class="whiteboard-container">
     <div id="canvas-container">
@@ -109,6 +163,7 @@
 
                                     let newlyInsertedParticipantDiv = document.createElement("div");
                                     newlyInsertedParticipantDiv.setAttribute("class", "whiteboard-participant");
+                                    newlyInsertedParticipantDiv.setAttribute("id", username);
                                     newlyInsertedParticipantDiv.textContent = "• " + username;
 
                                     participantsListDiv.append(newlyInsertedParticipantDiv);
@@ -117,7 +172,6 @@
                                 // displaying error or success message
                                 let usernameTextBox = document.getElementsByClassName("modal-content")[1];
                                 let outcomeMessageDiv = document.createElement("div");
-                                outcomeMessageDiv.setAttribute("id", "add-participant-outcome-message");
                                 outcomeMessageDiv.style.marginTop = "10px";
                                 if (jsonResponse.success)
                                     outcomeMessageDiv.setAttribute("class", "success-msg");
