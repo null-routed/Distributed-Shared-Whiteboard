@@ -35,8 +35,9 @@ document.addEventListener("DOMContentLoaded", function() {
     // Close the modal when clicking outside of it
     window.addEventListener("click", function(event) {
         if (event.target === document.getElementById("share-modal")) {
-            // if (document.getElementById("add-outcome-message"))
-            //     document.getElementById("add-outcome-message").remove();        // removing any failure or success messages
+            console.log("here");
+            if (document.getElementById("add-participant-outcome-message"))
+                document.getElementById("add-participant-outcome-message").remove();        // removing any failure or success messages
             document.getElementById("share-modal").style.display = "none";
             clearMessages();
         }

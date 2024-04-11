@@ -116,7 +116,7 @@
                                 // displaying error or success message
                                 let usernameTextBox = document.getElementsByClassName("modal-content")[1];
                                 let outcomeMessageDiv = document.createElement("div");
-                                outcomeMessageDiv.setAttribute("id", "add-outcome-message");
+                                outcomeMessageDiv.setAttribute("id", "add-participant-outcome-message");
                                 outcomeMessageDiv.style.marginTop = "10px";
                                 if (jsonResponse.success)
                                     outcomeMessageDiv.setAttribute("class", "success-msg");
