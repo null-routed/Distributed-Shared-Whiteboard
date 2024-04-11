@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function() {
     window.onclick = function (event) {
         if (event.target === modal) {
             modal.style.display = "none";
+            clearMessages();
         }
     }
 });
@@ -35,25 +36,22 @@ document.addEventListener("DOMContentLoaded", function() {
     // Close the modal when clicking outside of it
     window.addEventListener("click", function(event) {
         if (event.target === document.getElementById("share-modal")) {
-            console.log("here");
-            if (document.getElementById("add-participant-outcome-message"))
-                document.getElementById("add-participant-outcome-message").remove();        // removing any failure or success messages
             document.getElementById("share-modal").style.display = "none";
             clearMessages();
         }
     });
-
-    function clearMessages() {
-        const errorMessageElement = document.querySelector(".error-msg");
-        const successMessageElement = document.querySelector(".success-msg");
-
-        if (errorMessageElement)
-            errorMessageElement.remove();
-
-        if (successMessageElement)
-            successMessageElement.remove();
-    }
 });
+
+function clearMessages() {
+    const errorMessageElement = document.querySelector(".error-msg");
+    const successMessageElement = document.querySelector(".success-msg");
+
+    if (errorMessageElement)
+        errorMessageElement.remove();
+
+    if (successMessageElement)
+        successMessageElement.remove();
+}
 
 /*document.addEventListener("DOMContentLoaded", function() {
     let isPenToggled = true;

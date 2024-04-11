@@ -53,56 +53,52 @@
                         <div class="participant-remove-button">
                             <button
                                     class="custom-generic-button"
-                                    id="remove-participant-button"
-                                    value="<%= participantsOnWhiteboardOpen.get(i) %>"
+                                    onclick="removeParticipantAJAX('<%= participantsOnWhiteboardOpen.get(i) %>')"
                                     <% if (loggedUserDTO.getUsername().equals(participantsOnWhiteboardOpen.get(i))) {%>
-                                        disabled>
-                                    <% } else { %> > <% } %>
+                                        disabled
+                                    <% } %> >
                                 Remove
                             </button>
                         </div>
                         <script>
-                            document.addEventListener("DOMContentLoaded", function () {
-                                document.getElementById("remove-participant-button").addEventListener("click", function (event) {
-                                    event.preventDefault();
+                            function removeParticipantAJAX (username) {
+                                let whiteboardID = document.getElementById("whiteboardID").value;
 
-                                    let userToBeRemoved = document.getElementById("remove-participant-button").value;
-                                    let whiteboardID = document.getElementById("whiteboardID").value;
+                                console.log("params: " + username + ", " + whiteboardID);
 
-                                    let xhttp = new XMLHttpRequest();
-                                    xhttp.onreadystatechange = function () {
-                                        if (this.readyState === 4 && this.status === 200) {
-                                            console.log("AJAX response: " + this.responseText)
+                                let xhttp = new XMLHttpRequest();
+                                xhttp.onreadystatechange = function () {
+                                    if (this.readyState === 4 && this.status === 200) {
+                                        console.log("AJAX response: " + this.responseText)
 
-                                            const jsonResponse = JSON.parse(this.responseText);
+                                        const jsonResponse = JSON.parse(this.responseText);
 
-                                            if (jsonResponse.success === true) {      // removing participant from the list
-                                                let removedParticipantDiv = document.getElementById(userToBeRemoved);
-                                                removedParticipantDiv.remove();
-                                            }
-
-                                            // displaying error or success message
-                                            let participantsListDiv = document.getElementsByClassName("participants-list")[0];
-                                            let outcomeMessageDiv = document.createElement("div");
-                                            outcomeMessageDiv.style.marginTop = "10px";
-                                            if (jsonResponse.success)
-                                                outcomeMessageDiv.setAttribute("class", "success-msg");
-                                            else
-                                                outcomeMessageDiv.setAttribute("class", "error-msg");
-                                            outcomeMessageDiv.textContent = jsonResponse.message;
-                                            participantsListDiv.append(outcomeMessageDiv);
-
-                                            // if he's connected to the whiteboard make him go back to homepage with message
-                                            // + send notification ?
+                                        if (jsonResponse.success === true) {      // removing participant from the list
+                                            let removedParticipantDiv = document.getElementById(username);
+                                            removedParticipantDiv.remove();
                                         }
+
+                                        // displaying error or success message
+                                        let participantsListDiv = document.getElementsByClassName("participants-list")[0];
+                                        let outcomeMessageDiv = document.createElement("div");
+                                        outcomeMessageDiv.style.marginTop = "10px";
+                                        if (jsonResponse.success)
+                                            outcomeMessageDiv.setAttribute("class", "success-msg");
+                                        else
+                                            outcomeMessageDiv.setAttribute("class", "error-msg");
+                                        outcomeMessageDiv.textContent = jsonResponse.message;
+                                        participantsListDiv.append(outcomeMessageDiv);
+
+                                        // if he's connected to the whiteboard make him go back to homepage with message
+                                        // + send notification ?
                                     }
+                                }
 
-                                    xhttp.open("POST", "${pageContext.request.contextPath}/remove_participant", true);
-                                    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                                xhttp.open("POST", "${pageContext.request.contextPath}/remove_participant", true);
+                                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
-                                    xhttp.send("whiteboardID=" + whiteboardID + "&" + "username=" + userToBeRemoved);
-                                });
-                            });
+                                xhttp.send("whiteboardID=" + whiteboardID + "&" + "username=" + username);
+                            }
                         </script>
                         <% } %>
                     </div>

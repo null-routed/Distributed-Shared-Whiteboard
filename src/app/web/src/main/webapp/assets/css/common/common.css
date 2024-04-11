@@ -87,6 +87,12 @@ body {
     transition-timing-function: ease-out;
 }
 
+.custom-generic-button:disabled {
+    background-color: #dddddd;
+    color: #aaaaaa;
+    cursor: not-allowed;
+}
+
 .form-footer {
     margin-top: 15px;
     display: flex;
