@@ -52,6 +52,48 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
+/*document.addEventListener("DOMContentLoaded", function() {
+    let isPenToggled = true;
+    let isRubberToggled = false;
+    const penButton = document.getElementById("pen-button");
+    const rubberButton = document.getElementById("rubber-button");
+    const canvas = document.getElementById("whiteboard");
+
+
+    // Initial state: Pen button is selected
+    penButton.classList.add("button-selected");
+
+    penButton.addEventListener("click", function () {
+        if (!isPenToggled) {
+            isPenToggled = true;
+            penButton.classList.add("button-selected");
+            isRubberToggled = false; // Ensure rubber button is deselected
+            rubberButton.classList.remove("button-selected");
+        }
+    });
+
+    rubberButton.addEventListener("click", function () {
+        if (!isRubberToggled) {
+            isRubberToggled = true;
+            rubberButton.classList.add("button-selected");
+            isPenToggled = false; // Ensure pen button is deselected
+            penButton.classList.remove("button-selected");
+        }
+    });
+
+    canvas.addEventListener("mouseenter", function() {
+        if (isPenToggled) {
+            canvas.style.cursor = "url(/web/assets/images/pen.png), auto";
+        } else if (isRubberToggled) {
+            canvas.style.cursor = "url(/web/assets/images/eraser.png), auto";
+        }
+    });
+
+    canvas.addEventListener("mouseleave", function() {
+        canvas.style.cursor = "default"; // Restore default cursor when leaving canvas
+    });
+});*/
+
 
 
 

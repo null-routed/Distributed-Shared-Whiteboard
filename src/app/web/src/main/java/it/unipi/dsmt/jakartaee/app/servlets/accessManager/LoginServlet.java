@@ -5,7 +5,6 @@ import it.unipi.dsmt.jakartaee.app.dto.LoginInformationsDTO;
 import it.unipi.dsmt.jakartaee.app.interfaces.UserEJB;
 import it.unipi.dsmt.jakartaee.app.utility.ClientRedirector;
 import it.unipi.dsmt.jakartaee.app.utility.AccessController;
-import it.unipi.dsmt.jakartaee.app.utility.JWT;
 import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -50,9 +49,6 @@ public class LoginServlet extends HttpServlet {
         }
 
         //Login successful
-        // Generate JWT token and set it as a cookie in the response
-        JWT.generateTokenAndSetCookie(response, loggedUser.getUsername());
-
         AccessController.setLoggedUser(request, Objects.requireNonNull(loggedUser));    // add logged user info to session var
         ClientRedirector.redirectToMainPage(request, response);     // redirect to main page
     }
