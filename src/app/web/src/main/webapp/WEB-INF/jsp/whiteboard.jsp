@@ -2,7 +2,6 @@
 <%@ page import="it.unipi.dsmt.jakartaee.app.utility.AccessController" %>
 <%@ page import="java.util.List" %>
 <%@ page import="it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO" %>
-<%@ page import="java.util.Objects" %>
 <%@ page contentType="text/html;charset=UTF-8"%>
 <html>
 <%
@@ -17,10 +16,10 @@
     List<String> participantsOnWhiteboardOpen = (List<String>) session.getAttribute("whiteboardParticipants");
     if (!participantsOnWhiteboardOpen.contains(loggedUserDTO.getUsername())) {
 %>
-        <script>
-            alert("You are not allowed to perform any operation on this whiteboard.");
-            location.href = "${pageContext.request.contextPath}/homepage";
-        </script>
+<script>
+    alert("You are not allowed to perform any operation on this whiteboard.");
+    location.href = "${pageContext.request.contextPath}/homepage";
+</script>
 <% } %>
 
 <head>
@@ -32,6 +31,8 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/assets/javascript/whiteboardWebSocket.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/assets/javascript/whiteboard_AJAX_management.js"></script>
     <script> let contextPath = '${pageContext.request.contextPath}'; </script>
+    <script> let userID = <%= loggedUserDTO.getId() %> </script>
+    <script> let whiteboardID = <%= whiteboardData.getId() %> </script>
 </head>
 
 <body>
@@ -48,22 +49,22 @@
             <span class="close">&times;</span>
             <h2>Participants to <%= whiteboardData.getName() %></h2>
             <div class="participants-list">
-                    <% for(int i = 0; i < participantsOnWhiteboardOpen.size(); i++) { %>
-                    <div class="whiteboard-participant <%= i % 2 == 0 ? "even-participant" : "odd-participant" %>" id="<%=participantsOnWhiteboardOpen.get(i)%>">
-                        <div class="participant-username"> &bullet; <%= participantsOnWhiteboardOpen.get(i) %></div>
-                        <% if (isLoggedUserOwner) { %>
-                        <div class="participant-remove-button">
-                            <button
-                                    class="custom-generic-button"
-                                    onclick="removeParticipantAJAX('<%= participantsOnWhiteboardOpen.get(i) %>')"
-                                    <% if (loggedUserDTO.getUsername().equals(participantsOnWhiteboardOpen.get(i))) {%>
-                                        disabled
-                                    <% } %> >
-                                Remove
-                            </button>
-                        </div>
-                        <% } %>
+                <% for(int i = 0; i < participantsOnWhiteboardOpen.size(); i++) { %>
+                <div class="whiteboard-participant <%= i % 2 == 0 ? "even-participant" : "odd-participant" %>" id="<%=participantsOnWhiteboardOpen.get(i)%>">
+                    <div class="participant-username"> &bullet; <%= participantsOnWhiteboardOpen.get(i) %></div>
+                    <% if (isLoggedUserOwner) { %>
+                    <div class="participant-remove-button">
+                        <button
+                                class="custom-generic-button"
+                                onclick="removeParticipantAJAX('<%= participantsOnWhiteboardOpen.get(i) %>')"
+                                <% if (loggedUserDTO.getUsername().equals(participantsOnWhiteboardOpen.get(i))) {%>
+                                disabled
+                                <% } %> >
+                            Remove
+                        </button>
                     </div>
+                    <% } %>
+                </div>
                 <% } %>
             </div>
         </div>
