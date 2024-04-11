@@ -28,6 +28,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/whiteboard.css">
     <script type="text/javascript" src="${pageContext.request.contextPath}/assets/javascript/whiteboard.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/assets/javascript/whiteboard_sketching.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/assets/javascript/whiteboardWebSocket.js"></script>
 </head>
 
 <body>
