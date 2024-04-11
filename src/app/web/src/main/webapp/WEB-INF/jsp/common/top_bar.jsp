@@ -11,9 +11,6 @@
 
 <div class="topnav">
     <div id="left-container">
-        <button onclick="location.href = '${pageContext.request.contextPath}/homepage'">
-            Back
-        </button>
         <button class="custom-generic-button" onclick="location.href = '${pageContext.request.contextPath}/homepage'">
             Homepage
         </button>

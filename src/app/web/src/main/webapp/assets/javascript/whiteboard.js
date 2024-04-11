@@ -52,3 +52,32 @@ function clearMessages() {
     if (successMessageElement)
         successMessageElement.remove();
 }
+
+
+// ------ CANVAS SNAPSHOT SAVING ------
+window.addEventListener("beforeunload", function(event) {
+    let whiteboardCanvas = document.getElementById("whiteboard");
+    let imageDataURL = whiteboardCanvas.toDataURL();
+
+    let xhr = new XMLHttpRequest();
+
+    xhr.open("POST", contextPath + "/save_snapshot", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                console.log('Request sent successfully.');
+            } else {
+                console.error('Error sending request:', xhr.status);
+            }
+        }
+    };
+
+    xhr.send("snapshot=" + encodeURIComponent(imageDataURL) + "&userID=" + userID + "&whiteboardID=" + whiteboardID);
+
+    // Ensure that the request is sent before leaving the page
+    xhr.onload = function() {
+        console.log('Request sent successfully.');
+    };
+});

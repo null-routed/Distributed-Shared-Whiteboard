@@ -412,4 +412,29 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
 
         return ParticipantOperationStatus.OTHER_ERROR;        // Default to error
     }
+
+    @Override
+    public boolean updateWhiteboardSnapshot (String userID, byte[] snapshotDataBytes, String whiteboardID) {
+        System.out.println("@WhiteboardEJBImplementation: called updateWhiteboardSnapshot() method");
+
+        try (Connection connection = dataSource.getConnection()) {
+
+            final String query =
+                    "UPDATE WhiteboardParticipants SET WhiteboardSnapshot = ? " +
+                    "WHERE (UserID = ? AND WhiteboardID = ?)";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+                preparedStatement.setBytes(1, snapshotDataBytes);
+                preparedStatement.setString(2, userID);
+                preparedStatement.setString(3, whiteboardID);
+
+                int affectedRows = preparedStatement.executeUpdate();
+
+                return affectedRows > 0;
+            }
+        } catch (SQLException e) {
+            return false;
+        }
+    }
 }
