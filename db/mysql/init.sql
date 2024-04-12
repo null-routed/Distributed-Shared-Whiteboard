@@ -21,8 +21,8 @@ CREATE TABLE Whiteboards (
 	WhiteboardID INT AUTO_INCREMENT PRIMARY KEY,
     Name VARCHAR(50) NOT NULL,
     Description TEXT,
-    ReadOnly BOOLEAN NOT NULL		-- True: only the creator user can write on the whiteboard
-    -- ShareLink VARCHAR(200)  		-> ????????????
+    ReadOnly BOOLEAN NOT NULL,		-- True: only the creator user can write on the whiteboard
+    WhiteboardSnapshot LONGBLOB DEFAULT NULL
 );
 
 -- Whiteboard members and creator Table
