@@ -34,11 +34,12 @@ function establishWebSocketConnection(username) {
 }
 
 // Function to send a message to the WebSocket server
-function sendMessageToWebSocket(whiteboardName, username) {
+function sendMessageToWebSocket(whiteboardName, username, command) {
     if (socket && socket.readyState === WebSocket.OPEN) {
         const messageData = {
             whiteboardName: whiteboardName,
-            username: username
+            username: username,
+            command: command
         };
         const jsonMessage = JSON.stringify(messageData);
         socket.send(jsonMessage);
@@ -60,7 +61,7 @@ function handleReceivedMessage(message) {
     }
 
     // Check if the message contains the expected properties
-    if (!parsedMessage || !parsedMessage.whiteboardName || !parsedMessage.sender) {
+    if (!parsedMessage || !parsedMessage.whiteboardName || !parsedMessage.sender || !parsedMessage.command) {
         console.error("Received message does not contain expected properties.");
         return; // Exit function if message format is invalid
     }
@@ -68,23 +69,56 @@ function handleReceivedMessage(message) {
     // Extract relevant data from the parsed message
     const whiteboardId = parsedMessage.whiteboardName;
     const sender = parsedMessage.sender;
+    const command = parsedMessage.command;
 
     // Example: spawn a custom modal
-    const modalMessage = `${sender} has shared the whiteboard ${whiteboardId} with you`;
-    const modal = document.createElement('div');
-    modal.innerHTML = modalMessage;
-    modal.style.position = 'fixed';
-    modal.style.top = '50%';
-    modal.style.left = '50%';
-    modal.style.transform = 'translate(-50%, -50%)';
-    modal.style.backgroundColor = 'white';
-    modal.style.padding = '20px';
-    modal.style.border = '1px solid black';
-    modal.style.zIndex = '9999';
-    document.body.appendChild(modal);
+    let modalMessage = null;
+    if(command === "share")
+        modalMessage = `${sender} has shared the whiteboard ${whiteboardId} with you`;
+    else
+        modalMessage = `${sender} removed you from the whiteboard ${whiteboardId}`;
+    function handleReceivedMessage(message) {
+        // Parse the JSON message
+        let parsedMessage;
+        try {
+            parsedMessage = JSON.parse(message);
+        } catch (error) {
+            console.error("Error parsing JSON message:", error);
+            return; // Exit function if unable to parse JSON
+        }
 
-    // Add an event listener to the modal for reloading the page when clicked
-    modal.addEventListener('click', function() {
-        window.location.reload();
-    });
+        // Check if the message contains the expected properties
+        if (!parsedMessage || !parsedMessage.whiteboardName || !parsedMessage.sender || !parsedMessage.command) {
+            console.error("Received message does not contain expected properties.");
+            return; // Exit function if message format is invalid
+        }
+
+        // Extract relevant data from the parsed message
+        const whiteboardId = parsedMessage.whiteboardName;
+        const sender = parsedMessage.sender;
+        const command = parsedMessage.command;
+
+        // Example: spawn a custom modal
+        let modalMessage = null;
+        if(command === "share")
+            modalMessage = `${sender} has shared the whiteboard ${whiteboardId} with you`;
+        else
+            modalMessage = `${sender} removed you from the whiteboard ${whiteboardId}`;
+        const modal = document.createElement('div');
+        modal.innerHTML = modalMessage;
+        modal.style.position = 'fixed';
+        modal.style.top = '50%';
+        modal.style.left = '50%';
+        modal.style.transform = 'translate(-50%, -50%)';
+        modal.style.backgroundColor = 'white';
+        modal.style.padding = '20px';
+        modal.style.border = '1px solid black';
+        modal.style.zIndex = '9999';
+        document.body.appendChild(modal);
+
+        // Add an event listener to the modal for reloading the page when clicked
+        modal.addEventListener('click', function() {
+            window.location.reload();
+        });
+    }
 }

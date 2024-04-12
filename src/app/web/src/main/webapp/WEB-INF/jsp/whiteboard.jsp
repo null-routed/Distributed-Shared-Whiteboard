@@ -106,5 +106,11 @@
         </div>
     </div>
 </div>
+<script>
+    // Call establishWebSocketConnection() when the page loads
+    window.addEventListener('load', function() {
+        establishWebSocketConnection('<%= loggedUserDTO.getUsername() %>');
+    });
+</script>
 </body>
 </html>

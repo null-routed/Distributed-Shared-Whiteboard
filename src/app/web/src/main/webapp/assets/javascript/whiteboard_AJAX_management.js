@@ -1,6 +1,7 @@
 // ------ PARTICIPANT REMOVAL VIA AJAX ------
 function removeParticipantAJAX (username) {
     let whiteboardID = document.getElementById("whiteboardID").value;
+    let whiteboardName = document.getElementById("whiteboardName").value;
 
     console.log("params: " + username + ", " + whiteboardID);
 
@@ -20,8 +21,10 @@ function removeParticipantAJAX (username) {
             let participantsListDiv = document.getElementsByClassName("participants-list")[0];
             let outcomeMessageDiv = document.createElement("div");
             outcomeMessageDiv.style.marginTop = "10px";
-            if (jsonResponse.success)
+            if (jsonResponse.success) {
                 outcomeMessageDiv.setAttribute("class", "success-msg");
+                sendMessageToWebSocket(whiteboardName, username, "remove");
+            }
             else
                 outcomeMessageDiv.setAttribute("class", "error-msg");
             outcomeMessageDiv.textContent = jsonResponse.message;
@@ -63,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     newlyInsertedParticipantDiv.textContent = "• " + username;
 
                     participantsListDiv.append(newlyInsertedParticipantDiv);
-                    sendMessageToWebSocket(whiteboardName, username);
+                    sendMessageToWebSocket(whiteboardName, username, "share");
                 }
 
                 // displaying error or success message
