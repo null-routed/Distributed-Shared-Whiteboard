@@ -14,6 +14,7 @@
 <head>
     <title><%= loggedUserDTO.getUsername() %>'s Profile</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/common.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/profile.css">
 </head>
 <body>
     <jsp:useBean id="userProfileServlet" class="it.unipi.dsmt.jakartaee.app.servlets.UserProfileServlet" />
