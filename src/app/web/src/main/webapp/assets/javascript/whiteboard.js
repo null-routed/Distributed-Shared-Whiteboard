@@ -60,7 +60,7 @@ window.addEventListener("beforeunload", function(event) {
     let imageDataURL = whiteboardCanvas.toDataURL();
 
     let xhr = new XMLHttpRequest();
-    xhr.open("POST", contextPath + "/save_snapshot", true);
+    xhr.open("POST", contextPath + "/snapshot_manager", true);
     xhr.setRequestHeader("Content-Type", "application/json");
 
     xhr.onreadystatechange = function() {
