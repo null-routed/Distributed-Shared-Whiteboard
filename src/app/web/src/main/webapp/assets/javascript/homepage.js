@@ -15,14 +15,6 @@ window.onclick = function(event) {
 
 
 /* ------ INSERT NEW WHITEBOARD MODAL ------ */
-function toggleImage () {
-    let addNewWhiteboardImg = document.getElementById("add-button");
-    if (addNewWhiteboardImg.src.match("add_img_unclicked"))
-        addNewWhiteboardImg.src = pageContext + '/assets/images/add_img_clicked.svg';
-    else
-        addNewWhiteboardImg.src = pageContext + '/assets/images/add_img_unclicked.svg';
-}
-
 let insert_modal = document.getElementById("insert-whiteboard-modal");
 let insert_btn = document.getElementById("add-button");
 let insert_X_span = document.getElementsByClassName("close")[1];
@@ -30,17 +22,20 @@ let insert_X_span = document.getElementsByClassName("close")[1];
 // When the user clicks on the button, open the modal
 insert_btn.onclick = function() {
     insert_modal.style.display = "block";
+    insert_btn.src = pageContext + '/assets/images/add_img_clicked.svg';
 }
 
 // When the user clicks on <span> (x), close the modal
 insert_X_span.onclick = function() {
     insert_modal.style.display = "none";
+    insert_btn.src = pageContext + '/assets/images/add_img_unclicked.svg';
 }
 
 // When the user clicks anywhere outside the modal, close it
 window.onclick = function(event) {
     if (event.target === insert_modal) {
         insert_modal.style.display = "none";
+        insert_btn.src = pageContext + '/assets/images/add_img_unclicked.svg';
     }
 }
 
