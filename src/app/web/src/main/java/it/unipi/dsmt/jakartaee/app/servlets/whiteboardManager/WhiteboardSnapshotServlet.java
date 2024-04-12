@@ -1,12 +1,16 @@
 package it.unipi.dsmt.jakartaee.app.servlets.whiteboardManager;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
 import jakarta.ejb.EJB;
+import jakarta.json.JsonObject;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Base64;
@@ -30,6 +34,7 @@ public class WhiteboardSnapshotServlet extends HttpServlet {
 
         if (snapshotData != null) {
             try (OutputStream out = response.getOutputStream()) {
+//                System.out.println("DOGET(): RETURNING IMAGE TO JSP");
                 out.write(snapshotData);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -41,11 +46,14 @@ public class WhiteboardSnapshotServlet extends HttpServlet {
     protected void doPost (HttpServletRequest request, HttpServletResponse response) throws IOException {
         System.out.println("@WhiteboardSnapshotServlet: called doPost() method");
 
-        String imageDataString = request.getParameter("snapshot");
-        String userID = request.getParameter("userID");
-        String whiteboardID = request.getParameter("whiteboardID");
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = mapper.readTree(request.getReader());
 
-        byte[] snapshotDataBytes = Base64.getDecoder().decode(imageDataString.split(",")[1]);   // Decoding the base64-encoded image data
+        String imageDataURL = jsonNode.get("snapshot").asText();
+        String userID = jsonNode.get("userID").asText();
+        String whiteboardID = jsonNode.get("whiteboardID").asText();
+
+        byte[] snapshotDataBytes = Base64.getDecoder().decode(imageDataURL.split(",")[1]);   // Decoding the base64-encoded image data
 
         boolean snapshotUpdateOutcome = whiteboardEJB.updateWhiteboardSnapshot(userID, snapshotDataBytes, whiteboardID);
 
