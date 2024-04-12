@@ -1,26 +1,46 @@
-// Get the modal
-let modal = document.getElementById("myModal");
+/* ------ ERROR DISPLAYING MODAL ------ */
+let error_X_span = document.getElementsByClassName("close")[0];
 
-// Get the button that opens the modal
-let btn = document.getElementById("addButton");
+error_X_span.onclick = function () {
+    let error_modal = document.getElementById("error-display-modal");
+    error_modal.style.display = "none";
+}
 
-// Get the <span> element that closes the modal
-let span = document.getElementsByClassName("close")[0];
+window.onclick = function(event) {
+    let error_modal = document.getElementById("error-display-modal");
+    if (event.target === error_modal) {
+        insert_modal.style.display = "none";
+    }
+}
+
+
+/* ------ INSERT NEW WHITEBOARD MODAL ------ */
+function toggleImage () {
+    let addNewWhiteboardImg = document.getElementById("add-button");
+    if (addNewWhiteboardImg.src.match("add_img_unclicked"))
+        addNewWhiteboardImg.src = pageContext + '/assets/images/add_img_clicked.svg';
+    else
+        addNewWhiteboardImg.src = pageContext + '/assets/images/add_img_unclicked.svg';
+}
+
+let insert_modal = document.getElementById("insert-whiteboard-modal");
+let insert_btn = document.getElementById("add-button");
+let insert_X_span = document.getElementsByClassName("close")[1];
 
 // When the user clicks on the button, open the modal
-btn.onclick = function() {
-    modal.style.display = "block";
+insert_btn.onclick = function() {
+    insert_modal.style.display = "block";
 }
 
 // When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-    modal.style.display = "none";
+insert_X_span.onclick = function() {
+    insert_modal.style.display = "none";
 }
 
 // When the user clicks anywhere outside the modal, close it
 window.onclick = function(event) {
-    if (event.target === modal) {
-        modal.style.display = "none";
+    if (event.target === insert_modal) {
+        insert_modal.style.display = "none";
     }
 }
 
@@ -34,26 +54,3 @@ function confirmDelete(whiteboardId) {
     }
 }
 
-/*
-// Function to send an AJAX request for whiteboard deletion
-function deleteWhiteboard(whiteboardId) {
-    // AJAX request to send whiteboardId to Java backend for Erlang RPC call
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", "${pageContext.request.contextPath}/homepage", true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            if (xhr.status === 200) {
-                // Success
-                alert("Whiteboard deleted successfully.");
-                // Reload the page or update UI as needed
-            } else {
-                // Error handling
-                alert("Failed to delete whiteboard. Please try again later.");
-            }
-        }
-    };
-    var data = JSON.stringify({ "whiteboardId": whiteboardId });
-    xhr.send(data);
-}
-*/

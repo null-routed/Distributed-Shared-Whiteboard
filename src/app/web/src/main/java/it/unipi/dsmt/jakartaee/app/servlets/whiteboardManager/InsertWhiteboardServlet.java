@@ -76,5 +76,6 @@ public class InsertWhiteboardServlet extends HttpServlet {
             }
             throw new RuntimeException(e);
         }
+        response.sendRedirect(request.getContextPath() + "/homepage?insertionFailed=true");
     }
 }

@@ -7,8 +7,10 @@
 <html>
 <head>
     <title>Homepage</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/common.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/homepage.css">
     <script type="text/javascript" src="${pageContext.request.contextPath}/assets/javascript/whiteboardWebSocket.js"></script>
+    <script type="text/javascript"> let pageContext = "${pageContext.request.contextPath}"; </script>
 </head>
 <body>
 <div id="homepage-container">
@@ -32,29 +34,41 @@
             <span class="close">&times;</span>
             <h2>Error</h2>
             <% if (request.getParameter("insertionFailed") != null) { %>
-                <p>Failed to add a new whiteboard. Try again or try in a few minutes.</p>
+                <p class="error-msg">Failed to add a new whiteboard. Try again or try in a few minutes.</p>
             <% } %>
             <% if (request.getParameter("deletionFailed") != null) { %>
-                <p>Failed to delete the whiteboard. Try again or try in a few minutes.</p>
+                <p class="error-msg">Failed to delete the whiteboard. Try again or try in a few minutes.</p>
             <% } %>
         </div>
     </div>
 
-    <br>
-    <h1>Your Whiteboards</h1>
-    <br>
-    <div id="whiteboard-selection-container">
-        <div id="whiteboard-selection">
-            <div class="whiteboard-search">
-                <form class="search-form" action="${pageContext.request.contextPath}/homepage" method="get">
-                    <label class="search-input-label" for="search-input">Search Whiteboards:</label>
-                    <input type="text" id="search-input" name="search_input" placeholder="Type the whiteboard name ...">
-                    <button type="submit" class="homepage-button">Search</button>
-                </form>
-            </div>      <!-- TODO: make error modal smaller and make error message red inside it -->
 
-            <div id="whiteboard-type">
-                <button type="button" id="add-button" class="nav-button">New</button>
+    <!-- MAIN PAGE -->
+    <div class="main-container">
+        <br>
+        <div>
+            <h1>Your Whiteboards</h1>
+        </div>
+        <br>
+        <div class="whiteboard-selection-container">
+            <div class="whiteboard-search">
+                <div class="search-form">
+                    <form action="${pageContext.request.contextPath}/homepage" method="get">
+                        <input type="text" id="search-input" name="search_input" placeholder="Type the whiteboard name ...">
+                        <button type="submit" class="homepage-custom-button">Search</button>
+                    </form>
+                </div>
+                <div class="button-swap-form">
+                    <form action="${pageContext.request.contextPath}/homepage" method="GET">
+                        <% String isSharedView = request.getAttribute("shared") != null ? request.getAttribute("shared").toString() : "";
+                            if (isSharedView.equals("true")) { %>
+                        <button type="submit" name="shared" class="homepage-custom-button" value="false">Other</button>
+                        <% } else { %>
+                        <button type="submit" name="shared" class="homepage-custom-button" value="true">Shared with me</button>
+                        <% }
+                        %>
+                    </form>
+                </div>
 
                 <!-- INSERT NEW WHITEBOARD MODAL -->
                 <div id="insert-whiteboard-modal" class="modal">
@@ -75,43 +89,54 @@
                         </form>
                     </div>
                 </div>
-                <form class="search-form" action="${pageContext.request.contextPath}/homepage" method="GET">
-                    <% String isSharedView = request.getAttribute("shared") != null ? request.getAttribute("shared").toString() : "";
-                        if (isSharedView.equals("true")) { %>
-                            <button type="submit" name="shared" class="nav-button" value="false">Other</button>
-                        <% } else { %>
-                            <button type="submit" name="shared" class="nav-button" value="true">Shared with me</button>
-                        <% }
-                    %>
-                </form>
             </div>
-        </div>
-        <hr class="hr-style">
-        <div id="whiteboards">
-            <% List<MinimalWhiteboardDTO> whiteboards = (List<MinimalWhiteboardDTO>) request.getAttribute("whiteboards");
-                if (whiteboards != null) {
-                    int counter = 0;
-                    for (MinimalWhiteboardDTO whiteboard : whiteboards) {
-                        if (counter == 0) { %>
-            <div class="whiteboard-row-buttons">
-                <% }
-                    counter++; %>
-                <div class="whiteboard-button-container">
-                    <button type="button" id="whiteboard_<%= whiteboard.getId() %>" class="selected-whiteboards"
-                            onclick="location.href = '${pageContext.request.contextPath}/whiteboard?whiteboardID=<%= whiteboard.getId() %>'">
-                        <%= whiteboard.getName() %>
-                    </button>
-                    <button type="button" onclick="confirmDelete(<%= whiteboard.getId() %>)" class="delete-button">&times;</button>
+
+            <hr class="divider">
+
+            <div class="whiteboard-grid-container">
+                <% List<MinimalWhiteboardDTO> whiteboards = (List<MinimalWhiteboardDTO>) request.getAttribute("whiteboards"); %>
+                <div class="grid-item">
+                    <img alt="Add a new whiteboard" onclick="toggleImage()" id="add-button" src="${pageContext.request.contextPath}/assets/images/add_img_unclicked.svg">
                 </div>
-                <% if (counter == 3 || whiteboards.indexOf(whiteboard) == whiteboards.size() - 1) { %>
+                <% for (MinimalWhiteboardDTO whiteboard : whiteboards) { %>
+                    <div class="grid-item">
+                        <button
+                                type="button"
+                                class="select-whiteboard-button"
+                                id="whiteboard_<%= whiteboard.getId() %>"
+                                onclick="location.href = '${pageContext.request.contextPath}/whiteboard?whiteboardID=<%= whiteboard.getId() %>'"
+                        >
+                            <%= whiteboard.getName() %>
+                        </button>
+<%--                        <button type="button" class="delete-whiteboard-button" onclick="confirmDelete(<%= whiteboard.getId() %>)">&times;</button>--%>
+                    </div>
+                <% } %>
             </div>
-            <% }
-            }
-            } %>
+<%--                <% List<MinimalWhiteboardDTO> whiteboards = (List<MinimalWhiteboardDTO>) request.getAttribute("whiteboards");--%>
+<%--                    if (whiteboards != null) {--%>
+<%--                        int counter = 0;--%>
+<%--                        for (MinimalWhiteboardDTO whiteboard : whiteboards) {--%>
+<%--                            if (counter == 0) { %>--%>
+<%--                <div class="whiteboard-row-buttons">--%>
+<%--                    <% }--%>
+<%--                        counter++; %>--%>
+<%--                    <div class="grid-item">--%>
+<%--                        <button type="button" id="whiteboard_<%= whiteboard.getId() %>" class="selected-whiteboards"--%>
+<%--                                onclick="location.href = '${pageContext.request.contextPath}/whiteboard?whiteboardID=<%= whiteboard.getId() %>'">--%>
+<%--                            <%= whiteboard.getName() %>--%>
+<%--                        </button>--%>
+<%--                        <button type="button" onclick="confirmDelete(<%= whiteboard.getId() %>)" class="delete-button">&times;</button>--%>
+<%--                    </div>--%>
+<%--                    <% if (counter == 3 || whiteboards.indexOf(whiteboard) == whiteboards.size() - 1) { %>--%>
+<%--                </div>--%>
+<%--                <% }--%>
+<%--                }--%>
+<%--                } %>--%>
+<%--            </div>--%>
         </div>
+        <% }
+            assert loggedUserDTO != null;%>
     </div>
-    <% }
-        assert loggedUserDTO != null;%>
 </div>
 
 <form id="deleteWhiteboardForm" action="${pageContext.request.contextPath}/delete_whiteboard" method="POST" style="display: none;">

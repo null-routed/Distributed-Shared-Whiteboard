@@ -15,6 +15,14 @@ window.onclick = function(event) {
 
 
 /* ------ INSERT NEW WHITEBOARD MODAL ------ */
+function toggleImage () {
+    let addNewWhiteboardImg = document.getElementById("add-button");
+    if (addNewWhiteboardImg.src.match("add_img_unclicked"))
+        addNewWhiteboardImg.src = pageContext + '/assets/images/add_img_clicked.svg';
+    else
+        addNewWhiteboardImg.src = pageContext + '/assets/images/add_img_unclicked.svg';
+}
+
 let insert_modal = document.getElementById("insert-whiteboard-modal");
 let insert_btn = document.getElementById("add-button");
 let insert_X_span = document.getElementsByClassName("close")[1];
