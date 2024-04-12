@@ -95,44 +95,22 @@
 
             <div class="whiteboard-grid-container">
                 <% List<MinimalWhiteboardDTO> whiteboards = (List<MinimalWhiteboardDTO>) request.getAttribute("whiteboards"); %>
-                <div class="grid-item">
-                    <img alt="Add a new whiteboard" onclick="toggleImage()" id="add-button" src="${pageContext.request.contextPath}/assets/images/add_img_unclicked.svg">
+                <div class="grid-item-add">
+                    <img alt="Add a new whiteboard" id="add-button" src="${pageContext.request.contextPath}/assets/images/add_img_unclicked.svg">
                 </div>
                 <% for (MinimalWhiteboardDTO whiteboard : whiteboards) { %>
-                    <div class="grid-item">
-                        <button
-                                type="button"
-                                class="select-whiteboard-button"
-                                id="whiteboard_<%= whiteboard.getId() %>"
-                                onclick="location.href = '${pageContext.request.contextPath}/whiteboard?whiteboardID=<%= whiteboard.getId() %>'"
+                    <div class="grid-item-whiteboard">
+                        <img
+                            class="whiteboard-snapshot"
+                            alt="<%= whiteboard.getName() %>"
+                            src="${pageContext.request.contextPath}/snapshot_manager?whiteboardID=<%= whiteboard.getId() %>&userID=<%= loggedUserDTO.getId() %>"
+                            id="whiteboard_<%= whiteboard.getId() %>"
+                            onclick="location.href = '${pageContext.request.contextPath}/whiteboard?whiteboardID=<%= whiteboard.getId() %>'"
                         >
-                            <%= whiteboard.getName() %>
-                        </button>
 <%--                        <button type="button" class="delete-whiteboard-button" onclick="confirmDelete(<%= whiteboard.getId() %>)">&times;</button>--%>
                     </div>
                 <% } %>
             </div>
-<%--                <% List<MinimalWhiteboardDTO> whiteboards = (List<MinimalWhiteboardDTO>) request.getAttribute("whiteboards");--%>
-<%--                    if (whiteboards != null) {--%>
-<%--                        int counter = 0;--%>
-<%--                        for (MinimalWhiteboardDTO whiteboard : whiteboards) {--%>
-<%--                            if (counter == 0) { %>--%>
-<%--                <div class="whiteboard-row-buttons">--%>
-<%--                    <% }--%>
-<%--                        counter++; %>--%>
-<%--                    <div class="grid-item">--%>
-<%--                        <button type="button" id="whiteboard_<%= whiteboard.getId() %>" class="selected-whiteboards"--%>
-<%--                                onclick="location.href = '${pageContext.request.contextPath}/whiteboard?whiteboardID=<%= whiteboard.getId() %>'">--%>
-<%--                            <%= whiteboard.getName() %>--%>
-<%--                        </button>--%>
-<%--                        <button type="button" onclick="confirmDelete(<%= whiteboard.getId() %>)" class="delete-button">&times;</button>--%>
-<%--                    </div>--%>
-<%--                    <% if (counter == 3 || whiteboards.indexOf(whiteboard) == whiteboards.size() - 1) { %>--%>
-<%--                </div>--%>
-<%--                <% }--%>
-<%--                }--%>
-<%--                } %>--%>
-<%--            </div>--%>
         </div>
         <% }
             assert loggedUserDTO != null;%>

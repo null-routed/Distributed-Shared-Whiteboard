@@ -60,24 +60,15 @@ window.addEventListener("beforeunload", function(event) {
     let imageDataURL = whiteboardCanvas.toDataURL();
 
     let xhr = new XMLHttpRequest();
-
     xhr.open("POST", contextPath + "/save_snapshot", true);
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader("Content-Type", "application/json");
 
     xhr.onreadystatechange = function() {
         if (xhr.readyState === XMLHttpRequest.DONE) {
-            if (xhr.status === 200) {
-                console.log('Request sent successfully.');
-            } else {
-                console.error('Error sending request:', xhr.status);
-            }
+            if (xhr.readyState === 4 && xhr.status === 200)
+                console.log(xhr.responseText);
         }
     };
 
-    xhr.send("snapshot=" + encodeURIComponent(imageDataURL) + "&userID=" + userID + "&whiteboardID=" + whiteboardID);
-
-    // Ensure that the request is sent before leaving the page
-    xhr.onload = function() {
-        console.log('Request sent successfully.');
-    };
+    xhr.send(JSON.stringify({userID: userID, whiteboardID: whiteboardID, snapshot: imageDataURL}));
 });

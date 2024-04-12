@@ -8,7 +8,12 @@ import jakarta.annotation.Resource;
 import jakarta.ejb.Stateless;
 import jakarta.validation.constraints.NotNull;
 
+import javax.imageio.ImageIO;
 import javax.sql.DataSource;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +34,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
 
         try (Connection connection = dataSource.getConnection()) {
             final String query =
-                    "SELECT W.WhiteboardID, W.Name, W.Description " +
+                    "SELECT W.WhiteboardID, W.Name, W.Description, W.WhiteboardSnapshot " +
                     "FROM Whiteboards W " +
                         "INNER JOIN WhiteboardParticipants WP " +
                             "ON W.WhiteboardID = WP.WhiteboardID " +
@@ -45,7 +50,8 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                                 new MinimalWhiteboardDTO(
                                         resultSet.getInt("W.WhiteboardID"),
                                         resultSet.getString("W.Name"),
-                                        resultSet.getString("W.Description")
+                                        resultSet.getString("W.Description"),
+                                        resultSet.getBytes("W.WhiteboardSnapshot")
                                 )
                         );
                 }
@@ -64,7 +70,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         List<MinimalWhiteboardDTO> whiteboards = new ArrayList<>();
 
         final String query =
-                "SELECT W.WhiteboardID, W.Name, W.Description " +
+                "SELECT W.WhiteboardID, W.Name, W.Description, WP.WhiteboardSnapshot " +
                 "FROM Whiteboards W " +
                     "INNER JOIN WhiteboardParticipants WP " +
                         "ON W.WhiteboardID = WP.WhiteboardID " +
@@ -82,7 +88,8 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                         whiteboards.add(new MinimalWhiteboardDTO(
                                         resultSet.getInt("W.WhiteboardID"),
                                         resultSet.getString("W.Name"),
-                                        resultSet.getString("W.Description")
+                                        resultSet.getString("W.Description"),
+                                        resultSet.getBytes("WP.WhiteboardSnapshot")
                                 )
                         );
                 }
@@ -102,9 +109,9 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
 
         // SQL query
         final String query =
-                "SELECT W.WhiteboardID, W.Name, W.Description " +
+                "SELECT W.WhiteboardID, W.Name, W.Description, WP.WhiteboardSnapshot " +
                 "FROM Whiteboards W " +
-                    "INNER JOIN Whiteboardparticipants WP " +
+                    "INNER JOIN WhiteboardParticipants WP " +
                         "ON W.WhiteboardID = WP.WhiteboardID " +
                 "WHERE WP.UserID = ? AND WP.IsOwner = FALSE";
 
@@ -118,7 +125,8 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                                 new MinimalWhiteboardDTO(
                                     resultSet.getInt("W.WhiteboardID"),
                                     resultSet.getString("W.Name"),
-                                    resultSet.getString("W.Description")
+                                    resultSet.getString("W.Description"),
+                                    resultSet.getBytes("WP.WhiteboardSnapshot")
                                 )
                         );
                 }
@@ -259,10 +267,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                 whiteboardStatement.setString(1, whiteboardID);
 
                 rowsAffected = whiteboardStatement.executeUpdate();
-                if (rowsAffected == 0)
-                    return false;
-
-                return true;
+                return rowsAffected != 0;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -435,6 +440,47 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
             }
         } catch (SQLException e) {
             return false;
+        }
+    }
+
+    @Override
+    public byte[] getSnapshotByWhiteboardID (String whiteboardID, String userID) {
+        System.out.println("@WhiteboardEJBImplementation: called getSnapshotByWhiteboardID()");
+
+        byte[] snapshot = null;
+
+        try (Connection connection = dataSource.getConnection()) {
+
+            final String query = "SELECT WhiteboardSnapshot FROM WhiteboardParticipants WHERE WhiteboardID = ? AND UserID = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+                preparedStatement.setString(1, whiteboardID);
+                preparedStatement.setString(2, userID);
+
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        snapshot = resultSet.getBytes("WhiteboardSnapshot");
+                        if (snapshot != null)
+                            return snapshot;
+                        else {      // Snapshot is NULL, return a SNAPSHOT_WIDTH * SNAPSHOT_HEIGHT px blank image to use as snapshot
+                            final int SNAPSHOT_WIDTH = 300;
+                            final int SNAPSHOT_HEIGHT = 160;
+                            BufferedImage blankSnapshot = new BufferedImage(SNAPSHOT_WIDTH, SNAPSHOT_HEIGHT, BufferedImage.TYPE_INT_RGB);
+                            Graphics2D graphics2D = blankSnapshot.createGraphics();
+                            graphics2D.setColor(Color.WHITE);
+                            graphics2D.fillRect(0, 0, SNAPSHOT_WIDTH, SNAPSHOT_HEIGHT);
+                            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                            ImageIO.write(blankSnapshot, "jpg", outputStream);
+                            return outputStream.toByteArray();
+                        }
+                    } else {
+                        throw new SQLException();
+                    }
+                }
+            }
+        } catch (SQLException |IOException e) {
+            return null;
         }
     }
 }

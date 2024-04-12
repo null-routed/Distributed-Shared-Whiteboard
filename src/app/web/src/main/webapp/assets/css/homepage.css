@@ -103,6 +103,9 @@
     margin: 15px;
 }
 
+div {
+    border: 1px solid red;
+}
 
 /* ------ WHITEBOARDS SECTION ------ */
 .whiteboard-grid-container {
@@ -113,19 +116,32 @@
     justify-content: space-evenly;
 }
 
-.grid-item {
-    width: 200px;
-    height: 130px;
+.grid-item-add {
+    width: 300px;
+    height: 160px;
     font-size: 30px;
     text-align: center;
-    border: 1px solid green;
+    /*border: 1px solid green;*/
     display: flex;
     margin: 15px 5px 5px;
 }
 
+.grid-item-whiteboard {
+    width: 300px;
+    height: 160px;
+    font-size: 30px;
+    text-align: center;
+    border: 2px solid black;
+    display: flex;
+    margin: 15px 5px 5px;
+}
 
-
-
+.whiteboard-snapshot {
+    height: inherit;
+    width: inherit;
+    opacity: 0.4;
+    filter: grayscale(100%) brightness(0.7);
+}
 
 
 
