@@ -1,5 +1,5 @@
 -module(mnesia_setup).
--export([init/0, connect_nodes/1, setup_mnesia/0, create_tables_if_not_exist/0, truncate_user_access/0]).
+-export([init/0]).
 
 -include_lib("stdlib/include/assert.hrl").
 
@@ -13,7 +13,7 @@ init() ->
     connect_nodes(Nodes),
     setup_mnesia(),
     create_tables_if_not_exist(),
-    truncate_user_access().
+    truncate_whiteboard_users().
 
 connect_nodes(Nodes) ->
     lists:foreach(fun(Node) ->
@@ -42,8 +42,11 @@ create_tables_if_not_exist() ->
     lists:foreach(fun({Name, Fields, Type}) -> create_table(Name, Fields, Type) end, Tables).
 
 wait_for_mnesia() ->
-    mnesia:wait_for_tables([schema], 10000) orelse io:format("Timeout waiting for Mnesia to start.~n").
-
+        io:format("creating mnesia tables"),
+    case mnesia:wait_for_tables([schema], 10000) of
+        ok -> io:format("Mnesia operational.~n");
+        _ -> io:format("Timeout waiting for Mnesia to start.~n"), exit({mnesia_not_started, {}})
+    end.
 create_table(Name, Fields, Type) ->
     case mnesia:create_table(Name, [{attributes, Fields}, {disc_copies, [node()]}, {type, Type}]) of
         {atomic, ok} -> io:format("Table ~p created successfully.~n", [Name]);
@@ -51,11 +54,11 @@ create_table(Name, Fields, Type) ->
         Error -> io:format("Failed to create table ~p: ~p~n", [Name, Error])
     end.
 
-truncate_user_access() ->
-    case mnesia:table_info(whiteboard_access, size) > 0 of
+truncate_whiteboard_users() ->
+    case mnesia:table_info(whiteboard_users, size) > 0 of
         true ->
-            mnesia:clear_table(whiteboard_access),
-            io:format("Table whiteboard_access truncated successfully.~n");
+            mnesia:clear_table(whiteboard_users),
+            io:format("Table whiteboard_users truncated successfully.~n");
         false ->
-            io:format("Table whiteboard_access is already empty or does not exist.~n")
+            io:format("Table whiteboard_users is already empty or does not exist.~n")
     end.

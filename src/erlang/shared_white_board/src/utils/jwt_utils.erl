@@ -1,5 +1,5 @@
--module(whiteboard).
--export([decode_jwt/1, get_username_from_payload/1, find_jwt_cookie/1, validate_jwt/1]).
+-module(jwt_utils).
+-export([validate_jwt/1]).
 
 -define(SECRET, <<"yourRandomSecretKey">>). % secret
 
@@ -17,13 +17,14 @@ get_username_from_payload(Payload) ->
         Username -> {ok, Username}
     end.
 
-find_jwt_cookie([]) -> error;
-find_jwt_cookie([{<<"jwt">>, Token}|_]) -> {ok, Token};
-find_jwt_cookie([_|T]) -> find_jwt_cookie(T).
+find_jwt_param([]) -> error;
+find_jwt_param([{<<"jwt">>, Token}|_]) -> {ok, Token};
+find_jwt_param([_|T]) -> find_jwt_param(T).
 
 validate_jwt(Req) ->
-    Cookies = cowboy_req:parse_cookies(Req),
-    case find_jwt_cookie(Cookies) of
+    Params = cowboy_req:parse_qs(Req),
+    io:format("Params: ~p~n", [Params]),
+    case find_jwt_param(Params) of
         {ok, Token} ->
             case decode_jwt(Token) of
                 {ok, Payload} ->

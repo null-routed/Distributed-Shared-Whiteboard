@@ -5,8 +5,10 @@
 init(Req, Opts) ->
     case jwt_utils:validate_jwt(Req) of
         {ok, Username} ->
+            io:format("User ~p connected.~n", [Username]),
             validate_whiteboard_id(Req, Username, Opts);
         error ->
+            io:format("Invalid JWT token.~n"),
             reply_with_error(Req, 403, <<"Forbidden: Invalid JWT token">>, Opts)
     end.
 
@@ -35,23 +37,29 @@ reply_with_error(Req, StatusCode, Message, Opts) ->
 
 %%% WebSocket connection initialization.
 websocket_init(State) ->
-    #{username := Username, whiteboardId := WhiteboardId} = State,
+    #{username := Username, whiteboard_id := WhiteboardId} = State,
     whiteboard:notify_user_connection(WhiteboardId, Username, node()),
     whiteboard:regenerate_strokes(WhiteboardId, Username),
     {ok, State}.
 
 %%% Handles incoming WebSocket messages.
 websocket_handle({text, Msg}, State) ->
-    case decode_message(Msg) of
-        {ok, Map} -> whiteboard:handle_websocket_message(Map, State);
-        error -> ok
+    #{permission := Permission} = State,
+    case Permission of
+        1 -> 
+            case decode_message(Msg) of
+                {ok, Map} -> whiteboard:process_websocket_message(Map, State);
+                error -> ok
+            end;
+        _ -> ok
     end,
     {ok, State}.
 
 %%% Decodes a JSON-formatted string message into a map.
 decode_message(Msg) ->
     try jsx:decode(Msg, [return_maps]) of
-        Map when is_map(Map) -> {ok, Map}
+        Map when is_map(Map) -> 
+            {ok, Map}
     catch
         _:_ -> error
     end.
@@ -66,6 +74,11 @@ websocket_info(_, State) ->
 
 %%% Terminates the WebSocket connection.
 terminate(_Reason, _Req, State) ->
-    #{username := Username, whiteboardId := WhiteboardId} = State,
-    whiteboard:notify_user_disconnection(WhiteboardId, Username, node()),
-    ok.
+    case State of
+        #{username := Username, whiteboard_id := WhiteboardId} ->
+            whiteboard:notify_user_disconnection(WhiteboardId, Username, self(), node()),
+            ok;
+        _ ->
+            ok
+    end.
+
