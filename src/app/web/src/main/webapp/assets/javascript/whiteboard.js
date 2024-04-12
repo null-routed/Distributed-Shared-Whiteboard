@@ -55,20 +55,17 @@ function clearMessages() {
 
 
 // ------ CANVAS SNAPSHOT SAVING ------
-window.addEventListener("beforeunload", function(event) {
-    let whiteboardCanvas = document.getElementById("whiteboard");
-    let imageDataURL = whiteboardCanvas.toDataURL();
+let snapshotUpdateInterval = setInterval(sendAJAXSnapshot, 1000);
+
+function sendAJAXSnapshot () {
+    const compressionFactor = 0.7;
+
+    let currentWhiteboardCanvas = document.getElementById("whiteboard");
+    let imageDataURL = currentWhiteboardCanvas.toDataURL("image/png", compressionFactor);
 
     let xhr = new XMLHttpRequest();
     xhr.open("POST", contextPath + "/snapshot_manager", true);
     xhr.setRequestHeader("Content-Type", "application/json");
 
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            if (xhr.readyState === 4 && xhr.status === 200)
-                console.log(xhr.responseText);
-        }
-    };
-
     xhr.send(JSON.stringify({userID: userID, whiteboardID: whiteboardID, snapshot: imageDataURL}));
-});
+}

@@ -464,6 +464,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                         if (snapshot != null)
                             return snapshot;
                         else {      // Snapshot is NULL, return a SNAPSHOT_WIDTH * SNAPSHOT_HEIGHT px blank image to use as snapshot
+//                            System.out.println("RETURNING WHITE SNAPSHOT FOR WHITEBOARD " + whiteboardID);
                             final int SNAPSHOT_WIDTH = 300;
                             final int SNAPSHOT_HEIGHT = 160;
                             BufferedImage blankSnapshot = new BufferedImage(SNAPSHOT_WIDTH, SNAPSHOT_HEIGHT, BufferedImage.TYPE_INT_RGB);

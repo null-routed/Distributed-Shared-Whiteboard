@@ -127,6 +127,8 @@ div {
 }
 
 .grid-item-whiteboard {
+    position: relative;
+
     width: 300px;
     height: 160px;
     font-size: 30px;
@@ -139,8 +141,18 @@ div {
 .whiteboard-snapshot {
     height: inherit;
     width: inherit;
-    opacity: 0.4;
-    filter: grayscale(100%) brightness(0.7);
+    /*opacity: 0.4;*/
+    /*filter: grayscale(100%) brightness(0.7);*/
+}
+
+.whiteboard-name {
+    position: absolute;
+    color: black;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, 50%);
+    text-align: center;
+    font-size: 20px;
 }
 
 

@@ -100,6 +100,9 @@
                 </div>
                 <% for (MinimalWhiteboardDTO whiteboard : whiteboards) { %>
                     <div class="grid-item-whiteboard">
+<%--                        <div class="whiteboard-name">--%>
+<%--                            <p><%= whiteboard.getName() %></p>--%>
+<%--                        </div>--%>
                         <img
                             class="whiteboard-snapshot"
                             alt="<%= whiteboard.getName() %>"
