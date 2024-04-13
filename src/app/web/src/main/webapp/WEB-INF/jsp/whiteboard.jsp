@@ -58,9 +58,14 @@
                     <h5 class="modal-title" id="participantsModalLabel">Current Participants</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" id="participants">
                     <% for (String participant : participantsOnWhiteboardOpen) { %>
-                        <p><%= participant %></p>
+                        <div class="d-flex justify-content-between align-items-center mb-2" id="<%= participant %>-container">
+                            <p class="mb-0"><%= participant %></p>
+                            <button type="button" class="btn btn-danger btn-sm remove-participant-btn" data-participant="<%= participant %>">
+                                <i class="bi bi-x"></i>
+                            </button>                            
+                        </div>
                     <% } %>
                 </div>
             </div>
@@ -77,7 +82,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="new-participant-username" class="form-label">Username to share with:</label>
+                        <label for="username" class="form-label">Username to share with:</label>
                         <input type="text" class="form-control" id="new-participant-username">
                     </div>
                     <button id="share-button-modal" class="btn btn-primary">Share</button>
