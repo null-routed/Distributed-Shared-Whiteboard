@@ -1,7 +1,6 @@
 import { addMessage } from "./whiteboard-ui.js";
-/*
-// ------ PARTICIPANT REMOVAL VIA AJAX ------
-export const removeParticipantAJAX = (userToRemove) => {
+
+export const removeParticipant = (userToRemove) => {
   let whiteboardID = document.getElementById("whiteboardID").value;
   let whiteboardOwner = document.getElementById("self-username").value;
   let whiteboardName = document.getElementById("whiteboard-name").value;
@@ -35,8 +34,7 @@ export const removeParticipantAJAX = (userToRemove) => {
       whiteboardName
   );
 };
-*/
-// ------ SHARING FUNCTIONALITY VIA AJAX ------
+
 export const shareWhiteboard = (
   whiteboardId,
   whiteboardName,
@@ -82,7 +80,7 @@ export const shareWhiteboard = (
     }
   };
 
-  xhttp.open("POST", contextPath + "/share_whiteboard", true);
+  xhttp.open("GET", contextPath + "/share_whiteboard", true);
   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
   xhttp.send(
