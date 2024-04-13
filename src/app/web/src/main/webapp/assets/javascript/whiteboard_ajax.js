@@ -1,7 +1,9 @@
 // ------ PARTICIPANT REMOVAL VIA AJAX ------
 function removeParticipantAJAX(username) {
   let whiteboardID = document.getElementById("whiteboardID").value;
-  let whiteboardName = document.getElementById("whiteboardName").value;
+  let newParticipantUsername = document.getElementById("new-participant-username").value;
+    let whiteboardOwner = document.getElementById("self-username").value;
+    let whiteboardName = document.getElementById("whiteboard-name").value;
 
   console.log("params: " + username + ", " + whiteboardID);
 
@@ -25,7 +27,6 @@ function removeParticipantAJAX(username) {
       outcomeMessageDiv.style.marginTop = "10px";
       if (jsonResponse.success) {
         outcomeMessageDiv.setAttribute("class", "success-msg");
-        sendMessageToWebSocket(whiteboardName, username, "remove");
       } else outcomeMessageDiv.setAttribute("class", "error-msg");
       outcomeMessageDiv.textContent = jsonResponse.message;
       participantsListDiv.append(outcomeMessageDiv);
@@ -37,7 +38,7 @@ function removeParticipantAJAX(username) {
   xhttp.open("POST", contextPath + "/remove_participant", true);
   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
-  xhttp.send("whiteboardID=" + whiteboardID + "&" + "username=" + username);
+  xhttp.send("whiteboardID=" + whiteboardID + "&" + "newParticipantUsername=" + newParticipantUsername + "&whiteboardOwner=" + whiteboardOwner + "&whiteboardName=" + whiteboardName);
 }
 
 // ------ SHARING FUNCTIONALITY VIA AJAX ------
@@ -48,8 +49,9 @@ document.addEventListener("DOMContentLoaded", function () {
       event.preventDefault();
 
       let whiteboardID = document.getElementById("whiteboardID").value;
-      let username = document.getElementById("username").value;
-      let whiteboardName = document.getElementById("whiteboardName").value;
+      let username = document.getElementById("new-participant-username").value;
+      let whiteboardOwner = document.getElementById("self-username").value;
+      let whiteboardName = document.getElementById("whiteboard-name").value;
 
       let xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function () {
@@ -72,7 +74,6 @@ document.addEventListener("DOMContentLoaded", function () {
             newlyInsertedParticipantDiv.textContent = "• " + username;
 
             participantsListDiv.append(newlyInsertedParticipantDiv);
-            sendMessageToWebSocket(whiteboardName, username, "share");
           }
 
           // displaying error or success message
@@ -94,6 +95,6 @@ document.addEventListener("DOMContentLoaded", function () {
         "application/x-www-form-urlencoded"
       );
 
-      xhttp.send("whiteboardID=" + whiteboardID + "&" + "username=" + username);
+      xhttp.send("whiteboardID=" + whiteboardID + "&" + "newParticipantUsername=" + username + "&" + "whiteboardOwner=" + whiteboardOwner + "&whiteboardName=" + whiteboardName);
     });
 });
