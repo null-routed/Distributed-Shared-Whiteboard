@@ -12,7 +12,7 @@ export const removeParticipant = (userToRemove) => {
 
       if (jsonResponse.success === true) {
         let removedParticipantDiv = document.getElementById(
-          `${username}-container`
+          `${userToRemove}-container`
         );
         removedParticipantDiv.remove();
       }
@@ -46,8 +46,8 @@ export const shareWhiteboard = (
 
   let xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = () => {
-    if (this.readyState === 4 && this.status === 200) {
-      const jsonResponse = JSON.parse(this.responseText);
+    if (xhttp.readyState === 4 && xhttp.status === 200) {
+      const jsonResponse = JSON.parse(xhttp.responseText);
 
       if (jsonResponse.success === true) {
         let participantsListDiv = document.getElementById("participants");

@@ -27,6 +27,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/whiteboard.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script> let contextPath = "${pageContext.request.contextPath}"; </script>
 </head>
 <body>
     <div class="toolbar">
@@ -82,7 +83,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="username" class="form-label">Username to share with:</label>
+                        <label for="new-participant-username" class="form-label">Username to share with:</label>
                         <input type="text" class="form-control" id="new-participant-username">
                     </div>
                     <button id="share-button-modal" class="btn btn-primary">Share</button>

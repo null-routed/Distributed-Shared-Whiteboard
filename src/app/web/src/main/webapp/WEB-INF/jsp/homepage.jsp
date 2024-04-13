@@ -9,7 +9,6 @@
     <title>Homepage</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/common.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/homepage.css">
-    <script type="text/javascript" src="${pageContext.request.contextPath}/assets/javascript/websocket-notifications.js"></script>
     <script type="text/javascript"> let pageContext = "${pageContext.request.contextPath}"; </script>
 </head>
 <body>
@@ -124,13 +123,7 @@
     <input type="hidden" id="whiteboardIdToDelete" name="whiteboardIdToDelete">
 </form>
 
-<script src="${pageContext.request.contextPath}/assets/javascript/homepage.js"></script>
-<script>
-    window.addEventListener('load', function() {
-        establishWebSocketConnection('<%= loggedUserDTO.getUsername() %>');
-    });
-</script>
-
+<script type="module" src="${pageContext.request.contextPath}/assets/javascript/homepage.js"></script>
 
 </body>
 </html>
