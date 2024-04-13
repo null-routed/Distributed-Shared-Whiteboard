@@ -10,14 +10,17 @@ import {
 import { addMessage } from "./whiteboard-ui.js";
 import { getRandomColor } from "./utils.js";
 
-let ws;
-const jwt = localStorage.getItem("jwt");
+let ws, username;
+const jwt = document.cookie
+  .split("; ")
+  .find((row) => row.startsWith("jwt="))
+  .split("=")[1];
 const urlParams = new URLSearchParams(window.location.search);
 const whiteboardID = urlParams.get("whiteboardID");
 
 export const setupWebSocket = () => {
   ws = new WebSocket(`ws://127.0.0.1:8080/ws/${whiteboardID}?jwt=` + jwt);
-
+  usnername = document.getElementById("username").value;
   ws.onopen = () => {
     setInterval(() => {
       sendSelfCursor();
