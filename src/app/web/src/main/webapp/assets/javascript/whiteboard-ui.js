@@ -29,9 +29,31 @@ export const setupListeners = () => {
   redoButton.addEventListener("click", () => {
     sendRedo();
   });
+
+  document.querySelectorAll(".remove-participant-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      removeParticipant(this.getAttribute("data-participant"));
+    });
+  });
+
+  document.querySelectorAll(".remove-participant-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      removeParticipant(this.getAttribute("data-participant"));
+    });
+  });
+
+  document
+    .getElementById("share-button-modal")
+    .addEventListener("click", () => {
+      shareWhiteboard(
+        new URLSearchParams(window.location.search).get("whiteboardID"),
+        document.getElementById("whiteboard-name").value,
+        document.getElementById("self-username").value
+      );
+    });
 };
 
-export const addMessage = (user, action) => {
+export const addMessage = (message) => {
   const toastId = `toast-${Date.now()}`;
   const toastHtml = `
         <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="${toastId}">
@@ -41,7 +63,7 @@ export const addMessage = (user, action) => {
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body">
-                ${user} ${action}.
+                ${message}.
             </div>
         </div>
     `;

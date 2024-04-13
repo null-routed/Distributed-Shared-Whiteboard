@@ -124,14 +124,14 @@ const handleUserList = (users) => {
   for (const user of users) {
     if (!usersMap[user]) {
       usersMap[user] = { color: getRandomColor() };
-      addMessage(user, "joined");
+      addMessage(`${user} joined.`);
     }
   }
 
   for (const user in usersMap) {
     if (!users.includes(user)) {
       delete usersMap[user];
-      addMessage(user, "disconnected");
+      addMessage(`${user} disconnected.`);
     }
   }
 };

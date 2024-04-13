@@ -1,100 +1,100 @@
+import { addMessage } from "./whiteboard-ui.js";
+/*
 // ------ PARTICIPANT REMOVAL VIA AJAX ------
-function removeParticipantAJAX(username) {
+export const removeParticipantAJAX = (userToRemove) => {
   let whiteboardID = document.getElementById("whiteboardID").value;
-  let newParticipantUsername = document.getElementById("new-participant-username").value;
-    let whiteboardOwner = document.getElementById("self-username").value;
-    let whiteboardName = document.getElementById("whiteboard-name").value;
-
-  console.log("params: " + username + ", " + whiteboardID);
+  let whiteboardOwner = document.getElementById("self-username").value;
+  let whiteboardName = document.getElementById("whiteboard-name").value;
 
   let xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function () {
     if (this.readyState === 4 && this.status === 200) {
-      // console.log("AJAX response: " + this.responseText)
-
       const jsonResponse = JSON.parse(this.responseText);
 
       if (jsonResponse.success === true) {
-        // removing participant from the list
-        let removedParticipantDiv = document.getElementById(username);
+        let removedParticipantDiv = document.getElementById(
+          `${username}-container`
+        );
         removedParticipantDiv.remove();
       }
-
-      // displaying error or success message
-      let participantsListDiv =
-        document.getElementsByClassName("participants-list")[0];
-      let outcomeMessageDiv = document.createElement("div");
-      outcomeMessageDiv.style.marginTop = "10px";
-      if (jsonResponse.success) {
-        outcomeMessageDiv.setAttribute("class", "success-msg");
-      } else outcomeMessageDiv.setAttribute("class", "error-msg");
-      outcomeMessageDiv.textContent = jsonResponse.message;
-      participantsListDiv.append(outcomeMessageDiv);
-
-      // redirection to homepage + notification system handled by Erlang + websockets
+      addMessage(jsonResponse.message);
     }
   };
 
-  xhttp.open("POST", contextPath + "/remove_participant", true);
+  xhttp.open("GET", contextPath + "/remove_participant", true);
   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
-  xhttp.send("whiteboardID=" + whiteboardID + "&" + "newParticipantUsername=" + newParticipantUsername + "&whiteboardOwner=" + whiteboardOwner + "&whiteboardName=" + whiteboardName);
-}
-
+  xhttp.send(
+    "whiteboardID=" +
+      whiteboardID +
+      "&userToRemove=" +
+      userToRemove +
+      "&whiteboardOwner=" +
+      whiteboardOwner +
+      "&whiteboardName=" +
+      whiteboardName
+  );
+};
+*/
 // ------ SHARING FUNCTIONALITY VIA AJAX ------
-document.addEventListener("DOMContentLoaded", function () {
-  document
-    .getElementById("share-button-modal")
-    .addEventListener("click", function (event) {
-      event.preventDefault();
+export const shareWhiteboard = (
+  whiteboardId,
+  whiteboardName,
+  whiteboardOwner
+) => {
+  let targetUsername = document.getElementById(
+    "new-participant-username"
+  ).value;
 
-      let whiteboardID = document.getElementById("whiteboardID").value;
-      let username = document.getElementById("new-participant-username").value;
-      let whiteboardOwner = document.getElementById("self-username").value;
-      let whiteboardName = document.getElementById("whiteboard-name").value;
+  let xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = () => {
+    if (this.readyState === 4 && this.status === 200) {
+      const jsonResponse = JSON.parse(this.responseText);
 
-      let xhttp = new XMLHttpRequest();
-      xhttp.onreadystatechange = function () {
-        if (this.readyState === 4 && this.status === 200) {
-          // console.log("AJAX response: " + this.responseText)
+      if (jsonResponse.success === true) {
+        let participantsListDiv = document.getElementById("participants");
 
-          const jsonResponse = JSON.parse(this.responseText);
+        let participantContainer = document.createElement("div");
+        participantContainer.className =
+          "d-flex justify-content-between align-items-center mb-2";
+        participantContainer.id = `${targetUsername}-container`;
 
-          if (jsonResponse.success === true) {
-            // adding new participant to list
-            let participantsListDiv =
-              document.getElementsByClassName("participants-list")[0];
+        let participantName = document.createElement("p");
+        participantName.className = "mb-0";
+        participantName.textContent = targetUsername;
+        participantContainer.appendChild(participantName);
 
-            let newlyInsertedParticipantDiv = document.createElement("div");
-            newlyInsertedParticipantDiv.setAttribute(
-              "class",
-              "whiteboard-participant"
-            );
-            newlyInsertedParticipantDiv.setAttribute("id", username);
-            newlyInsertedParticipantDiv.textContent = "• " + username;
+        let removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.className = "btn btn-danger btn-sm remove-participant-btn";
+        removeButton.setAttribute("data-participant", targetUsername);
+        removeButton.innerHTML = '<i class="bi bi-x"></i>';
 
-            participantsListDiv.append(newlyInsertedParticipantDiv);
-          }
+        removeButton.addEventListener("click", () => {
+          removeParticipant(targetUsername);
+        });
 
-          // displaying error or success message
-          let usernameTextBox =
-            document.getElementsByClassName("modal-content")[1];
-          let outcomeMessageDiv = document.createElement("div");
-          outcomeMessageDiv.style.marginTop = "10px";
-          if (jsonResponse.success)
-            outcomeMessageDiv.setAttribute("class", "success-msg");
-          else outcomeMessageDiv.setAttribute("class", "error-msg");
-          outcomeMessageDiv.textContent = jsonResponse.message;
-          usernameTextBox.append(outcomeMessageDiv);
-        }
-      };
+        participantContainer.appendChild(removeButton);
+        participantsListDiv.appendChild(participantContainer);
+      }
 
-      xhttp.open("POST", contextPath + "/share_whiteboard", true);
-      xhttp.setRequestHeader(
-        "Content-type",
-        "application/x-www-form-urlencoded"
-      );
+      addMessage(jsonResponse.message);
+    }
+  };
 
-      xhttp.send("whiteboardID=" + whiteboardID + "&" + "newParticipantUsername=" + username + "&" + "whiteboardOwner=" + whiteboardOwner + "&whiteboardName=" + whiteboardName);
-    });
-});
+  xhttp.open("POST", contextPath + "/share_whiteboard", true);
+  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+  xhttp.send(
+    "whiteboardID=" +
+      whiteboardId +
+      "&" +
+      "newParticipantUsername=" +
+      targetUsername +
+      "&" +
+      "whiteboardOwner=" +
+      whiteboardOwner +
+      "&whiteboardName=" +
+      whiteboardName
+  );
+};
