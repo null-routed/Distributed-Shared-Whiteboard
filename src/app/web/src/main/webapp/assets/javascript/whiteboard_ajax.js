@@ -7,8 +7,8 @@ export const removeParticipant = (userToRemove) => {
 
   let xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function () {
-    if (this.readyState === 4 && this.status === 200) {
-      const jsonResponse = JSON.parse(this.responseText);
+    if (xhttp.readyState === 4 && xhttp.status === 200) {
+      const jsonResponse = JSON.parse(xhttp.responseText);
 
       if (jsonResponse.success === true) {
         let removedParticipantDiv = document.getElementById(
