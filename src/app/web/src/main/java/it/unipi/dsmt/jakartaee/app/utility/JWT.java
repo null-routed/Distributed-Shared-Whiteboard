@@ -28,7 +28,6 @@ public class JWT{
         // Create a cookie to store the JWT
         Cookie cookie = new Cookie("jwt", token);
         cookie.setPath("/"); // Specify the cookie's path
-        cookie.setHttpOnly(true); // Prevent JavaScript from accessing the cookie
         cookie.setMaxAge((int) (EXPIRATION_TIME / 1000)); // Set cookie expiration time in seconds
         response.addCookie(cookie);
     }

@@ -45,6 +45,7 @@
             <% if (isLoggedUserOwner) { %>
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#shareModal" title="Share">Share</button>
             <% } %>
+        </div>
     </div>
     <!-- Whiteboard Canvas -->
     <canvas id="whiteboard"></canvas>
@@ -95,3 +96,4 @@
     <script type="module" src="${pageContext.request.contextPath}/assets/javascript/whiteboard-main.js" defer></script>
     <input type="hidden" id="username" value="<%= loggedUserDTO.getUsername() %>">
 </body>
+</html>

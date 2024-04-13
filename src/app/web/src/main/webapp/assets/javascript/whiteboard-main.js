@@ -5,5 +5,5 @@ import { setupCanvas } from "./canvas-setup.js";
 document.addEventListener("DOMContentLoaded", () => {
   setupListeners();
   setupCanvas();
-  setupWebSocket();
+  // setupWebSocket();
 });
