@@ -1,5 +1,6 @@
 import { penLogic, rubberLogic } from "./canvas-setup.js";
 import { sendRedo, sendUndo } from "./whiteboard-websocket.js";
+import { removeParticipant, shareWhiteboard } from "./whiteboard_ajax.js";
 
 let penButton, rubberButton, redoButton, undoButton, toastContainer;
 
