@@ -9,7 +9,7 @@
     <title>Homepage</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/common.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/homepage.css">
-    <script type="text/javascript" src="${pageContext.request.contextPath}/assets/javascript/whiteboardWebSocket.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/assets/javascript/websocket-notifications.js"></script>
     <script type="text/javascript"> let pageContext = "${pageContext.request.contextPath}"; </script>
 </head>
 <body>

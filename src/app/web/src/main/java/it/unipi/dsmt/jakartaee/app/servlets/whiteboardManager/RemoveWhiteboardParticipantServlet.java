@@ -33,11 +33,14 @@ public class RemoveWhiteboardParticipantServlet extends HttpServlet {
     private UserTransaction userTransaction;
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
 
         String whiteboardID = Optional.ofNullable(request.getParameter("whiteboardID")).orElse("");
-        String usernameToBeRemoved = Optional.ofNullable(request.getParameter("username")).orElse("");
+        String usernameToBeRemoved = Optional.ofNullable(request.getParameter("userToRemove")).orElse("");
+        String whiteboardOwner = Optional.ofNullable(request.getParameter("whiteboardOwner")).orElse("");
+        String whiteboardName = Optional.ofNullable(request.getParameter("whiteboardName")).orElse("");
+
 
         System.out.println("@RemoveWhiteboardParticipantServlet: called doPost() method, params=" + whiteboardID + ", " + usernameToBeRemoved);
 
@@ -97,8 +100,9 @@ public class RemoveWhiteboardParticipantServlet extends HttpServlet {
                     .build();
         }
 
-        response.setStatus(HttpServletResponse.SC_OK);      // Always send success, JSP behavior is determined by the JSON response content
 
+
+        response.setStatus(HttpServletResponse.SC_OK);      // Always send success, JSP behavior is determined by the JSON response content
         PrintWriter out = response.getWriter();
         out.print(jsonResponse);
         out.flush();

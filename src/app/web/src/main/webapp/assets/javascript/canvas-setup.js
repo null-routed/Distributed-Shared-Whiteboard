@@ -1,4 +1,4 @@
-import { sendNewStroke, sendDeleteStroke } from "./websocket.js";
+import { sendNewStroke, sendDeleteStroke } from "./whiteboard-websocket.js";
 import { generateRandomId } from "./utils.js";
 let currentColor = "#000000";
 let currentWidth = 5;

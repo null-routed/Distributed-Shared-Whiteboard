@@ -17,35 +17,36 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WebSocketServerEndpoint {
 
     // Map to store sessions associated with identifiers (e.g., usernames)
-    // private static final Map<String, Session> sessionMap = new ConcurrentHashMap<>();
+     private static final Map<String, Session> sessionMap = new ConcurrentHashMap<>();
 
     @OnOpen
-    public void onOpen(Session session, @PathParam("username") String username) {
-        session.getUserProperties().put("username", username);
+    public void onOpen(Session session, @PathParam("JWT") String JWT) {
+        sessionMap.put(JWT, session);          // associating the session to the username opening it
+//        session.getUserProperties().put("username", username);
         System.out.println("WebSocket connection opened: " + session.getUserProperties().get("username"));
     }
 
-    @OnMessage
-    public void onMessage(String message, Session session) {
-        System.out.println("Message received from client " + session.getUserProperties().get("username") + ": " + message);
-
-        // Parse JSON message
-        JsonObject jsonMessage = Json.createReader(new StringReader(message)).readObject();
-        String whiteboardName = jsonMessage.getString("whiteboardName");
-        String username = jsonMessage.getString("username");
-        String command = jsonMessage.getString("command");
-
-        String sender = (String) session.getUserProperties().get("username");
-
-        // Create a JSON object containing whiteboardId, sender
-        JsonObjectBuilder jsonBuilder = Json.createObjectBuilder()
-                .add("whiteboardName", whiteboardName)
-                .add("sender", sender)
-                .add("command", command);
-
-        JsonObject jsonToSend = jsonBuilder.build();
-        sendMessageToUser(username, jsonToSend, session);
-    }
+//    @OnMessage
+//    public void onMessage(String message, Session session) {
+//        System.out.println("Message received from client " + session.getUserProperties().get("username") + ": " + message);
+//
+//        // Parse JSON message
+//        JsonObject jsonMessage = Json.createReader(new StringReader(message)).readObject();
+//        String whiteboardName = jsonMessage.getString("whiteboardName");
+//        String username = jsonMessage.getString("username");
+//        String command = jsonMessage.getString("command");
+//
+//        String sender = (String) session.getUserProperties().get("username");
+//
+//        // Create a JSON object containing whiteboardId, sender
+//        JsonObjectBuilder jsonBuilder = Json.createObjectBuilder()
+//                .add("whiteboardName", whiteboardName)
+//                .add("sender", sender)
+//                .add("command", command);
+//
+//        JsonObject jsonToSend = jsonBuilder.build();
+//        sendMessageToUser(username, jsonToSend);
+//    }
 
     @OnClose
     public void onClose(Session session) {
@@ -63,26 +64,27 @@ public class WebSocketServerEndpoint {
     }
 
     // Method to send a message to a specific user
-    private void sendMessageToUser(String username, JsonObject message, Session clientSession) {
+    public static void sendMessageToUser(String JWT, JsonObject message) {
         // Get all active sessions
-        Set<Session> sessions = clientSession.getOpenSessions();
+//        Set<Session> sessions = clientSession.getOpenSessions();
 
         // Iterate through sessions to find the one associated with the username
-        for (Session session : sessions) {
-            String sessionUsername = (String) session.getUserProperties().get("username");
-            if (sessionUsername != null && sessionUsername.equals(username)) {
-                if (session.isOpen()) {
-                    try {
-                        session.getBasicRemote().sendObject(message);
-                        System.out.println("sending message: " + message + "to " + username);
-                    } catch (Exception e) {
-                        System.out.println("Error sending message to user: " + e.getMessage());
-                    }
-                    return; // Exit loop once the session is found and message is sent
-                }
+//        for (Session session : sessions) {
+//            String sessionUsername = (String) session.getUserProperties().get("username");
+//            if (sessionUsername != null && sessionUsername.equals(targetUsername)) {
+        Session targetUserSession = sessionMap.get(JWT);
+        if (targetUserSession.isOpen()) {
+            try {
+                targetUserSession.getBasicRemote().sendObject(message);
+                System.out.println("sending message: " + message + "to " + JWT);
+            } catch (Exception e) {
+                System.out.println("Error sending message to user: " + e.getMessage());
             }
+            return; // Exit loop once the session is found and message is sent
         }
+//            }
+//        }
         // If the session is not found or closed
-        System.out.println("User session not found or closed: " + username);
+        System.out.println("User session not found or closed: " + JWT);
     }
 }

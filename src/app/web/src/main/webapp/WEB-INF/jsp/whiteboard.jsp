@@ -77,8 +77,8 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="username" class="form-label">Username to share with:</label>
-                        <input type="text" class="form-control" id="username">
+                        <label for="new-participant-username" class="form-label">Username to share with:</label>
+                        <input type="text" class="form-control" id="new-participant-username">
                     </div>
                     <button id="share-button-modal" class="btn btn-primary">Share</button>
                 </div>

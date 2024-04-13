@@ -1,11 +1,16 @@
 // Function to establish WebSocket connection if not already present
 let socket;
-function establishWebSocketConnection(username) {
+
+export function establishWebSocketConnection() {
   // Check if WebSocket connection already exists
   if (!socket || socket.readyState !== WebSocket.OPEN) {
     // Create new WebSocket connection only if not already present or if not in OPEN state
+    const jwt = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("jwt="))
+        .split("=")[1];
     socket = new WebSocket(
-      `ws://localhost:8080/web/websocket?username=${username}`
+      `ws://localhost:8080/web/websocket?jwt=${jwt}`
     );
 
     // Function to handle WebSocket open event
@@ -36,7 +41,7 @@ function establishWebSocketConnection(username) {
 }
 
 // Function to send a message to the WebSocket server
-function sendMessageToWebSocket(whiteboardName, username, command) {
+export function sendMessageToWebSocket(whiteboardName, username, command) {
   if (socket && socket.readyState === WebSocket.OPEN) {
     const messageData = {
       whiteboardName: whiteboardName,
@@ -52,7 +57,7 @@ function sendMessageToWebSocket(whiteboardName, username, command) {
 }
 
 // Custom function to handle the received message
-function handleReceivedMessage(message) {
+export function handleReceivedMessage(message) {
   // Parse the JSON message
   let parsedMessage;
   try {

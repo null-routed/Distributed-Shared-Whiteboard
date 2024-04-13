@@ -1,7 +1,10 @@
 package it.unipi.dsmt.jakartaee.app.servlets.whiteboardManager;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unipi.dsmt.jakartaee.app.enums.ParticipantOperationStatus;
 import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
+import it.unipi.dsmt.jakartaee.app.servlets.WebSocketServerEndpoint;
 import it.unipi.dsmt.jakartaee.app.utility.RPC;
 import jakarta.annotation.Resource;
 import jakarta.ejb.EJB;
@@ -9,10 +12,12 @@ import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.UserTransaction;
+import jakarta.websocket.Session;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -34,7 +39,9 @@ public class ShareWhiteboardServlet extends HttpServlet {
 
         // Extracting parameters from the request
         String whiteboardID = Optional.ofNullable(request.getParameter("whiteboardID")).orElse("");
-        String newParticipantUsername = Optional.ofNullable(request.getParameter("username")).orElse("");
+        String newParticipantUsername = Optional.ofNullable(request.getParameter("newParticipantUsername")).orElse("");
+        String whiteboardOwner = Optional.ofNullable(request.getParameter("whiteboardOwner")).orElse("");
+        String whiteboardName = Optional.ofNullable(request.getParameter("whiteboardName")).orElse("");
 
         System.out.println("@WhiteboardServlet: called doPost() method, params=" + whiteboardID + ", " + newParticipantUsername);
 
@@ -111,8 +118,25 @@ public class ShareWhiteboardServlet extends HttpServlet {
             }
         }
 
-        response.setStatus(HttpServletResponse.SC_OK);      // Always send success, JSP behavior is determined by the JSON response content
+        // call to WebSockedEndpoint@sendUserMessage()
+        JsonObject JSONMessage = Json.createObjectBuilder()
+                .add("whiteboardName", whiteboardName)
+                .add("username", whiteboardOwner)
+                .add("command", "share")
+                .build();
 
+        String JWTValue = "";
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("jwt")) {
+                    JWTValue = cookie.getValue();
+                }
+            }
+        }
+        WebSocketServerEndpoint.sendMessageToUser(JWTValue, JSONMessage);
+
+        response.setStatus(HttpServletResponse.SC_OK);      // Always send success, JSP behavior is determined by the JSON response content
         PrintWriter out = response.getWriter();
         out.print(jsonResponse);
         out.flush();

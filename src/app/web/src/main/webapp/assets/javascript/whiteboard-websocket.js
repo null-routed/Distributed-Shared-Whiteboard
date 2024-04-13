@@ -20,7 +20,7 @@ const whiteboardID = urlParams.get("whiteboardID");
 
 export const setupWebSocket = () => {
   ws = new WebSocket(`ws://127.0.0.1:8080/ws/${whiteboardID}?jwt=` + jwt);
-  usnername = document.getElementById("username").value;
+  username = document.getElementById("self-username").value;
   ws.onopen = () => {
     setInterval(() => {
       sendSelfCursor();

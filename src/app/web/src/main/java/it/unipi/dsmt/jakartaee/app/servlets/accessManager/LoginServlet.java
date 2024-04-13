@@ -6,6 +6,7 @@ import it.unipi.dsmt.jakartaee.app.interfaces.UserEJB;
 import it.unipi.dsmt.jakartaee.app.utility.ClientRedirector;
 import it.unipi.dsmt.jakartaee.app.utility.AccessController;
 // import it.unipi.dsmt.jakartaee.app.utility.JWT;
+import it.unipi.dsmt.jakartaee.app.utility.JWT;
 import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -52,7 +53,7 @@ public class LoginServlet extends HttpServlet {
 
         //Login successful
         // Generate JWT token and set it as a cookie in the response
-        // JWT.generateTokenAndSetCookie(response, loggedUser.getUsername());
+        JWT.generateTokenAndSetCookie(response, loggedUser.getUsername());
         // add logged user info to session var
         AccessController.setLoggedUser(request, Objects.requireNonNull(loggedUser));
         response.getWriter().write("InitiateWebSocketConnection");
