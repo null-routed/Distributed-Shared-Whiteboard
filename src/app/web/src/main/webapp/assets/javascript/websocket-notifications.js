@@ -6,12 +6,10 @@ export function establishWebSocketConnection() {
   if (!socket || socket.readyState !== WebSocket.OPEN) {
     // Create new WebSocket connection only if not already present or if not in OPEN state
     const jwt = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("jwt="))
-        .split("=")[1];
-    socket = new WebSocket(
-      `ws://localhost:8080/web/websocket?jwt=${jwt}`
-    );
+      .split("; ")
+      .find((row) => row.startsWith("jwt="))
+      .split("=")[1];
+    socket = new WebSocket(`ws://localhost:8080/web/websocket?jwt=${jwt}`);
 
     // Function to handle WebSocket open event
     socket.onopen = function (event) {
@@ -40,24 +38,8 @@ export function establishWebSocketConnection() {
   }
 }
 
-// Function to send a message to the WebSocket server
-export function sendMessageToWebSocket(whiteboardName, username, command) {
-  if (socket && socket.readyState === WebSocket.OPEN) {
-    const messageData = {
-      whiteboardName: whiteboardName,
-      username: username,
-      command: command,
-    };
-    const jsonMessage = JSON.stringify(messageData);
-    socket.send(jsonMessage);
-    console.log("Message sent to server: " + messageData);
-  } else {
-    console.log("WebSocket connection is not open. Message not sent.");
-  }
-}
-
 // Custom function to handle the received message
-export function handleReceivedMessage(message) {
+function handleReceivedMessage(message) {
   // Parse the JSON message
   let parsedMessage;
   try {
