@@ -3,6 +3,7 @@ package it.unipi.dsmt.jakartaee.app.servlets.whiteboardManager;
 import it.unipi.dsmt.jakartaee.app.enums.ParticipantOperationStatus;
 import it.unipi.dsmt.jakartaee.app.interfaces.UserEJB;
 import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
+import it.unipi.dsmt.jakartaee.app.servlets.WebSocketServerEndpoint;
 import it.unipi.dsmt.jakartaee.app.utility.RPC;
 import jakarta.annotation.Resource;
 import jakarta.ejb.EJB;
@@ -10,6 +11,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,7 +35,7 @@ public class RemoveWhiteboardParticipantServlet extends HttpServlet {
     private UserTransaction userTransaction;
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
 
         String whiteboardID = Optional.ofNullable(request.getParameter("whiteboardID")).orElse("");
@@ -56,12 +58,14 @@ public class RemoveWhiteboardParticipantServlet extends HttpServlet {
 
             switch (mySQLParticipantRemovalOutcome) {
                 case SQL_SUCCESS:
-                    boolean erlangParticipantRemovalOutcome = RPC.sendErlangWhiteboardUpdateRPC(
-                            "delete",
-                            whiteboardID,
-                            userIDToBeRemoved,
-                            null
-                    );
+//                    boolean erlangParticipantRemovalOutcome = RPC.sendErlangWhiteboardUpdateRPC(
+//                            "delete",
+//                            whiteboardID,
+//                            userIDToBeRemoved,
+//                            null
+//                    );
+
+                    boolean erlangParticipantRemovalOutcome = true;
 
                     if (erlangParticipantRemovalOutcome) {
                         userTransaction.commit();
@@ -100,7 +104,14 @@ public class RemoveWhiteboardParticipantServlet extends HttpServlet {
                     .build();
         }
 
+        // call to WebSockedEndpoint@sendUserMessage()
+        JsonObject JSONMessage = Json.createObjectBuilder()
+                .add("whiteboardName", whiteboardName)
+                .add("whiteboardOwner", whiteboardOwner)
+                .add("command", "remove")
+                .build();
 
+        WebSocketServerEndpoint.sendMessageToUser(usernameToBeRemoved, JSONMessage);
 
         response.setStatus(HttpServletResponse.SC_OK);      // Always send success, JSP behavior is determined by the JSON response content
         PrintWriter out = response.getWriter();

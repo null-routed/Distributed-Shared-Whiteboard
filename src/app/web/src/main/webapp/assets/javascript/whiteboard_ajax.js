@@ -1,7 +1,7 @@
 import { addMessage } from "./whiteboard-ui.js";
 
 export const removeParticipant = (userToRemove) => {
-  let whiteboardID = document.getElementById("whiteboardID").value;
+  let whiteboardID = new URLSearchParams(window.location.search).get("whiteboardID");
   let whiteboardOwner = document.getElementById("self-username").value;
   let whiteboardName = document.getElementById("whiteboard-name").value;
 
@@ -20,7 +20,7 @@ export const removeParticipant = (userToRemove) => {
     }
   };
 
-  xhttp.open("GET", contextPath + "/remove_participant", true);
+  xhttp.open("POST", contextPath + "/remove_participant", true);
   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
   xhttp.send(
@@ -80,7 +80,7 @@ export const shareWhiteboard = (
     }
   };
 
-  xhttp.open("GET", contextPath + "/share_whiteboard", true);
+  xhttp.open("POST", contextPath + "/share_whiteboard", true);
   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
   xhttp.send(

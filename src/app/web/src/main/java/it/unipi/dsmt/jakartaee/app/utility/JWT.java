@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.Map;
 
 public class JWT{
     // Secret key used to sign the JWT
@@ -33,11 +34,11 @@ public class JWT{
     }
 
     // Validate and parse JWT token with claim assertions
-    public static Claims parseToken(String token, String username) {
+    public static Claims parseToken(String token) {
         SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
         try {
             // Configure JwtParserBuilder to use the secret key for signature verification
-            JwtParserBuilder builder = Jwts.parser().verifyWith(key).requireSubject(username);
+            JwtParserBuilder builder = Jwts.parser().verifyWith(key);//.requireSubject(username);
             JwtParser parser = builder.build();
 
             // Parse the token and extract its claims

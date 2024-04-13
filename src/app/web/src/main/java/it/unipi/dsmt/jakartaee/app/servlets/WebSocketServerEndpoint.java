@@ -1,5 +1,6 @@
 package it.unipi.dsmt.jakartaee.app.servlets;
 
+import it.unipi.dsmt.jakartaee.app.utility.JWT;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
@@ -10,6 +11,7 @@ import jakarta.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,13 +19,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WebSocketServerEndpoint {
 
     // Map to store sessions associated with identifiers (e.g., usernames)
-     private static final Map<String, Session> sessionMap = new ConcurrentHashMap<>();
+    private static final Map<String, Session> sessionMap = new ConcurrentHashMap<>();
 
     @OnOpen
-    public void onOpen(Session session, @PathParam("JWT") String JWT) {
-        sessionMap.put(JWT, session);          // associating the session to the username opening it
-//        session.getUserProperties().put("username", username);
-        System.out.println("WebSocket connection opened: " + session.getUserProperties().get("username"));
+    public void onOpen(Session session, @PathParam("jwt") String jwt) {
+        System.out.println("@WebSocketServerEndpoint: called onOpen() method, jwt = " + jwt);
+        String username = Objects.requireNonNull(JWT.parseToken(jwt)).getSubject();
+        System.out.println("@WebSocketServerEndpoint: who has opened the socket: " + username);
+        sessionMap.put(username, session);          // associating the session to the JWT opening it
     }
 
 //    @OnMessage
@@ -64,27 +67,24 @@ public class WebSocketServerEndpoint {
     }
 
     // Method to send a message to a specific user
-    public static void sendMessageToUser(String JWT, JsonObject message) {
-        // Get all active sessions
-//        Set<Session> sessions = clientSession.getOpenSessions();
+    public static void sendMessageToUser(String username, JsonObject message) {
+        System.out.println("@WebSocketServerEndpoint: called sendMessageToUser() method");
+        System.out.println("@WebSocketServerEndpoint: jwt = " + username);
 
-        // Iterate through sessions to find the one associated with the username
-//        for (Session session : sessions) {
-//            String sessionUsername = (String) session.getUserProperties().get("username");
-//            if (sessionUsername != null && sessionUsername.equals(targetUsername)) {
-        Session targetUserSession = sessionMap.get(JWT);
+        Session targetUserSession = sessionMap.get(username);
+        System.out.println("@WebSocketServerEndpoint: found target user session");
         if (targetUserSession.isOpen()) {
+            System.out.println("@WebSocketServerEndpoint: target user session is open");
             try {
                 targetUserSession.getBasicRemote().sendObject(message);
-                System.out.println("sending message: " + message + "to " + JWT);
+                System.out.println("sending message: " + message + "to " + username);
             } catch (Exception e) {
                 System.out.println("Error sending message to user: " + e.getMessage());
             }
             return; // Exit loop once the session is found and message is sent
         }
-//            }
-//        }
+
         // If the session is not found or closed
-        System.out.println("User session not found or closed: " + JWT);
+        System.out.println("User session not found or closed: " + username);
     }
 }

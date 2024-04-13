@@ -34,7 +34,7 @@ public class ShareWhiteboardServlet extends HttpServlet {
     private UserTransaction userTransaction;
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
 
         // Extracting parameters from the request
@@ -68,12 +68,13 @@ public class ShareWhiteboardServlet extends HttpServlet {
 
                 switch (insertOutcome) {
                     case SQL_SUCCESS:
-                        boolean erlangShareOperationOutcome = RPC.sendErlangWhiteboardUpdateRPC(
-                                "insert",
-                                whiteboardID,
-                                newParticipantUsername,
-                                false
-                        );
+//                        boolean erlangShareOperationOutcome = RPC.sendErlangWhiteboardUpdateRPC(
+//                                "insert",
+//                                whiteboardID,
+//                                newParticipantUsername,
+//                                false
+//                        );
+                        boolean erlangShareOperationOutcome = true;
 
                         if (erlangShareOperationOutcome) {
                             userTransaction.commit();
@@ -121,20 +122,13 @@ public class ShareWhiteboardServlet extends HttpServlet {
         // call to WebSockedEndpoint@sendUserMessage()
         JsonObject JSONMessage = Json.createObjectBuilder()
                 .add("whiteboardName", whiteboardName)
-                .add("username", whiteboardOwner)
+                .add("whiteboardOwner", whiteboardOwner)
                 .add("command", "share")
                 .build();
 
-        String JWTValue = "";
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("jwt")) {
-                    JWTValue = cookie.getValue();
-                }
-            }
-        }
-        WebSocketServerEndpoint.sendMessageToUser(JWTValue, JSONMessage);
+        System.out.println("@ShareWhiteboardServlet: JSONMessage = " + JSONMessage);
+
+        WebSocketServerEndpoint.sendMessageToUser(newParticipantUsername, JSONMessage);
 
         response.setStatus(HttpServletResponse.SC_OK);      // Always send success, JSP behavior is determined by the JSON response content
         PrintWriter out = response.getWriter();

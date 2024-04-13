@@ -33,13 +33,7 @@ export const setupListeners = () => {
 
   document.querySelectorAll(".remove-participant-btn").forEach((button) => {
     button.addEventListener("click", () => {
-      removeParticipant(this.getAttribute("data-participant"));
-    });
-  });
-
-  document.querySelectorAll(".remove-participant-btn").forEach((button) => {
-    button.addEventListener("click", () => {
-      removeParticipant(this.getAttribute("data-participant"));
+      removeParticipant(button.getAttribute("data-participant"));
     });
   });
 

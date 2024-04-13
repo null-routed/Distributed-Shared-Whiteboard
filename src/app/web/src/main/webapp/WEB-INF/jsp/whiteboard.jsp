@@ -63,9 +63,11 @@
                     <% for (String participant : participantsOnWhiteboardOpen) { %>
                         <div class="d-flex justify-content-between align-items-center mb-2" id="<%= participant %>-container">
                             <p class="mb-0"><%= participant %></p>
-                            <button type="button" class="btn btn-danger btn-sm remove-participant-btn" data-participant="<%= participant %>">
-                                <i class="bi bi-x"></i>
-                            </button>                            
+                            <% if (!(participant.equals(loggedUserDTO.getUsername()) && isLoggedUserOwner)) { %>
+                                <button type="button" class="btn btn-danger btn-sm remove-participant-btn" data-participant="<%= participant %>">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            <% } %>
                         </div>
                     <% } %>
                 </div>
