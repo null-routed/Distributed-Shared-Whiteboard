@@ -94,19 +94,23 @@ regenerate_strokes(WhiteboardId, Username) ->
 %%% Managing whiteboard access and changes
 
 handle_whiteboard_change(Action, WhiteboardId, Username, Permission) ->
-    io:format("Received RPC call"),
+    io:format("Params: ~p, ~p, ~p, ~p~n", [Action, WhiteboardId, Username, Permission]),
     case Action of
         insert ->
             new_whiteboard(WhiteboardId, Username, Permission, node());
         delete ->
             remove_whiteboard(WhiteboardId, node());
         removeParticipant ->
-            remove_participant(WhiteboardId, Username, node())
+            remove_participant(WhiteboardId, Username, node());
+        _Reason ->
+            io:format("Invalid action: ~p~n", [Action])
     end,
     ok.
 
 new_whiteboard(WhiteboardId, Username, Permission, OriginNode) ->
+    io:format("Adding new whiteboard~n"),
     mnesia_queries:add_whiteboard_access(WhiteboardId, Username, Permission),
+    io:format("Mnesia query successful~n"),
     broadcast_to_other_nodes(new_whiteboard, [WhiteboardId, Username, Permission], OriginNode).
 
 remove_whiteboard(WhiteboardId, OriginNode) ->
