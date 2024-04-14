@@ -108,9 +108,8 @@ handle_whiteboard_change(Action, WhiteboardId, Username, Permission) ->
     ok.
 
 new_whiteboard(WhiteboardId, Username, Permission, OriginNode) ->
-    io:format("Adding new whiteboard~n"),
-    mnesia_queries:add_whiteboard_access(WhiteboardId, Username, Permission),
-    io:format("Mnesia query successful~n"),
+    Res = mnesia_queries:add_whiteboard_access(WhiteboardId, Username, Permission),
+    io:format("Result: ~p~n", [Res]),
     broadcast_to_other_nodes(new_whiteboard, [WhiteboardId, Username, Permission], OriginNode).
 
 remove_whiteboard(WhiteboardId, OriginNode) ->
