@@ -54,11 +54,21 @@ public class ShareWhiteboardServlet extends HttpServlet {
                     .add("success", false)
                     .add("message", newParticipantUsername + " is already participating to this whiteboard.")
                     .build();
+            response.setStatus(HttpServletResponse.SC_OK);      // Always send success, JSP behavior is determined by the JSON response content
+            PrintWriter out = response.getWriter();
+            out.print(jsonResponse);
+            out.flush();
+            return;
         } else if (alreadyParticipantCheck == ParticipantOperationStatus.OTHER_ERROR) {
             jsonResponse = Json.createObjectBuilder()
                     .add("success", false)
                     .add("message", "An error occurred. Try again or try in a few minutes.")
                     .build();
+            response.setStatus(HttpServletResponse.SC_OK);      // Always send success, JSP behavior is determined by the JSON response content
+            PrintWriter out = response.getWriter();
+            out.print(jsonResponse);
+            out.flush();
+            return;
         } else {
             // Erlang + MySQL operations transaction
             try {
@@ -69,7 +79,7 @@ public class ShareWhiteboardServlet extends HttpServlet {
                 switch (insertOutcome) {
                     case SQL_SUCCESS:
                         boolean erlangShareOperationOutcome = RPC.sendErlangWhiteboardUpdateRPC(
-                                "share",
+                                "insert",       // share and insert operations get handled by the same Erlang handler
                                 whiteboardID,
                                 newParticipantUsername,
                                 0

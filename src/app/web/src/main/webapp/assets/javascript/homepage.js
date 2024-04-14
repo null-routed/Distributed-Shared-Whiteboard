@@ -39,7 +39,7 @@ window.onclick = function (event) {
   }
 };
 
-function confirmDelete(whiteboardId) {
+export function confirmDelete(whiteboardId) {
   if (
     confirm(
       "Are you sure you want to delete this whiteboard? \n" +
@@ -47,9 +47,8 @@ function confirmDelete(whiteboardId) {
     )
   ) {
     // submit the form
-    document.getElementById("whiteboardIdToDelete").value = whiteboardId;
-    document.getElementById("deleteWhiteboardForm").submit();
-    //deleteWhiteboard(whiteboardId)
+    document.getElementById("whiteboardIdToDelete").value = whiteboardId;     // setting the hidden field of the delete form
+    document.getElementById("deleteWhiteboardForm").submit();     // submitting the delete form to call the servlet doPost() method
   }
 }
 

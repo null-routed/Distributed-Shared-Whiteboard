@@ -9,6 +9,7 @@
     <title>Homepage</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/common.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/homepage.css">
+    <script type="module" src="${pageContext.request.contextPath}/assets/javascript/homepage.js"></script>
     <script type="text/javascript"> let pageContext = "${pageContext.request.contextPath}"; </script>
 </head>
 <body>
@@ -109,7 +110,7 @@
                             id="whiteboard_<%= whiteboard.getId() %>"
                             onclick="location.href = '${pageContext.request.contextPath}/whiteboard?whiteboardID=<%= whiteboard.getId() %>'"
                         >
-<%--                        <button type="button" class="delete-whiteboard-button" onclick="confirmDelete(<%= whiteboard.getId() %>)">&times;</button>--%>
+                        <button type="button" class="delete-whiteboard-button" onclick="confirmDelete(<%= whiteboard.getId() %>)">&times;</button>
                     </div>
                 <% } %>
             </div>
@@ -122,8 +123,6 @@
 <form id="deleteWhiteboardForm" action="${pageContext.request.contextPath}/delete_whiteboard" method="POST" style="display: none;">
     <input type="hidden" id="whiteboardIdToDelete" name="whiteboardIdToDelete">
 </form>
-
-<script type="module" src="${pageContext.request.contextPath}/assets/javascript/homepage.js"></script>
 
 </body>
 </html>

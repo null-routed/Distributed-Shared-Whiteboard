@@ -59,7 +59,7 @@ public class RemoveWhiteboardParticipantServlet extends HttpServlet {
             switch (mySQLParticipantRemovalOutcome) {
                 case SQL_SUCCESS:
                     boolean erlangParticipantRemovalOutcome = RPC.sendErlangWhiteboardUpdateRPC(
-                            "delete",
+                            "removeParticipant",
                             whiteboardID,
                             userIDToBeRemoved,
                             0       // not needed Erlang side

@@ -29,28 +29,6 @@ public class WebSocketServerEndpoint {
         sessionMap.put(username, session);          // associating the session to the JWT opening it
     }
 
-//    @OnMessage
-//    public void onMessage(String message, Session session) {
-//        System.out.println("Message received from client " + session.getUserProperties().get("username") + ": " + message);
-//
-//        // Parse JSON message
-//        JsonObject jsonMessage = Json.createReader(new StringReader(message)).readObject();
-//        String whiteboardName = jsonMessage.getString("whiteboardName");
-//        String username = jsonMessage.getString("username");
-//        String command = jsonMessage.getString("command");
-//
-//        String sender = (String) session.getUserProperties().get("username");
-//
-//        // Create a JSON object containing whiteboardId, sender
-//        JsonObjectBuilder jsonBuilder = Json.createObjectBuilder()
-//                .add("whiteboardName", whiteboardName)
-//                .add("sender", sender)
-//                .add("command", command);
-//
-//        JsonObject jsonToSend = jsonBuilder.build();
-//        sendMessageToUser(username, jsonToSend);
-//    }
-
     @OnClose
     public void onClose(Session session) {
         // Handle closed connections

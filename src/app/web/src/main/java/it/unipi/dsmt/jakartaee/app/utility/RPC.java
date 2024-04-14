@@ -49,16 +49,14 @@ public class RPC {
             return null;
         }
 
-        OtpErlangAtom arg1 = null;
-        switch (command) {
-            case "insert":
-            case "share":
-                arg1 = new OtpErlangAtom("insert"); break;
-            case "delete": arg1 = new OtpErlangAtom("delete"); break;
-            case "remove": arg1 = new OtpErlangAtom("remove"); break;
-        }
-        OtpErlangString arg2 = new OtpErlangString(whiteboardId);
-        OtpErlangString arg3 = new OtpErlangString(userId);
+        OtpErlangAtom arg1 = new OtpErlangAtom(command);
+
+        byte[] whiteboardIdBytes = whiteboardId.getBytes();
+        OtpErlangBinary arg2 = new OtpErlangBinary(whiteboardIdBytes);
+
+        byte[] userIdBytes = userId.getBytes();
+        OtpErlangBinary arg3 = new OtpErlangBinary(userIdBytes);
+
         OtpErlangInt arg4 = new OtpErlangInt(isOwner);
         OtpErlangObject[] args = new OtpErlangObject[] { arg1, arg2, arg3, arg4 };
         OtpErlangList argList = new OtpErlangList(args);

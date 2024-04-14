@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.Map;
+
 
 public class JWT{
     // Secret key used to sign the JWT
