@@ -95,7 +95,7 @@
     </div>
 
     <!-- Toast Container -->
-    <div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11; min-height: 100px;"></div>
+    <div id="toast-container" class="position-fixed bottom-0 end-0 p-3"></div>
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>

@@ -217,7 +217,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
 
         try (Connection connection = dataSource.getConnection()) {
             final String query =
-                    "SELECT W.Name AS Name, W.Description AS Description, U.Username AS Owner " +
+                    "SELECT W.Name AS Name, W.Description AS Description, U.Username AS Owner, W.ReadOnly AS isReadOnly " +
                     "FROM Whiteboards W " +
                         "INNER JOIN WhiteboardParticipants WP " +
                             "ON W.WhiteboardID = WP.WhiteboardID " +
@@ -235,7 +235,8 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                                 whiteboardID,
                                 resultSet.getString("Name"),        // Object gets built by 4-param constructor
                                 resultSet.getString("Description"),
-                                resultSet.getString("Owner")
+                                resultSet.getString("Owner"),
+                                resultSet.getBoolean("isReadOnly")
                         );
                     else
                         return null;
