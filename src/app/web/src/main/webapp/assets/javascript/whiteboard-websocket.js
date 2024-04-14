@@ -110,8 +110,9 @@ const handleWebsocketMessage = (event) => {
       break;
     case "updateUserList":
       if (receivedList) {
-        handleUserList(message.users);
+        handleUserList(message.users, true);
       } else {
+        handleUserList(message.users, false);
         receivedList = true;
       }
       break;
@@ -123,11 +124,11 @@ const handleWebsocketMessage = (event) => {
   }
 };
 
-const handleUserList = (users) => {
+const handleUserList = (users, showMessage) => {
   for (const user of users) {
     if (!usersMap[user]) {
       usersMap[user] = { color: getRandomColor() };
-      addMessage(`${user} joined.`);
+      if (showMessage) addMessage(`${user} joined.`);
     }
   }
 
