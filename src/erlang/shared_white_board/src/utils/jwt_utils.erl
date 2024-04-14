@@ -12,7 +12,7 @@ decode_jwt(Token) ->
     end.
 
 get_username_from_payload(Payload) ->
-    case maps:get(<<"username">>, Payload, undefined) of
+    case maps:get(<<"sub">>, Payload, undefined) of
         undefined -> error;
         Username -> {ok, Username}
     end.
@@ -28,7 +28,6 @@ validate_jwt(Req) ->
         {ok, Token} ->
             case decode_jwt(Token) of
                 {ok, Payload} ->
-                    io:format(Payload),
                     get_username_from_payload(Payload);
                 error ->
                     error
