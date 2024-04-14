@@ -15,6 +15,7 @@ import jakarta.transaction.*;
 
 import java.io.IOException;
 
+
 @WebServlet(name = "InsertWhiteboardServlet", value = "/insert_whiteboard")
 public class InsertWhiteboardServlet extends HttpServlet {
 
@@ -54,7 +55,7 @@ public class InsertWhiteboardServlet extends HttpServlet {
                         "insert",
                         Integer.toString(mySQLNewWhiteboardID),
                         loggedUserDTO.getUsername(),
-                        isReadOnly
+                        1
                 );
 
                 if (erlangInsertOperationOutcome) {
@@ -64,9 +65,8 @@ public class InsertWhiteboardServlet extends HttpServlet {
                 }
             }
 
-            System.out.println("Before rolling back");
             userTransaction.rollback();
-            System.out.println("After rolling back");
+            System.out.println("After rolling back: redirecting to " + request.getContextPath() + "/homepage?insertionFailed=true");
             response.sendRedirect(request.getContextPath() + "/homepage?insertionFailed=true");
         } catch (Exception e) {
             try {
@@ -76,6 +76,5 @@ public class InsertWhiteboardServlet extends HttpServlet {
             }
             throw new RuntimeException(e);
         }
-        response.sendRedirect(request.getContextPath() + "/homepage?insertionFailed=true");
     }
 }
