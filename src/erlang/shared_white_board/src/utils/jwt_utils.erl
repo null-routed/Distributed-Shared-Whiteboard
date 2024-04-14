@@ -28,6 +28,7 @@ validate_jwt(Req) ->
         {ok, Token} ->
             case decode_jwt(Token) of
                 {ok, Payload} ->
+                    io:format(Payload),
                     get_username_from_payload(Payload);
                 error ->
                     error
