@@ -29,11 +29,12 @@ broadcast_to_other_nodes(Func, Params, OriginNode) ->
 %%% User connection / disconnection notifications
 %%% These functions are used to notify all users connected to a whiteboard when a new user connects or disconnects.
 
-notify_all_users(WhiteboardId, Action, ExtraProps) ->
+notify_all_users(WhiteboardId, Action, ExtraProps, ExcludeUsername) ->
     Users = mnesia_queries:get_connected_users(WhiteboardId),
+    FilteredUsers = lists:filter(fun({Username, _}) -> Username /= ExcludeUsername end, Users),
     lists:foreach(fun({_, Pid}) ->
-                      send_message(Pid, maps:merge(#{action => Action},ExtraProps))
-                  end, Users),
+                      send_message(Pid, maps:merge(#{action => Action}, ExtraProps))
+                  end, FilteredUsers),
     ok.
 
 handle_user_connection(WhiteboardId, Username, WebSocketPid) ->
@@ -46,7 +47,8 @@ handle_user_connection(WhiteboardId, Username, WebSocketPid) ->
     mnesia_queries:update_or_add_user_connection(WhiteboardId, Username, WebSocketPid),
     notify_all_users(
         WhiteboardId, <<"updateUserList">>, 
-        #{users => [User || {User, _} <- mnesia_queries:get_connected_users(WhiteboardId)]}),
+        #{users => [User || {User, _} <- mnesia_queries:get_connected_users(WhiteboardId)]},
+        <<"">>),
 
     ok.
 
@@ -67,7 +69,8 @@ notify_user_disconnection(WhiteboardId, Username, Pid, OriginNode) ->
     mnesia_queries:remove_user_connection(WhiteboardId, Username, Pid),
     notify_all_users(
         WhiteboardId, <<"updateUserList">>, 
-        #{users => [User || {User, _} <- mnesia_queries:get_connected_users(WhiteboardId)]}),
+        #{users => [User || {User, _} <- mnesia_queries:get_connected_users(WhiteboardId)]},
+        Username),
     broadcast_to_other_nodes(notify_user_disconnection, [WhiteboardId, Username], OriginNode).
 
 regenerate_strokes(WhiteboardId, Username) ->
@@ -128,10 +131,10 @@ handle_stroke(StrokeId, Action, WhiteboardId, Username, Data, TempId, Timestamp,
 notify_stroke(StrokeId, Action, WhiteboardId, Data, TempId) ->
     io:format("notify_strokes called with params: ~p, ~p, ~p, ~p, ~p~n", [StrokeId, Action, WhiteboardId, Data, TempId]),
     ExtraProps = #{strokeId => StrokeId, action => Action, data => Data, tempId => TempId},
-    notify_all_users(WhiteboardId, Action, ExtraProps).
+    notify_all_users(WhiteboardId, Action, ExtraProps, <<"">>).
 
 handle_cursor_position_update(WhiteboardId, Username, Data, OriginNode) ->
-    notify_all_users(WhiteboardId, <<"updateUserCursor">>, #{username => Username, data => Data}),
+    notify_all_users(WhiteboardId, <<"updateUserCursor">>, #{username => Username, data => Data}, Username),
     broadcast_to_other_nodes(handle_cursor_position_update, [WhiteboardId, Username, Data], OriginNode).
 
 handle_undo(WhiteboardId, Username, OriginNode) ->
