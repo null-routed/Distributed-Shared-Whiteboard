@@ -1,7 +1,7 @@
 -module(jwt_utils).
 -export([validate_jwt/1]).
 
--define(SECRET, <<"yourRandomSecretKey">>). % secret
+-define(SECRET, <<"12345678912345678912345678912345">>). % secret
 
 decode_jwt(Token) ->
     case jwt:decode(Token, ?SECRET) of
