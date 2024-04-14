@@ -10,6 +10,8 @@ public class MinimalWhiteboardDTO implements Serializable {
     private String owner;
     private byte[] whiteboardSnapshot;
 
+    private boolean readOnly;
+
     public MinimalWhiteboardDTO(int id, String name, String description, byte[] whiteboardSnapshot) {
         this.id = id;
         this.name = name;
@@ -17,11 +19,12 @@ public class MinimalWhiteboardDTO implements Serializable {
         this.whiteboardSnapshot = whiteboardSnapshot;
     }
 
-    public MinimalWhiteboardDTO(int id, String name, String description, String owner) {
+    public MinimalWhiteboardDTO(int id, String name, String description, String owner, boolean  readOnly) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.owner = owner;
+        this.readOnly = readOnly;
     }
 
     public int getId() {
@@ -56,6 +59,9 @@ public class MinimalWhiteboardDTO implements Serializable {
 
     public void setWhiteboardSnapshot(byte[] whiteboardSnapshot) { this.whiteboardSnapshot = whiteboardSnapshot; }
 
+    public boolean isReadOnly() {
+        return readOnly;
+    }
     @Override
     public String toString() {
          return name;
