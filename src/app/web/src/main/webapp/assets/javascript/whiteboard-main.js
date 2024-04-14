@@ -6,6 +6,6 @@ import { establishWebSocketConnection } from "./websocket-notifications.js";
 document.addEventListener("DOMContentLoaded", () => {
   setupListeners();
   setupCanvas();
-  establishWebSocketConnection();
-  // setupWebSocket();
+  establishWebSocketConnection();     // notifications
+  setupWebSocket();         // sketching
 });

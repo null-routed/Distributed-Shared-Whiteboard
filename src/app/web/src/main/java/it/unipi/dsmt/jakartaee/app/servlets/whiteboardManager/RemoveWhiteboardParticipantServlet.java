@@ -58,14 +58,12 @@ public class RemoveWhiteboardParticipantServlet extends HttpServlet {
 
             switch (mySQLParticipantRemovalOutcome) {
                 case SQL_SUCCESS:
-//                    boolean erlangParticipantRemovalOutcome = RPC.sendErlangWhiteboardUpdateRPC(
-//                            "delete",
-//                            whiteboardID,
-//                            userIDToBeRemoved,
-//                            null
-//                    );
-
-                    boolean erlangParticipantRemovalOutcome = true;
+                    boolean erlangParticipantRemovalOutcome = RPC.sendErlangWhiteboardUpdateRPC(
+                            "delete",
+                            whiteboardID,
+                            userIDToBeRemoved,
+                            0       // not needed Erlang side
+                    );
 
                     if (erlangParticipantRemovalOutcome) {
                         userTransaction.commit();

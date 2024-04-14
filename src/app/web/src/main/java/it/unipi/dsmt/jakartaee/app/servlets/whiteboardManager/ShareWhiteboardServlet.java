@@ -68,13 +68,12 @@ public class ShareWhiteboardServlet extends HttpServlet {
 
                 switch (insertOutcome) {
                     case SQL_SUCCESS:
-//                        boolean erlangShareOperationOutcome = RPC.sendErlangWhiteboardUpdateRPC(
-//                                "insert",
-//                                whiteboardID,
-//                                newParticipantUsername,
-//                                false
-//                        );
-                        boolean erlangShareOperationOutcome = true;
+                        boolean erlangShareOperationOutcome = RPC.sendErlangWhiteboardUpdateRPC(
+                                "share",
+                                whiteboardID,
+                                newParticipantUsername,
+                                0
+                        );
 
                         if (erlangShareOperationOutcome) {
                             userTransaction.commit();

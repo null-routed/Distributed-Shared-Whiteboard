@@ -50,7 +50,7 @@ public class DeleteWhiteboardServlet extends HttpServlet {
                                 "delete",
                                 whiteboardIdToDelete,
                                 null,       // not needed Erlang side
-                                null
+                                0           // not needed Erlang side
                         );
 
                         if (erlangDeleteOperationOutcome) {
@@ -87,7 +87,7 @@ public class DeleteWhiteboardServlet extends HttpServlet {
                             "delete",
                             whiteboardIdToDelete,
                             loggedUserDTO.getUsername(),        // user to be removed from the whiteboard participants list
-                            null            // not needed Erlang side
+                            0            // not needed Erlang side
                     );
 
                     if (erlangParticipantRemovalOutcome) {

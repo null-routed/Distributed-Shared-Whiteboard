@@ -9,7 +9,7 @@ public class RPC {
 
     private static OtpConnection connection = null;
 
-    public static boolean sendErlangWhiteboardUpdateRPC(String command, String whiteboardId, String userId, Boolean isOwner) {
+    public static boolean sendErlangWhiteboardUpdateRPC(String command, String whiteboardId, String userId, int isOwner) {
         System.out.println("@RPC: called sendErlangWhiteboardUpdateRPC() method, params=" + command + ", " + whiteboardId + ", " + userId + ", " + isOwner);
         try {
             OtpErlangObject received = executeErlangCommand(command, whiteboardId, userId, isOwner);
@@ -27,29 +27,43 @@ public class RPC {
 
     public static OtpConnection getConnection() throws IOException, OtpAuthException {
         if (connection == null) {
-            OtpSelf self = new OtpSelf("java_client", "XNXTRFGTRHNTNTCISPTB");
-            OtpPeer peer = new OtpPeer("erlang_node@localhost");
-            connection = self.connect(peer);
+            OtpSelf self = new OtpSelf("java_client", "shared_whiteboard_app");
+            OtpPeer peer = new OtpPeer("node1@localhost");
+            try {
+                connection = self.connect(peer);
+                System.out.println("Java erlang node connection established.");
+            } catch (Exception e) {
+                System.out.println("cause:" + e.getCause());
+                e.printStackTrace();
+            }
         }
         return connection;
     }
 
-    public static OtpErlangObject executeErlangCommand(String command, String whiteboardId, String userId, boolean isOwner)
+    public static OtpErlangObject executeErlangCommand(String command, String whiteboardId, String userId, int isOwner)
             throws IOException, OtpAuthException, OtpErlangExit {
         OtpConnection conn = getConnection();           // Connecting to Erlang node
+
         if (conn == null) {
             System.err.println("@RPC: called executeErlangCommand() method, failed to establish connection.");
             return null;
         }
 
-        OtpErlangString arg1 = new OtpErlangString(command);
+        OtpErlangAtom arg1 = null;
+        switch (command) {
+            case "insert":
+            case "share":
+                arg1 = new OtpErlangAtom("insert"); break;
+            case "delete": arg1 = new OtpErlangAtom("delete"); break;
+            case "remove": arg1 = new OtpErlangAtom("remove"); break;
+        }
         OtpErlangString arg2 = new OtpErlangString(whiteboardId);
         OtpErlangString arg3 = new OtpErlangString(userId);
-        OtpErlangBoolean arg4 = new OtpErlangBoolean(isOwner);
+        OtpErlangInt arg4 = new OtpErlangInt(isOwner);
         OtpErlangObject[] args = new OtpErlangObject[] { arg1, arg2, arg3, arg4 };
         OtpErlangList argList = new OtpErlangList(args);
 
-        connection.sendRPC("whiteboard_manager", "delete_whiteboard", argList);
+        connection.sendRPC("whiteboard", "handle_whiteboard_change", argList);
 
         return connection.receiveRPC();             // Return the received responses
     }
