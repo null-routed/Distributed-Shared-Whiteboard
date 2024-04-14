@@ -318,7 +318,7 @@ print_all_records() ->
             io:format("~p~n", [Record]),
             Acc
         end,
-        mnesia:foldl(FoldFun, ok, whiteboard_users)
+        mnesia:foldl(FoldFun, ok, whiteboard_access)
     end,
     mnesia:transaction(Fun).
 
