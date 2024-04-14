@@ -11,6 +11,7 @@ import { addMessage } from "./whiteboard-ui.js";
 import { getRandomColor } from "./utils.js";
 
 let ws, username;
+let receivedList = false;
 const jwt = document.cookie
   .split("; ")
   .find((row) => row.startsWith("jwt="))
@@ -93,9 +94,7 @@ const sendSelfCursor = () => {
 
 const handleWebsocketMessage = (event) => {
   const message = JSON.parse(event.data);
-  switch (
-    message.action // message action is addStroke
-  ) {
+  switch (message.action) {
     case "addStroke":
       if (
         message.tempId !== undefined &&
@@ -110,7 +109,11 @@ const handleWebsocketMessage = (event) => {
       deleteStroke(message.strokeId);
       break;
     case "updateUserList":
-      handleUserList(message.users);
+      if (receivedList) {
+        handleUserList(message.users);
+      } else {
+        receivedList = true;
+      }
       break;
     case "updateUserCursor":
       updateUserCursor(message.data, message.username);
