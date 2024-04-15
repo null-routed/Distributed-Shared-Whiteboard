@@ -42,7 +42,8 @@
         <!-- Additional actions on the right -->
         <div>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#participantsModal" title="Participants">Participants</button>
-            <button class="btn btn-primary" onclick="window.location='/'" title="Home">Home</button>
+            <button class="btn btn-primary" onclick="location.href = '${pageContext.request.contextPath}/homepage'"
+                    title="Home">Home</button>
             <% if (isLoggedUserOwner) { %>
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#shareModal" title="Share">Share</button>
             <% } %>
