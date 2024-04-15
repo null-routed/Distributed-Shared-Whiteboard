@@ -9,6 +9,7 @@
     <title>Homepage</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/common.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/homepage.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script type="module" src="${pageContext.request.contextPath}/assets/javascript/homepage.js"></script>
     <script type="text/javascript"> let pageContext = "${pageContext.request.contextPath}"; </script>
 </head>
@@ -71,22 +72,34 @@
                 </div>
 
                 <!-- INSERT NEW WHITEBOARD MODAL -->
-                <div id="insert-whiteboard-modal" class="modal">
-                    <div class="modal-content">
-                        <span class="close">&times;</span>
-                        <h2>Create a new Whiteboard</h2>
-                            <form id="addForm" action="${pageContext.request.contextPath}/insert_whiteboard" method="POST">
-                            <label for="whiteboardName">Whiteboard Name:</label>
-                            <input type="text" id="whiteboardName" name="whiteboardName">
-
-                            <label for="whiteboardDescription">Description:</label>
-                            <textarea id="whiteboardDescription" name="whiteboardDescription"></textarea>
-
-                            <label for="readOnly">Read-only:</label>
-                            <input type="checkbox" id="readOnly" name="readOnly">
-
-                            <button type="submit">Submit</button>
-                        </form>
+                <div id="insert-whiteboard-modal" class="modal fade" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalLabel">Create a New Whiteboard</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="addForm" action="${pageContext.request.contextPath}/insert_whiteboard" method="POST">
+                                    <div class="mb-3">
+                                        <label for="whiteboardName" class="form-label">Whiteboard Name:</label>
+                                        <input type="text" class="form-control" id="whiteboardName" name="whiteboardName">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="whiteboardDescription" class="form-label">Description:</label>
+                                        <textarea class="form-control" id="whiteboardDescription" name="whiteboardDescription"></textarea>
+                                    </div>
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="readOnly" name="readOnly">
+                                        <label class="form-check-label" for="readOnly">Read-only</label>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -123,6 +136,7 @@
 <form id="deleteWhiteboardForm" action="${pageContext.request.contextPath}/delete_whiteboard" method="POST" style="display: none;">
     <input type="hidden" id="whiteboardIdToDelete" name="whiteboardIdToDelete">
 </form>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

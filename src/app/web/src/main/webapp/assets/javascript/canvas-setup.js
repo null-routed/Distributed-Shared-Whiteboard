@@ -12,8 +12,9 @@ export let usersMap = {};
 export let cursorPosition = { x: 0, y: 0 };
 
 export const setupCanvas = () => {
+  let hasWritePermission = document.getElementById("writePermission").value === "true";
   canvas = new fabric.Canvas("whiteboard", {
-    isDrawingMode: true,
+    isDrawingMode: hasWritePermission,
     perPixelTargetFind: true,
   });
 
@@ -71,6 +72,18 @@ export const addStroke = (jsonizedPath, strokeId) => {
     canvas.renderAll();
   });
 };
+
+export const removeUserCursor = (username) => {
+    let user = usersMap[username];
+    if (!user) {
+        return;
+    }
+
+    if (user.cursor && user.cursor.group) {
+        canvas.remove(user.cursor.group);
+        canvas.renderAll();
+    }
+}
 
 export const updateUserCursor = (data, username) => {
   let user = usersMap[username];

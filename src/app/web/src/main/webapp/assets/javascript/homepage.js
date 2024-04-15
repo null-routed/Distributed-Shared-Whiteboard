@@ -15,13 +15,13 @@ window.onclick = function (event) {
 };
 
 /* ------ INSERT NEW WHITEBOARD MODAL ------ */
-let insert_modal = document.getElementById("insert-whiteboard-modal");
+let insert_modal = new bootstrap.Modal(document.getElementById("insert-whiteboard-modal"));
 let insert_btn = document.getElementById("add-button");
 let insert_X_span = document.getElementsByClassName("close")[1];
 
 // When the user clicks on the button, open the modal
 insert_btn.onclick = function () {
-  insert_modal.style.display = "block";
+  insert_modal.show();
   insert_btn.src = pageContext + "/assets/images/add_img_clicked.svg";
 };
 
