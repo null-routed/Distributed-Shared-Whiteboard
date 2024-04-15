@@ -37,8 +37,6 @@ export const removeParticipant = (userToRemove) => {
 
 export const shareWhiteboard = (
   whiteboardId,
-  whiteboardName,
-  whiteboardOwner
 ) => {
   let targetUsername = document.getElementById(
     "new-participant-username"
@@ -88,11 +86,6 @@ export const shareWhiteboard = (
       whiteboardId +
       "&" +
       "newParticipantUsername=" +
-      targetUsername +
-      "&" +
-      "whiteboardOwner=" +
-      whiteboardOwner +
-      "&whiteboardName=" +
-      whiteboardName
+      targetUsername
   );
 };
