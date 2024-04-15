@@ -6,6 +6,7 @@ import {
   deleteStroke,
   updateStroke,
   tempIdMap,
+  removeUserCursor,
 } from "./canvas-setup.js";
 import { addMessage } from "./whiteboard-ui.js";
 import { getRandomColor } from "./utils.js";
@@ -134,6 +135,7 @@ const handleUserList = (users, showMessage) => {
 
   for (const user in usersMap) {
     if (!users.includes(user)) {
+      removeUserCursor(user);
       delete usersMap[user];
       addMessage(`${user} disconnected.`);
     }
