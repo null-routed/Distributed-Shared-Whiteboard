@@ -42,8 +42,6 @@ export const setupListeners = () => {
     .addEventListener("click", () => {
       shareWhiteboard(
         new URLSearchParams(window.location.search).get("whiteboardID"),
-        document.getElementById("whiteboard-name").value,
-        document.getElementById("self-username").value
       );
     });
 };

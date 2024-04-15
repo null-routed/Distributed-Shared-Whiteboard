@@ -13,7 +13,7 @@
     MinimalWhiteboardDTO whiteboardData = (MinimalWhiteboardDTO) session.getAttribute("whiteboardData");
 
     boolean isLoggedUserOwner = whiteboardData.getOwner().equals(loggedUserDTO.getUsername());
-
+    boolean hasWritePermission = isLoggedUserOwner || !whiteboardData.isReadOnly();
     List<String> participantsOnWhiteboardOpen = (List<String>) session.getAttribute("whiteboardParticipants");
     if (!participantsOnWhiteboardOpen.contains(loggedUserDTO.getUsername())) {
 %>
@@ -33,10 +33,10 @@
     <div class="toolbar">
         <!-- Tools on the left -->
         <div>
-            <button class="btn btn-light" id="undo-button" title="Undo"><i class="bi bi-arrow-counterclockwise"></i></button>
-            <button class="btn btn-light" id="redo-button" title="Redo"><i class="bi bi-arrow-clockwise"></i></button>
-            <button class="btn btn-light active" id="pen-button" title="Pen"><i class="bi bi-pencil-fill"></i></button>
-            <button class="btn btn-light" id="rubber-button" title="Rubber"><i class="bi bi-eraser-fill"></i></button>
+            <button class="btn btn-light" id="undo-button" title="Undo" <%= !hasWritePermission ? "disabled" : "" %>><i class="bi bi-arrow-counterclockwise"></i></button>
+            <button class="btn btn-light" id="redo-button" title="Redo" <%= !hasWritePermission ? "disabled" : "" %>><i class="bi bi-arrow-clockwise"></i></button>
+            <button class="btn btn-light active" id="pen-button" title="Pen" <%= !hasWritePermission ? "disabled" : "" %>><i class="bi bi-pencil-fill"></i></button>
+            <button class="btn btn-light" id="rubber-button" title="Rubber" <%= !hasWritePermission ? "disabled" : "" %>><i class="bi bi-eraser-fill"></i></button>
         </div>
 
         <!-- Additional actions on the right -->
@@ -104,6 +104,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
     <script type="module" src="${pageContext.request.contextPath}/assets/javascript/whiteboard-main.js" defer></script>
     <input type="hidden" id="self-username" value="<%= loggedUserDTO.getUsername() %>">
-    <input type="hidden" id="whiteboard-name" value="<%= whiteboardData.getName() %>">
+    <input type="hidden" id="writePermission" value="<%= hasWritePermission %>">
 </body>
 </html>
