@@ -1,4 +1,10 @@
 import { establishWebSocketConnection } from "./websocket-notifications.js";
+
+document.addEventListener("DOMContentLoaded", () => {
+  establishWebSocketConnection();
+  setupWhiteboardDeleteButtons();
+});
+
 /* ------ ERROR DISPLAYING MODAL ------ */
 let error_X_span = document.getElementsByClassName("close")[0];
 
@@ -39,19 +45,24 @@ window.onclick = function (event) {
   }
 };
 
-window.confirmDelete = function (whiteboardId) {
-  if (
-    confirm(
+export function setupWhiteboardDeleteButtons () {
+  let deleteWhiteboardButtons = document.getElementsByClassName("delete-whiteboard-button");
+  console.log(deleteWhiteboardButtons);
+  for (let button of deleteWhiteboardButtons) {
+    button.addEventListener("click", function () {
+      confirmDelete(button.getAttribute("data"))
+    });
+  }
+}
+
+export function confirmDelete (whiteboardId) {
+  let deleteConfirmation = confirm(
       "Are you sure you want to delete this whiteboard? \n" +
-        "If you are not the owner you will leave the participation"
-    )
-  ) {
-    // submit the form
+      "If you are not the owner you will leave the participation."
+  )
+
+  if (deleteConfirmation) {
     document.getElementById("whiteboardIdToDelete").value = whiteboardId;     // setting the hidden field of the delete form
     document.getElementById("deleteWhiteboardForm").submit();     // submitting the delete form to call the servlet doPost() method
   }
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-  establishWebSocketConnection();
-});

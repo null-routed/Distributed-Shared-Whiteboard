@@ -11,8 +11,6 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/homepage.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script type="text/javascript"> let pageContext = "${pageContext.request.contextPath}"; </script>
-    <script type="module" src="${pageContext.request.contextPath}/assets/javascript/homepage.js"></script>
-    <script type="module" src="${pageContext.request.contextPath}/assets/javascript/homepage-main.js" defer></script>
 </head>
 <body>
 <div id="homepage-container">
@@ -118,13 +116,14 @@
 <%--                            <p><%= whiteboard.getName() %></p>--%>
 <%--                        </div>--%>
                         <img
+
                             class="whiteboard-snapshot"
                             alt="<%= whiteboard.getName() %>"
-                            src="${pageContext.request.contextPath}/snapshot_manager?whiteboardID=<%= whiteboard.getId() %>&userID=<%= loggedUserDTO.getId() %>"
+                            src="${pageContext.request.contextPath}/snapshot_manager?whiteboardID=<%= whiteboard.getId() %>"
                             id="whiteboard_<%= whiteboard.getId() %>"
                             onclick="location.href = '${pageContext.request.contextPath}/whiteboard?whiteboardID=<%= whiteboard.getId() %>'"
                         >
-                        <button type="button" class="delete-whiteboard-button" onclick="confirmDelete(<%= whiteboard.getId() %>)">&times;</button>
+                        <button type="button" class="delete-whiteboard-button" data="<%= whiteboard.getId() %>">&times;</button>
                     </div>
                 <% } %>
             </div>
@@ -140,6 +139,9 @@
 <form id="deleteWhiteboardForm" action="${pageContext.request.contextPath}/delete_whiteboard" method="POST" style="display: none;">
     <input type="hidden" id="whiteboardIdToDelete" name="whiteboardIdToDelete">
 </form>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="${pageContext.request.contextPath}/assets/javascript/homepage.js"></script>
+
 </body>
 </html>

@@ -38,6 +38,7 @@ public class DeleteWhiteboardServlet extends HttpServlet {
         if (whiteboardIdToDelete != null) {
 
             boolean clientIsOwner = whiteboardEJB.isWhiteboardOwner(loggedUserDTO.getId(), whiteboardIdToDelete);
+
             if (clientIsOwner) {        // Erlang + MySQL operations transaction if the requester is the whiteboard owner
 
                 try {
@@ -49,7 +50,7 @@ public class DeleteWhiteboardServlet extends HttpServlet {
                         boolean erlangDeleteOperationOutcome = RPC.sendErlangWhiteboardUpdateRPC(
                                 "delete",
                                 whiteboardIdToDelete,
-                                null,       // not needed Erlang side
+                                "",       // not needed Erlang side
                                 0           // not needed Erlang side
                         );
 
