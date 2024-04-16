@@ -134,6 +134,9 @@
     </div>
 </div>
 
+<!-- Toast Container -->
+<div id="toast-container" class="position-fixed bottom-0 end-0 p-3"></div>
+
 <form id="deleteWhiteboardForm" action="${pageContext.request.contextPath}/delete_whiteboard" method="POST" style="display: none;">
     <input type="hidden" id="whiteboardIdToDelete" name="whiteboardIdToDelete">
 </form>

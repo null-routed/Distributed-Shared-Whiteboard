@@ -1,6 +1,8 @@
-// Function to establish WebSocket connection if not already present
+import {addMessage} from "./whiteboard-ui.js";
+
 let socket;
 
+// Function to establish WebSocket connection if not already present
 export function establishWebSocketConnection() {
   // Check if WebSocket connection already exists
   if (!socket || socket.readyState !== WebSocket.OPEN) {
@@ -52,10 +54,10 @@ export function establishWebSocketConnection() {
 
     // Check if the message contains the expected properties
     if (
-      !parsedMessage ||
-      !parsedMessage.whiteboardName ||
-      !parsedMessage.whiteboardOwner ||
-      !parsedMessage.command
+        !parsedMessage ||
+        !parsedMessage.whiteboardName ||
+        !parsedMessage.whiteboardOwner ||
+        !parsedMessage.command
     ) {
       console.error("Received message does not contain expected properties.");
       return; // Exit function if message format is invalid
@@ -66,26 +68,19 @@ export function establishWebSocketConnection() {
     const whiteboardOwner = parsedMessage.whiteboardOwner;
     const command = parsedMessage.command;
 
-    // Example: spawn a custom modal
-    let modalMessage = null;
-    if (command === "share")
-      modalMessage = `${whiteboardOwner} has shared the whiteboard ${whiteboardId} with you`;
-    else
-      modalMessage = `${whiteboardOwner} removed you from the whiteboard ${whiteboardId}`;
-    const modal = document.createElement("div");
-    modal.innerHTML = modalMessage;
-    modal.style.position = "fixed";
-    modal.style.top = "50%";
-    modal.style.left = "50%";
-    modal.style.transform = "translate(-50%, -50%)";
-    modal.style.backgroundColor = "white";
-    modal.style.padding = "20px";
-    modal.style.border = "1px solid black";
-    modal.style.zIndex = "9999";
-    document.body.appendChild(modal);
+    // show toast notification
+    const toastMessage = (command === "share") ?
+        `${whiteboardOwner} has shared the whiteboard ${whiteboardId} with you` :
+        `${whiteboardOwner} removed you from the whiteboard ${whiteboardId}`;
 
-    // Add an event listener to the modal for reloading the page when clicked
-    modal.addEventListener("click", function () {
+    addMessage(toastMessage); // Call the addMessage function to display the toast
+
+    // Reload the page when the toast is clicked
+    const toastElement = document.getElementById('toast-container').lastElementChild; // Assuming 'toastContainer' is the id of your toast container
+    toastElement.addEventListener("click", function () {
+      window.location.reload();
+    });
+    toastElement.addEventListener("hidden.bs.toast", function () {
       window.location.reload();
     });
   }

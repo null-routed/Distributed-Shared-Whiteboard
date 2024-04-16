@@ -9,7 +9,7 @@ export const setupListeners = () => {
   rubberButton = document.getElementById("rubber-button");
   redoButton = document.getElementById("redo-button");
   undoButton = document.getElementById("undo-button");
-  toastContainer = document.getElementById("toast-container");
+  //toastContainer = document.getElementById("toast-container");
 
   penButton.addEventListener("click", function () {
     penLogic();
@@ -47,6 +47,7 @@ export const setupListeners = () => {
 };
 
 export const addMessage = (message) => {
+  toastContainer = document.getElementById("toast-container");
   const toastId = `toast-${Date.now()}`;
   const toastHtml = `
         <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="${toastId}">
@@ -64,7 +65,7 @@ export const addMessage = (message) => {
   toastContainer.insertAdjacentHTML("beforeend", toastHtml);
   const toastElement = document.getElementById(toastId);
   const toast = new bootstrap.Toast(toastElement, {
-    delay: 2000,
+    delay: 5000,
   });
 
   toast.show();
