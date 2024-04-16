@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.Base64;
 
 @WebServlet(name = "ShareWhiteboardServlet", value = "/share_whiteboard")
 public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
@@ -88,8 +87,7 @@ public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
 
         if (erlangShareOperationOutcome) {
             userTransaction.commit();
-            byte[] snapshotData = whiteboardEJB.getSnapshotByWhiteboardID(String.valueOf(whiteboardDTO.getId()));
-            sendWebSocketMessage(newParticipantUsername, whiteboardDTO, snapshotData);
+            sendWebSocketMessage(newParticipantUsername, whiteboardDTO);
             return createJsonResponse(true, newParticipantUsername + " has been added to this whiteboard!");
         } else {
             userTransaction.rollback();
@@ -115,12 +113,10 @@ public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
         }
     }
 
-    private void sendWebSocketMessage(String username, MinimalWhiteboardDTO whiteboardDTO, byte[] snapshotData) {
-        String base64EncodedSnapshot = Base64.getEncoder().encodeToString(snapshotData);
+    private void sendWebSocketMessage(String username, MinimalWhiteboardDTO whiteboardDTO) {
         JsonObject message = Json.createObjectBuilder()
                 .add("whiteboardName", whiteboardDTO.getName())
                 .add("whiteboardOwner", whiteboardDTO.getOwner())
-                .add("whiteboardSnapshot", base64EncodedSnapshot)
                 .add("whiteboardID", whiteboardDTO.getId())
                 .add("whiteboardDescription", whiteboardDTO.getDescription())
                 .add("whiteboardReadOnly", whiteboardDTO.isReadOnly())
