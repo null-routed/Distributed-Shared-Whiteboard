@@ -21,13 +21,14 @@ CREATE TABLE Whiteboards (
 	WhiteboardID INT AUTO_INCREMENT PRIMARY KEY,
     Name VARCHAR(50) NOT NULL,
     Description TEXT,
-    ReadOnly BOOLEAN NOT NULL		-- True: only the creator user can write on the whiteboard
+    ReadOnly BOOLEAN NOT NULL,		-- True: only the creator user can write on the whiteboard
+    WhiteboardSnapshot LONGBLOB DEFAULT NULL
+
 );
 
 -- Whiteboard members and creator Table
 CREATE TABLE WhiteboardParticipants (
     WhiteboardID INT NOT NULL,
     UserID INT NOT NULL,
-    IsOwner BOOLEAN NOT NULL,		-- True: UserID is the owner of WhiteboardID 
-    WhiteboardSnapshot LONGBLOB DEFAULT NULL
+    IsOwner BOOLEAN NOT NULL		-- True: UserID is the owner of WhiteboardID
 );
