@@ -2,8 +2,6 @@ import { addMessage } from "./whiteboard-ui.js";
 
 export const removeParticipant = (userToRemove) => {
   let whiteboardID = new URLSearchParams(window.location.search).get("whiteboardID");
-  let whiteboardOwner = document.getElementById("self-username").value;
-  let whiteboardName = document.getElementById("whiteboard-name").value;
 
   let xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function () {
@@ -27,11 +25,7 @@ export const removeParticipant = (userToRemove) => {
     "whiteboardID=" +
       whiteboardID +
       "&userToRemove=" +
-      userToRemove +
-      "&whiteboardOwner=" +
-      whiteboardOwner +
-      "&whiteboardName=" +
-      whiteboardName
+      userToRemove
   );
 };
 
