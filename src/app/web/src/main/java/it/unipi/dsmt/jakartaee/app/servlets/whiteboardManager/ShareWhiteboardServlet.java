@@ -29,14 +29,14 @@ public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
         String newParticipantUsername = getParameter(request, "newParticipantUsername");
 
         if(whiteboardID.isEmpty() || newParticipantUsername.isEmpty() || user == null) {
-            sendResponse(response, createJsonResponse(false, "missing parameters"), HttpServletResponse.SC_BAD_REQUEST);
+            sendResponse(response, createJsonResponse(false, "missing parameters"));
             return;
         }
 
         MinimalWhiteboardDTO whiteboardDTO = whiteboardEJB.getWhiteboardByID(Integer.parseInt(whiteboardID));
 
-        if(!checkOwnership(whiteboardDTO, user.getUsername())) {
-            sendResponse(response, createJsonResponse(false, "Forbidden"), HttpServletResponse.SC_FORBIDDEN);
+        if(isNotOwner(whiteboardDTO, user.getUsername())) {
+            sendResponse(response, createJsonResponse(false, "Forbidden"));
             return;
         }
 
@@ -75,6 +75,7 @@ public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
                 return createJsonResponse(false, getErrorMessage(insertOutcome));
             }
         } catch (Exception e) {
+            System.out.println("Error processing transaction: " + e.getMessage());
             rollbackTransaction();
             return createJsonResponse(false, "An error occurred during transaction. Try again.");
         }
