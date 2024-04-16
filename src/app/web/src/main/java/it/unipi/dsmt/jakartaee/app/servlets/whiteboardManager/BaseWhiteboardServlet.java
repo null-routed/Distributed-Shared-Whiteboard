@@ -1,5 +1,6 @@
 package it.unipi.dsmt.jakartaee.app.servlets.whiteboardManager;
 
+import it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO;
 import jakarta.annotation.Resource;
 import jakarta.ejb.EJB;
 import jakarta.json.Json;
@@ -38,8 +39,18 @@ public abstract class BaseWhiteboardServlet extends HttpServlet {
         }
     }
 
+    protected void sendResponse(HttpServletResponse response, JsonObject jsonResponse, int statusCode) throws IOException {
+        response.setStatus(statusCode);
+        sendResponse(response, jsonResponse);
+    }
+
+
     protected String getParameter(HttpServletRequest request, String paramName) {
         return Optional.ofNullable(request.getParameter(paramName)).orElse("");
+    }
+
+    protected boolean checkOwnership(MinimalWhiteboardDTO whiteboardDTO, String username) {
+        return whiteboardDTO != null && whiteboardDTO.getOwner().equals(username);
     }
 
 }
