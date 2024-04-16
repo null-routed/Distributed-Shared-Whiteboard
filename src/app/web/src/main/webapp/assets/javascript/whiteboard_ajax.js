@@ -89,3 +89,18 @@ export const shareWhiteboard = (
       targetUsername
   );
 };
+export function sendAJAXSnapshot () {
+  const compressionFactor = 0.7;
+  let currentWhiteboardCanvas = document.getElementById("whiteboard");
+  let imageDataURL = currentWhiteboardCanvas.toDataURL("image/png", compressionFactor);
+  const whiteboardId = document.getElementById("whiteboard-id").value;
+
+
+  let xhr = new XMLHttpRequest();
+  xhr.open("POST", contextPath + "/snapshot_manager", true);
+  xhr.setRequestHeader("Content-Type", "application/json");
+
+  xhr.send(JSON.stringify({whiteboardID: whiteboardId, snapshot: imageDataURL}));
+}
+
+

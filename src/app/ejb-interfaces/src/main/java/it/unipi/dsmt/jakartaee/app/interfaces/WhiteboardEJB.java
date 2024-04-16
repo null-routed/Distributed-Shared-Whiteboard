@@ -22,6 +22,6 @@ public interface WhiteboardEJB {
     ParticipantOperationStatus removeParticipant(@NotNull String userId, @NotNull String whiteboardId);
     ParticipantOperationStatus isParticipant(String username, String whiteboardID);
     ParticipantOperationStatus addParticipant(String username, String whiteboardID);
-    boolean updateWhiteboardSnapshot(@NotNull String userID, @NotNull byte[] snapshotDataBytes, @NotNull String whiteboardID);
-    byte[] getSnapshotByWhiteboardID(@NotNull String whiteboardID, @NotNull String userID);
+    boolean updateWhiteboardSnapshot(@NotNull byte[] snapshotDataBytes, @NotNull String whiteboardID);
+    byte[] getSnapshotByWhiteboardID(@NotNull String whiteboardID);
 }

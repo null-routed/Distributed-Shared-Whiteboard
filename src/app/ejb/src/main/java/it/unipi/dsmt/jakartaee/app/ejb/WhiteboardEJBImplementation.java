@@ -70,7 +70,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         List<MinimalWhiteboardDTO> whiteboards = new ArrayList<>();
 
         final String query =
-                "SELECT W.WhiteboardID, W.Name, W.Description, WP.WhiteboardSnapshot " +
+                "SELECT W.WhiteboardID, W.Name, W.Description, W.WhiteboardSnapshot " +
                 "FROM Whiteboards W " +
                     "INNER JOIN WhiteboardParticipants WP " +
                         "ON W.WhiteboardID = WP.WhiteboardID " +
@@ -89,7 +89,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                                         resultSet.getInt("W.WhiteboardID"),
                                         resultSet.getString("W.Name"),
                                         resultSet.getString("W.Description"),
-                                        resultSet.getBytes("WP.WhiteboardSnapshot")
+                                        resultSet.getBytes("W.WhiteboardSnapshot")
                                 )
                         );
                 }
@@ -109,7 +109,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
 
         // SQL query
         final String query =
-                "SELECT W.WhiteboardID, W.Name, W.Description, WP.WhiteboardSnapshot " +
+                "SELECT W.WhiteboardID, W.Name, W.Description, W.WhiteboardSnapshot " +
                 "FROM Whiteboards W " +
                     "INNER JOIN WhiteboardParticipants WP " +
                         "ON W.WhiteboardID = WP.WhiteboardID " +
@@ -126,7 +126,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                                     resultSet.getInt("W.WhiteboardID"),
                                     resultSet.getString("W.Name"),
                                     resultSet.getString("W.Description"),
-                                    resultSet.getBytes("WP.WhiteboardSnapshot")
+                                    resultSet.getBytes("W.WhiteboardSnapshot")
                                 )
                         );
                 }
@@ -420,20 +420,19 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
     }
 
     @Override
-    public boolean updateWhiteboardSnapshot (String userID, byte[] snapshotDataBytes, String whiteboardID) {
+    public boolean updateWhiteboardSnapshot (byte[] snapshotDataBytes, String whiteboardID) {
         System.out.println("@WhiteboardEJBImplementation: called updateWhiteboardSnapshot() method");
 
         try (Connection connection = dataSource.getConnection()) {
 
             final String query =
-                    "UPDATE WhiteboardParticipants SET WhiteboardSnapshot = ? " +
-                    "WHERE (UserID = ? AND WhiteboardID = ?)";
+                    "UPDATE Whiteboards SET WhiteboardSnapshot = ? " +
+                    "WHERE WhiteboardID = ?";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
                 preparedStatement.setBytes(1, snapshotDataBytes);
-                preparedStatement.setString(2, userID);
-                preparedStatement.setString(3, whiteboardID);
+                preparedStatement.setString(2, whiteboardID);
 
                 int affectedRows = preparedStatement.executeUpdate();
 
@@ -444,7 +443,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         }
     }
 
-    @Override
+    /*@Override
     public byte[] getSnapshotByWhiteboardID (String whiteboardID, String userID) {
         System.out.println("@WhiteboardEJBImplementation: called getSnapshotByWhiteboardID()");
 
@@ -482,6 +481,37 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                 }
             }
         } catch (SQLException |IOException e) {
+            return null;
+        }
+    }*/
+    @Override
+    public byte[] getSnapshotByWhiteboardID (String whiteboardID) {
+        //System.out.println("@WhiteboardEJBImplementation: called getSnapshotByWhiteboardID()");
+
+        byte[] snapshot = null;
+
+        try (Connection connection = dataSource.getConnection()) {
+
+            final String query = "SELECT WhiteboardSnapshot FROM Whiteboards WHERE WhiteboardID = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+                preparedStatement.setString(1, whiteboardID);
+
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        snapshot = resultSet.getBytes("WhiteboardSnapshot");
+                        if (snapshot != null)
+                            return snapshot;
+                        else {
+                            throw new SQLException();
+                        }
+                    } else {
+                        throw new SQLException();
+                    }
+                }
+            }
+        } catch (SQLException e) {
             return null;
         }
     }

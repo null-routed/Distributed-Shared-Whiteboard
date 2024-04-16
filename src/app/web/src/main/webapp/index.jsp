@@ -1,55 +1,53 @@
-<%--
-    Webapp login page
---%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page isELIgnored="false" %>
-
 <%@ page import="it.unipi.dsmt.jakartaee.app.utility.ClientRedirector" %>
 <%@ page import="it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO" %>
 <%@ page import="it.unipi.dsmt.jakartaee.app.utility.AccessController" %>
 
 <html>
 <head>
-    <title>Shared Whiteboards</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/common.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/login.css">
+    <!-- Bootstrap JS for form validation -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="${pageContext.request.contextPath}/assets/javascript/login.js"></script>
 </head>
 <body>
-<div>
+<div class="container">
     <div class="custom-header">
         <div class="text-section">
-            <span> LOGIN TO SHARED WHITEBOARDS </span>
+            <span>LOGIN TO SHARED WHITEBOARDS</span>
         </div>
     </div>
     <div class="form-container">
-        <form method="POST" action="${pageContext.request.contextPath}/login">
-            <div class="form-field">
-                <label> Username: </label>
-                <input type="text" name="username" required />
+        <form method="POST" action="${pageContext.request.contextPath}/login" class="needs-validation" novalidate>
+            <div class="mb-3">
+                <label for="username" class="form-label">Username:</label>
+                <input type="text" id="username" name="username" class="form-control" required />
             </div>
-            <div class="form-field">
-                <label> Password: </label>
-                <input type="password" name="password" required />
-                <% if (request.getParameter("loginError") != null) { %>             <!-- error message span visibility check -->
-                <span class="error-msg"> Wrong username or password. </span>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password:</label>
+                <input type="password" id="password" name="password" class="form-control" required />
+                <% if (request.getParameter("loginError") != null) { %>
+                <div class="error-msg">Wrong username or password.</div>
                 <% } %>
             </div>
-            <button type="submit" class="custom-submit-button"> Login </button>
+            <button type="submit" class="btn btn-primary">Login</button>
         </form>
     </div>
     <div class="form-footer">
-        <a onclick="location.href = '${pageContext.request.contextPath}/signup'">
-            Join us
-        </a>
+        <p>Don't have an account? <a href="${pageContext.request.contextPath}/signup">Join us</a></p>
     </div>
 </div>
-
+</body>
+</html>
 <%
-    // Redirect user to main page
+    // Redirect user to main page if already logged in
     LoggedUserDTO loggedUser = AccessController.getLoggedUser(request);
     if (loggedUser != null) {
         ClientRedirector.redirectToMainPage(request, response);
     }
 %>
-
-</body>
-</html>

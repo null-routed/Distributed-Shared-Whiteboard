@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/common.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/homepage.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script type="module" src="${pageContext.request.contextPath}/assets/javascript/homepage.js"></script>
     <script type="text/javascript"> let pageContext = "${pageContext.request.contextPath}"; </script>
+    <script type="module" src="${pageContext.request.contextPath}/assets/javascript/homepage.js"></script>
 </head>
 <body>
 <div id="homepage-container">
@@ -137,6 +137,5 @@
     <input type="hidden" id="whiteboardIdToDelete" name="whiteboardIdToDelete">
 </form>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>

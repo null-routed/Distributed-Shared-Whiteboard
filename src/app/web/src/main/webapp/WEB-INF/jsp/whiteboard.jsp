@@ -105,5 +105,8 @@
     <script type="module" src="${pageContext.request.contextPath}/assets/javascript/whiteboard-main.js" defer></script>
     <input type="hidden" id="self-username" value="<%= loggedUserDTO.getUsername() %>">
     <input type="hidden" id="writePermission" value="<%= hasWritePermission %>">
+    <input type="hidden" id="whiteboard-name" value="<%= whiteboardData.getName() %>">
+    <input type="hidden" id="whiteboard-id" value="<%= whiteboardData.getId() %>">
+>>>>>>> Stashed changes
 </body>
 </html>

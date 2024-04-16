@@ -39,7 +39,7 @@ window.onclick = function (event) {
   }
 };
 
-export function confirmDelete(whiteboardId) {
+window.confirmDelete = function (whiteboardId) {
   if (
     confirm(
       "Are you sure you want to delete this whiteboard? \n" +

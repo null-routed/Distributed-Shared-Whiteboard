@@ -1,48 +1,18 @@
 /* Profile Page Styles */
+.container {
+    max-width: 800px;
+}
 
-#profile-container {
-    width: 100%;
-    max-width: 400px; /* Adjust the width as necessary */
-    margin: 0 auto;
+.card {
+    margin-top: 20px;
+}
+
+.card-header {
+    background-color: #4c0bce;
+    color: white;
+    text-align: center;
+}
+
+.card-body {
     padding: 20px;
-    box-sizing: border-box;
 }
-
-.profile-field {
-    margin-bottom: 10px;
-}
-
-.profile-field label {
-    text-transform: uppercase;
-    display: block;
-    margin-bottom: 5px;
-    font-size: 14px;
-}
-
-.profile-field input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 0;
-    outline: none;
-    border: 1px solid black;
-    height: 45px;
-    font-size: 15px;
-    background-color: white;
-}
-
-.profile-field input[readonly] {
-    background-color: white;
-}
-
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    font-size: 13px;
-    line-height: 20px;
-    border-bottom: 1px solid black;
-    width: 100%;
-    box-sizing: border-box;
-}
-

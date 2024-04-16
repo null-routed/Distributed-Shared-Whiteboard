@@ -40,41 +40,6 @@ export function establishWebSocketConnection() {
   }
 }
 
-// // Custom function to handle the received message
-// function handleReceivedMessage(message) {
-//   // Parse the JSON message
-//   let parsedMessage;
-//   try {
-//     parsedMessage = JSON.parse(message);
-//   } catch (error) {
-//     console.error("Error parsing JSON message:", error);
-//     return; // Exit function if unable to parse JSON
-//   }
-//
-//   // Check if the message contains the expected properties
-//   if (
-//     !parsedMessage ||
-//     !parsedMessage.whiteboardName ||
-//     !parsedMessage.whiteboardOwner ||
-//     !parsedMessage.command
-//   ) {
-//     console.error("Received message does not contain expected properties.");
-//     return; // Exit function if message format is invalid
-//   }
-//
-//   // Extract relevant data from the parsed message
-//   const whiteboardId = parsedMessage.whiteboardName;
-//   const whiteboardOwner = parsedMessage.whiteboardOwner;
-//   const command = parsedMessage.command;
-//
-//   // Example: spawn a custom modal
-//   let modalMessage = null;
-//   if (command === "share")
-//     modalMessage = `${whiteboardOwner} has shared the whiteboard ${whiteboardId} with you`;
-//   else
-//     modalMessage = `${whiteboardOwner} removed you from the whiteboard ${whiteboardId}`;
-//
-
   function handleReceivedMessage(message) {
     // Parse the JSON message
     let parsedMessage;
