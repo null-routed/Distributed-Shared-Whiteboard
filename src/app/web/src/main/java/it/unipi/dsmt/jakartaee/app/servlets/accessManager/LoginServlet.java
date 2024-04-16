@@ -8,6 +8,7 @@ import it.unipi.dsmt.jakartaee.app.utility.AccessController;
 // import it.unipi.dsmt.jakartaee.app.utility.JWT;
 import it.unipi.dsmt.jakartaee.app.utility.JWT;
 import jakarta.ejb.EJB;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -46,11 +47,11 @@ public class LoginServlet extends HttpServlet {
 
         // Login failed -> sending an 'error' GET parameter
         if (loggedUser == null) {
-            // request.setAttribute("loginError", true);
-            response.sendRedirect(request.getContextPath() + "/?loginError=error");
+            request.setAttribute("loginError", true);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("");
+            dispatcher.forward(request, response);
             return;
         }
-
         //Login successful
         // Generate JWT token and set it as a cookie in the response
         JWT.generateTokenAndSetCookie(response, loggedUser.getUsername());

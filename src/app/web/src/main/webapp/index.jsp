@@ -31,7 +31,7 @@
             <div class="mb-3">
                 <label for="password" class="form-label">Password:</label>
                 <input type="password" id="password" name="password" class="form-control" required />
-                <% if (request.getParameter("loginError") != null) { %>
+                <% if (request.getAttribute("loginError") != null && Boolean.TRUE.equals(request.getAttribute("loginError"))) { %>
                 <div class="error-msg">Wrong username or password.</div>
                 <% } %>
             </div>
