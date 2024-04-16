@@ -69,6 +69,7 @@ public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
 
         if (erlangShareOperationOutcome) {
             userTransaction.commit();
+            sendWebSocketMessage(newParticipantUsername, whiteboardDTO);
             return createJsonResponse(true, newParticipantUsername + " has been added to this whiteboard!");
         } else {
             userTransaction.rollback();

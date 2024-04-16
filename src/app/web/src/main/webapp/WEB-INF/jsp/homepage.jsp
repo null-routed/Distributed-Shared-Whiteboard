@@ -12,6 +12,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script type="text/javascript"> let pageContext = "${pageContext.request.contextPath}"; </script>
     <script type="module" src="${pageContext.request.contextPath}/assets/javascript/homepage.js"></script>
+    <script type="module" src="${pageContext.request.contextPath}/assets/javascript/homepage-main.js" defer></script>
 </head>
 <body>
 <div id="homepage-container">

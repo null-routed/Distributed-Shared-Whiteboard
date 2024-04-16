@@ -15,7 +15,7 @@ export function establishWebSocketConnection() {
 
     // Function to handle WebSocket open event
     socket.onopen = function (event) {
-      console.log("WebSocket connection established.");
+      console.log("Notification webSocket connection established.");
     };
 
     // Function to handle WebSocket message event

@@ -107,6 +107,5 @@
     <input type="hidden" id="writePermission" value="<%= hasWritePermission %>">
     <input type="hidden" id="whiteboard-name" value="<%= whiteboardData.getName() %>">
     <input type="hidden" id="whiteboard-id" value="<%= whiteboardData.getId() %>">
->>>>>>> Stashed changes
 </body>
 </html>

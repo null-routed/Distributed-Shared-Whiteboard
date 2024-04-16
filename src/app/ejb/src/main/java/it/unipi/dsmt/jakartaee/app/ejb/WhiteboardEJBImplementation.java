@@ -421,7 +421,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
 
     @Override
     public boolean updateWhiteboardSnapshot (byte[] snapshotDataBytes, String whiteboardID) {
-        System.out.println("@WhiteboardEJBImplementation: called updateWhiteboardSnapshot() method");
+        //System.out.println("@WhiteboardEJBImplementation: called updateWhiteboardSnapshot() method");
 
         try (Connection connection = dataSource.getConnection()) {
 
