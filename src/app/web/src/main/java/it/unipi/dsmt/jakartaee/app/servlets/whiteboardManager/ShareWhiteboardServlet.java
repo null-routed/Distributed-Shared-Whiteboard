@@ -1,8 +1,10 @@
 package it.unipi.dsmt.jakartaee.app.servlets.whiteboardManager;
+import it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO;
 import it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO;
 
 import it.unipi.dsmt.jakartaee.app.enums.ParticipantOperationStatus;
 import it.unipi.dsmt.jakartaee.app.servlets.WebSocketServerEndpoint;
+import it.unipi.dsmt.jakartaee.app.utility.AccessController;
 import it.unipi.dsmt.jakartaee.app.utility.RPC;
 
 import jakarta.json.Json;
@@ -19,20 +21,36 @@ public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        LoggedUserDTO user = AccessController.getLoggedUserWithRedirect(request, response);
+
         response.setContentType("application/json");
 
         String whiteboardID = getParameter(request, "whiteboardID");
         String newParticipantUsername = getParameter(request, "newParticipantUsername");
 
+        if(whiteboardID.isEmpty() || newParticipantUsername.isEmpty() || user == null) {
+            sendResponse(response, createJsonResponse(false, "missing parameters"), HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        MinimalWhiteboardDTO whiteboardDTO = whiteboardEJB.getWhiteboardByID(Integer.parseInt(whiteboardID));
+
+        if(checkOwnership(whiteboardDTO, user.getUsername())) {
+            sendResponse(response, createJsonResponse(false, "Forbidden"), HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         System.out.println("@WhiteboardServlet: called doPost() method, params=" + whiteboardID + ", " + newParticipantUsername);
 
-        JsonObject jsonResponse = handleRequest(whiteboardID, newParticipantUsername);
+        JsonObject jsonResponse = handleRequest(whiteboardDTO, newParticipantUsername);
 
         sendResponse(response, jsonResponse);
     }
 
-    private JsonObject handleRequest(String whiteboardID, String newParticipantUsername) {
-        ParticipantOperationStatus status = whiteboardEJB.isParticipant(newParticipantUsername, whiteboardID);
+    private JsonObject handleRequest(MinimalWhiteboardDTO whiteboardDTO, String newParticipantUsername) {
+        ParticipantOperationStatus status = whiteboardEJB.isParticipant(
+                newParticipantUsername, String.valueOf(whiteboardDTO.getId()));
 
         switch (status) {
             case ALREADY_PARTICIPATING:
@@ -41,7 +59,7 @@ public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
                         newParticipantUsername + " is already participating to this whiteboard." :
                         "An error occurred. Try again or try in a few minutes.");
             default:
-                return processTransaction(whiteboardID, newParticipantUsername);
+                return processTransaction(String.valueOf(whiteboardDTO.getId()), newParticipantUsername);
         }
     }
 
@@ -102,7 +120,10 @@ public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
         JsonObject message = Json.createObjectBuilder()
                 .add("whiteboardName", whiteboardDTO.getName())
                 .add("whiteboardOwner", whiteboardDTO.getOwner())
-                .add("snapshot", base64EncodedSnapshot)
+                .add("whiteboardSnapshot", base64EncodedSnapshot)
+                .add("whiteboardID", whiteboardDTO.getId())
+                .add("whiteboardDescription", whiteboardDTO.getDescription())
+                .add("whiteboardReadOnly", whiteboardDTO.isReadOnly())
                 .add("command", "share")
                 .build();
 
