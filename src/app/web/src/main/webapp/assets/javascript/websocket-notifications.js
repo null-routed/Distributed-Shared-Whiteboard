@@ -8,9 +8,9 @@ export function establishWebSocketConnection() {
   if (!socket || socket.readyState !== WebSocket.OPEN) {
     // Create new WebSocket connection only if not already present or if not in OPEN state
     const jwt = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("jwt="))
-      .split("=")[1];
+        .split("; ")
+        .find((row) => row.startsWith("jwt="))
+        .split("=")[1];
     socket = new WebSocket(`ws://localhost:8080/web/websocket?jwt=${jwt}`);
 
     console.log("My JWT: " + jwt)
@@ -42,45 +42,81 @@ export function establishWebSocketConnection() {
   }
 }
 
-  function handleReceivedMessage(message) {
-    // Parse the JSON message
-    let parsedMessage;
-    try {
-      parsedMessage = JSON.parse(message);
-    } catch (error) {
-      console.error("Error parsing JSON message:", error);
-      return; // Exit function if unable to parse JSON
-    }
-
-    // Check if the message contains the expected properties
-    if (
-        !parsedMessage ||
-        !parsedMessage.whiteboardName ||
-        !parsedMessage.whiteboardOwner ||
-        !parsedMessage.command
-    ) {
-      console.error("Received message does not contain expected properties.");
-      return; // Exit function if message format is invalid
-    }
-
-    // Extract relevant data from the parsed message
-    const whiteboardId = parsedMessage.whiteboardName;
-    const whiteboardOwner = parsedMessage.whiteboardOwner;
-    const command = parsedMessage.command;
-
-    // show toast notification
-    const toastMessage = (command === "share") ?
-        `${whiteboardOwner} has shared the whiteboard ${whiteboardId} with you` :
-        `${whiteboardOwner} removed you from the whiteboard ${whiteboardId}`;
-
-    addMessage(toastMessage); // Call the addMessage function to display the toast
-
-    // Reload the page when the toast is clicked
-    const toastElement = document.getElementById('toast-container').lastElementChild; // Assuming 'toastContainer' is the id of your toast container
-    toastElement.addEventListener("click", function () {
-      window.location.reload();
-    });
-    toastElement.addEventListener("hidden.bs.toast", function () {
-      window.location.reload();
-    });
+function handleReceivedMessage(message) {
+  // Parse the JSON message
+  let parsedMessage;
+  try {
+    parsedMessage = JSON.parse(message);
+  } catch (error) {
+    console.error("Error parsing JSON message:", error);
+    return; // Exit function if unable to parse JSON
   }
+
+  // Check if the message contains the expected properties
+  if (
+      !parsedMessage ||
+      !parsedMessage.whiteboardName ||
+      !parsedMessage.whiteboardOwner ||
+      !parsedMessage.command
+  ) {
+    console.error("Received message does not contain expected properties.");
+    return; // Exit function if message format is invalid
+  }
+
+  // Extract relevant data from the parsed message
+  const whiteboardName = parsedMessage.whiteboardName;
+  const whiteboardOwner = parsedMessage.whiteboardOwner;
+  const command = parsedMessage.command;
+
+  let toastMessage = null;
+
+  if (command === "share") {
+    toastMessage=`${whiteboardOwner} has shared the whiteboard ${whiteboardName} with you`;
+    addNewWhiteboardToDOM(parsedMessage.whiteboardID, whiteboardName, whiteboardOwner,
+        parsedMessage.whiteboardDescription, parsedMessage.whiteboardReadOnly);
+  } else {
+    toastMessage =  `${whiteboardOwner} removed you from the whiteboard ${whiteboardName}`;
+    removeWhiteboardFromDOM(parsedMessage.whiteboardID);
+  }
+
+  // show toast notification
+  addMessage(toastMessage); // Call the addMessage function to display the toast
+
+
+  // Reload the page when the toast is clicked
+  /*const toastElement = document.getElementById('toast-container').lastElementChild; // Assuming 'toastContainer' is the id of your toast container
+  toastElement.addEventListener("click", function () {
+    window.location.reload();
+  });
+  toastElement.addEventListener("hidden.bs.toast", function () {
+    window.location.reload();
+  });*/
+}
+
+// Define a function to add the new whiteboard HTML to the DOM
+function addNewWhiteboardToDOM(id, name, owner, description, readOnly) {
+  // Create a new whiteboard HTML element
+  const whiteboardElement = document.createElement('div');
+  whiteboardElement.classList.add('grid-item-whiteboard');
+  whiteboardElement.innerHTML = `
+        <img class="whiteboard-snapshot" alt="${name}"
+             src="/web/snapshot_manager?whiteboardID=${id}"
+             id="whiteboard_${id}"
+             onclick="location.href = '/web/whiteboard?whiteboardID=${id}'">
+        <button type="button" class="delete-whiteboard-button" onclick="confirmDelete(${id})">&times;</button>
+    `;
+
+  // Append the new whiteboard HTML element to the whiteboard grid container
+  const whiteboardGridContainer = document.querySelector('.whiteboard-grid-container');
+  whiteboardGridContainer.appendChild(whiteboardElement);
+}
+
+// Define a function to remove the whiteboard HTML from the DOM
+function removeWhiteboardFromDOM(whiteboardId) {
+  // Find the whiteboard element by its ID
+  const whiteboardElement = document.getElementById(`whiteboard_${whiteboardId}`);
+  if (whiteboardElement) {
+    // Remove the whiteboard element from the DOM
+    whiteboardElement.parentNode.removeChild(whiteboardElement);
+  }
+}

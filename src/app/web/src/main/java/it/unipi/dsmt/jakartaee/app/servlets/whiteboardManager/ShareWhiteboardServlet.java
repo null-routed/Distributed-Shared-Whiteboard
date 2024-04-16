@@ -35,7 +35,7 @@ public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
 
         MinimalWhiteboardDTO whiteboardDTO = whiteboardEJB.getWhiteboardByID(Integer.parseInt(whiteboardID));
 
-        if(checkOwnership(whiteboardDTO, user.getUsername())) {
+        if(!checkOwnership(whiteboardDTO, user.getUsername())) {
             sendResponse(response, createJsonResponse(false, "Forbidden"), HttpServletResponse.SC_FORBIDDEN);
             return;
         }
