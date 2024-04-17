@@ -48,7 +48,7 @@ public class RemoveWhiteboardParticipantServlet extends BaseWhiteboardServlet {
 
         MinimalWhiteboardDTO whiteboardDTO = whiteboardEJB.getWhiteboardByID(Integer.parseInt(whiteboardID));
 
-        if(isNotOwner(whiteboardDTO, user.getUsername())) {
+        if(isNotOwner(whiteboardDTO, user.getUsername()) && !user.getUsername().equals(usernameToBeRemoved)) {
             sendResponse(response, createJsonResponse(false, "Forbidden"));
             return;
         }
