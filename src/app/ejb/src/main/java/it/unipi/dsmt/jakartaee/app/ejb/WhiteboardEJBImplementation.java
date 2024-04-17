@@ -421,7 +421,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
 
     @Override
     public boolean updateWhiteboardSnapshot (byte[] snapshotDataBytes, String whiteboardID) {
-        //System.out.println("@WhiteboardEJBImplementation: called updateWhiteboardSnapshot() method");
+        System.out.println("@WhiteboardEJBImplementation: called updateWhiteboardSnapshot() method");
 
         try (Connection connection = dataSource.getConnection()) {
 
@@ -443,52 +443,23 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         }
     }
 
-    /*@Override
-    public byte[] getSnapshotByWhiteboardID (String whiteboardID, String userID) {
+    private static byte[] generateBlankSnapshot(int width, int height) throws IOException {
+        BufferedImage blankSnapshot = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics2D = blankSnapshot.createGraphics();
+        graphics2D.setColor(Color.WHITE);
+        graphics2D.fillRect(0, 0, width, height);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ImageIO.write(blankSnapshot, "png", outputStream);
+        return outputStream.toByteArray();
+    }
+
+    @Override
+    public byte[] getSnapshotByWhiteboardID (String whiteboardID) {
         System.out.println("@WhiteboardEJBImplementation: called getSnapshotByWhiteboardID()");
 
         byte[] snapshot = null;
-
-        try (Connection connection = dataSource.getConnection()) {
-
-            final String query = "SELECT WhiteboardSnapshot FROM WhiteboardParticipants WHERE WhiteboardID = ? AND UserID = ?";
-
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
-                preparedStatement.setString(1, whiteboardID);
-                preparedStatement.setString(2, userID);
-
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        snapshot = resultSet.getBytes("WhiteboardSnapshot");
-                        if (snapshot != null)
-                            return snapshot;
-                        else {      // Snapshot is NULL, return a SNAPSHOT_WIDTH * SNAPSHOT_HEIGHT px blank image to use as snapshot
-//                            System.out.println("RETURNING WHITE SNAPSHOT FOR WHITEBOARD " + whiteboardID);
-                            final int SNAPSHOT_WIDTH = 300;
-                            final int SNAPSHOT_HEIGHT = 160;
-                            BufferedImage blankSnapshot = new BufferedImage(SNAPSHOT_WIDTH, SNAPSHOT_HEIGHT, BufferedImage.TYPE_INT_RGB);
-                            Graphics2D graphics2D = blankSnapshot.createGraphics();
-                            graphics2D.setColor(Color.WHITE);
-                            graphics2D.fillRect(0, 0, SNAPSHOT_WIDTH, SNAPSHOT_HEIGHT);
-                            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                            ImageIO.write(blankSnapshot, "jpg", outputStream);
-                            return outputStream.toByteArray();
-                        }
-                    } else {
-                        throw new SQLException();
-                    }
-                }
-            }
-        } catch (SQLException |IOException e) {
-            return null;
-        }
-    }*/
-    @Override
-    public byte[] getSnapshotByWhiteboardID (String whiteboardID) {
-        //System.out.println("@WhiteboardEJBImplementation: called getSnapshotByWhiteboardID()");
-
-        byte[] snapshot = null;
+        final int SNAPSHOT_WIDTH = 300;
+        final int SNAPSHOT_HEIGHT = 160;
 
         try (Connection connection = dataSource.getConnection()) {
 
@@ -503,15 +474,15 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                         snapshot = resultSet.getBytes("WhiteboardSnapshot");
                         if (snapshot != null)
                             return snapshot;
-                        else {
-                            throw new SQLException();
-                        }
+                        else
+                            // on whiteboard creation, return a blank snapshot. WhiteboardSnapshot is DEFAULT NULL
+                            return generateBlankSnapshot(SNAPSHOT_WIDTH, SNAPSHOT_HEIGHT);
                     } else {
                         throw new SQLException();
                     }
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             return null;
         }
     }

@@ -128,7 +128,6 @@ div {
 
 .grid-item-whiteboard {
     position: relative;
-
     width: 300px;
     height: 160px;
     font-size: 30px;
@@ -141,8 +140,6 @@ div {
 .whiteboard-snapshot {
     height: inherit;
     width: inherit;
-    /*opacity: 0.4;*/
-    /*filter: grayscale(100%) brightness(0.7);*/
 }
 
 .whiteboard-name {
@@ -155,165 +152,42 @@ div {
     font-size: 20px;
 }
 
-
-
-/*.whiteboard-selection {*/
-/*    margin: 15px;*/
-/*}*/
-
-
-
-/*#whiteboard-type{*/
-/*    display: flex;*/
-/*}*/
-
-/*.whiteboard-search{*/
-/*    display: flex;*/
-/*    align-items: center;*/
-/*    width: 80%;*/
-/*}*/
-
-/*#whiteboards{*/
-/*    display: flex;*/
-/*    width: 90%;*/
-/*    height: 40vh;*/
-/*    flex-direction: column;*/
-/*    overflow-y: auto;*/
-/*    margin-top: 2vw;*/
-/*}*/
-
-/*.whiteboard-row-buttons{*/
-/*    margin: 0.5vw 1vw;*/
-/*    display: flex;*/
-/*    justify-content: space-around;*/
-/*}*/
-
-/*#whiteboard-selection-container{*/
-/*    display: flex;*/
-/*    flex-direction: column;*/
-/*    align-items: center;*/
-/*    width: 70%;*/
-/*    height: 60vh;*/
-/*    border: var(--border);*/
-/*    border-radius: 10px;*/
-/*    padding: 2.5vw;*/
-/*    background-color: white;*/
-/*    justify-content: flex-start;*/
-/*}*/
-
-/*.hr-style{*/
-/*    color: black;*/
-/*    width: 90%;*/
-/*}*/
-
-/*#homepage-container{*/
-/*    display: flex;*/
-/*    flex-direction: column;*/
-/*    align-items: center;*/
-/*}*/
-
-/*.search-form{*/
-/*    margin: 0;*/
-/*    display: flex;*/
-/*    flex-direction: row;*/
-/*    align-items: center;*/
-/*    padding-bottom: 3vw;*/
-/*}*/
-
-/*.search-input-label{*/
-/*    width: 7vw;*/
-/*}*/
-
-/*#search-input {*/
-/*    border-radius: 5px;*/
-/*    background: #ffffff;*/
-/*    height: 3vw;*/
-/*    width: 40vw;*/
-/*    border: var(--border);*/
-/*    margin-right: 1vw;*/
-/*    padding-left: 1vw;*/
-/*}*/
-
-/*.homepage-button {*/
-/*    background: rgb(0, 196, 65);*/
-/*    color: #fff;*/
-/*    font-weight: bold;*/
-/*    cursor: pointer;*/
-/*    height: 3vw;*/
-/*    width: 5vw;*/
-/*    box-shadow: 0 6px 6px -3px rgba(0, 0, 0, 0.3);*/
-/*    border: 1px solid #ddd;*/
-/*    border-radius: 5px;*/
-/*}*/
-
-/*.selected-whiteboards{*/
-/*    background: rgb(91 109 246);*/
-/*    color: #fff;*/
-/*    font-weight: bold;*/
-/*    cursor: pointer;*/
-/*    height: 6vw;*/
-/*    width: 18vw;*/
-/*    overflow-y: auto;*/
-/*    overflow-x: auto;*/
-/*    font-size: 1.25vw;*/
-/*    box-shadow: 0 6px 6px -3px rgba(0, 0, 0, 0.3);*/
-/*    border: 1px solid #ddd;*/
-/*    border-radius: 5px;*/
-/*}*/
-
-/*.selected-whiteboards:hover{*/
-/*    background: rgb(41, 67, 253);*/
-/*}*/
-
-/*.homepage-button:hover {*/
-/*    background: rgb(0, 120, 34);*/
-/*}*/
-
-/*.nav-button {*/
-/*    background: rgb(91 109 246);*/
-/*    color: #fff;*/
-/*    font-weight: bold;*/
-/*    cursor: pointer;*/
-/*    height: 3vw;*/
-/*    width: 7vw;*/
-/*    overflow-x: auto;*/
-/*    max-width: 7vw;*/
-/*    font-size: 1vw;*/
-/*    box-shadow: 0 6px 6px -3px rgba(0, 0, 0, 0.3);*/
-/*    border: 1px solid #ddd;*/
-/*    padding: 0 1vw;*/
-/*    border-radius: 5px;*/
-/*}*/
-
-/*.nav-button:hover {*/
-/*    background: rgb(41, 67, 253);*/
-/*}*/
-
-/*.normal_whiteboards{*/
-/*    display: flex;*/
-/*}*/
-
+.delete-whiteboard-button {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    z-index: 1;
+    background-color: rgba(255, 0, 0, 0.6);
+    width: 30px;
+    height: 30px;
+    line-height: 15px;
+    text-align: center;
+    border: 1px solid black;
+    border-radius: 10%;
+    font-size: 25px;
+    color: white;
+}
 
 /* ------ MODAL STYLING ------*/
 .modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
+    display: none;
+    position: fixed;
+    z-index: 1;
     left: 0;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    width: 50%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
 }
 
 .modal-content {
     background-color: #fefefe;
-    margin: 15% auto; /* 15% from the top and centered */
+    margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
+    width: 80%;
 }
 
 .close {

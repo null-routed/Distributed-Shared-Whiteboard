@@ -47,7 +47,6 @@ window.onclick = function (event) {
 
 export function setupWhiteboardDeleteButtons () {
   let deleteWhiteboardButtons = document.getElementsByClassName("delete-whiteboard-button");
-  console.log(deleteWhiteboardButtons);
   for (let button of deleteWhiteboardButtons) {
     button.addEventListener("click", function () {
       confirmDelete(button.getAttribute("data"))
