@@ -1,4 +1,5 @@
 /* Login Page Styles */
+
 .container {
     display: flex;
     flex-direction: column;
@@ -13,6 +14,7 @@
     text-align: center;
     padding: 20px;
     width: 100%;
+    box-sizing: content-box;
 }
 
 .custom-header span {
