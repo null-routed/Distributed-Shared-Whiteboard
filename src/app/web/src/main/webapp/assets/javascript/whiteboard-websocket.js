@@ -33,12 +33,16 @@ export const setupWebSocket = () => {
     alert(
       "An error occurred while establishing the connection with the whiteboard. Make sure you have the permissions to access this whiteboard and refresh the page."
     );
-    window.location.href = contextPath + "/homepage";
+    setTimeout(() => {
+      window.location.href = contextPath + "/homepage";
+    }, 0);
   };
 
   ws.onclose = (event) => {
     alert("WebSocket closed due to: " + event.reason);
-    window.location.href = contextPath + "/homepage";
+    setTimeout(() => {
+      window.location.href = contextPath + "/homepage";
+    }, 0);
   };
 
   ws.onmessage = (event) => {
