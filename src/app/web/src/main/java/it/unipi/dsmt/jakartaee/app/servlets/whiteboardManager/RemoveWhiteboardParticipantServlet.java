@@ -78,7 +78,6 @@ public class RemoveWhiteboardParticipantServlet extends BaseWhiteboardServlet {
                                 "An error occurred. Try again or try in a few minutes."
                         ));
             }
-
         } catch (Exception e) {
             try {
                 userTransaction.rollback();
@@ -107,7 +106,7 @@ public class RemoveWhiteboardParticipantServlet extends BaseWhiteboardServlet {
                 .add("whiteboardName", whiteboardDTO.getName())
                 .add("command", "remove")
                 .build();
-        
+
         WebSocketServerEndpoint.sendMessageToUser(usernameToBeRemoved, JSONMessage);
     }
 }

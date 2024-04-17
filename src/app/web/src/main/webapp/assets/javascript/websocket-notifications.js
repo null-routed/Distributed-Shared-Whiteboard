@@ -72,25 +72,18 @@ function handleReceivedMessage(message) {
 
   if (command === "share") {
     toastMessage=`${whiteboardOwner} has shared the whiteboard ${whiteboardName} with you`;
-    addNewWhiteboardToDOM(parsedMessage.whiteboardID, whiteboardName, whiteboardOwner,
-        parsedMessage.whiteboardDescription, parsedMessage.whiteboardReadOnly);
+    // Check if the current page URL matches a certain pattern
+    if (window.location.href.includes("/web/homepage"))
+      // Call the functions only when on the homepage
+      addNewWhiteboardToDOM(parsedMessage.whiteboardID, whiteboardName, whiteboardOwner,
+          parsedMessage.whiteboardDescription, parsedMessage.whiteboardReadOnly);
   } else {
     toastMessage =  `${whiteboardOwner} removed you from the whiteboard ${whiteboardName}`;
-    removeWhiteboardFromDOM(parsedMessage.whiteboardID);
+    if (window.location.href.includes("/web/homepage"))
+      removeWhiteboardFromDOM(parsedMessage.whiteboardID);
   }
-
   // show toast notification
   addMessage(toastMessage); // Call the addMessage function to display the toast
-
-
-  // Reload the page when the toast is clicked
-  /*const toastElement = document.getElementById('toast-container').lastElementChild; // Assuming 'toastContainer' is the id of your toast container
-  toastElement.addEventListener("click", function () {
-    window.location.reload();
-  });
-  toastElement.addEventListener("hidden.bs.toast", function () {
-    window.location.reload();
-  });*/
 }
 
 // Define a function to add the new whiteboard HTML to the DOM
