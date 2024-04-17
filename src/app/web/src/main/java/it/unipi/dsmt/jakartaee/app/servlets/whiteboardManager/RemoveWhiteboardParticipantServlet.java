@@ -107,7 +107,7 @@ public class RemoveWhiteboardParticipantServlet extends BaseWhiteboardServlet {
                 .add("whiteboardName", whiteboardDTO.getName())
                 .add("command", "remove")
                 .build();
-
+        
         WebSocketServerEndpoint.sendMessageToUser(usernameToBeRemoved, JSONMessage);
     }
 }

@@ -116,7 +116,11 @@ function removeWhiteboardFromDOM(whiteboardId) {
   // Find the whiteboard element by its ID
   const whiteboardElement = document.getElementById(`whiteboard_${whiteboardId}`);
   if (whiteboardElement) {
-    // Remove the whiteboard element from the DOM
-    whiteboardElement.parentNode.removeChild(whiteboardElement);
+    // Find the parent div with the class grid-item-whiteboard
+    const parentDiv = whiteboardElement.closest('.grid-item-whiteboard');
+    if (parentDiv) {
+      // Remove the parent div from the DOM
+      parentDiv.parentNode.removeChild(parentDiv);
+    }
   }
 }
