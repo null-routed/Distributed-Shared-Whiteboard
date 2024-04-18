@@ -83,10 +83,12 @@ function handleReceivedMessage(message) {
   } else {
     if(whiteboardOwner !== currentUser)
       toastMessage = `${whiteboardOwner} has left the whiteboard ${whiteboardName}`;
-    else
-      toastMessage =  `${whiteboardOwner} removed you from the whiteboard ${whiteboardName}`;
-    if (window.location.href.includes("/web/homepage"))
-      removeWhiteboardFromDOM(parsedMessage.whiteboardID);
+    else {
+      toastMessage = `${whiteboardOwner} removed you from the whiteboard ${whiteboardName}`;
+      if (window.location.href.includes("/web/homepage"))
+        removeWhiteboardFromDOM(parsedMessage.whiteboardID);
+    }
+
   }
   // show toast notification
   addMessage(toastMessage); // Call the addMessage function to display the toast

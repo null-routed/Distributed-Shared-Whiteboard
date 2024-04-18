@@ -107,8 +107,6 @@ public class RemoveWhiteboardParticipantServlet extends BaseWhiteboardServlet {
                 .add("whiteboardName", whiteboardDTO.getName())
                 .add("command", "remove");
 
-        System.out.println("send message to: " + usernameToBeRemoved + " with owner: " + whiteboardDTO.getOwner());
-
         if(currentUser.equals(usernameToBeRemoved)) {
             jsonObjectBuilder.add("whiteboardOwner", currentUser);
             JsonObject JSONMessage = jsonObjectBuilder.build();

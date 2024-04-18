@@ -1,12 +1,17 @@
 package it.unipi.dsmt.jakartaee.app.servlets.whiteboardManager;
 
 import it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO;
+import it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO;
 import it.unipi.dsmt.jakartaee.app.enums.ParticipantOperationStatus;
 import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
+import it.unipi.dsmt.jakartaee.app.servlets.WebSocketServerEndpoint;
 import it.unipi.dsmt.jakartaee.app.utility.AccessController;
 import it.unipi.dsmt.jakartaee.app.utility.RPC;
 import jakarta.annotation.Resource;
 import jakarta.ejb.EJB;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.UserTransaction;
 
 import java.io.IOException;
+import java.util.Objects;
 
 
 @WebServlet (name = "DeleteWhiteboardServlet", value = "/delete_whiteboard")
@@ -37,9 +43,12 @@ public class DeleteWhiteboardServlet extends HttpServlet {
 
         if (whiteboardIdToDelete != null) {
 
-            boolean clientIsOwner = whiteboardEJB.isWhiteboardOwner(loggedUserDTO.getId(), whiteboardIdToDelete);
+            String currentUser = loggedUserDTO.getUsername();
+            MinimalWhiteboardDTO whiteboardDTO = whiteboardEJB.getWhiteboardByID(Integer.parseInt(whiteboardIdToDelete));
 
-            if (clientIsOwner) {        // Erlang + MySQL operations transaction if the requester is the whiteboard owner
+            //boolean clientIsOwner = whiteboardEJB.isWhiteboardOwner(loggedUserDTO.getId(), whiteboardIdToDelete);
+
+            if (/*clientIsOwner*/ Objects.equals(currentUser, whiteboardDTO.getOwner())) {        // Erlang + MySQL operations transaction if the requester is the whiteboard owner
 
                 try {
                     userTransaction.begin();
@@ -56,9 +65,11 @@ public class DeleteWhiteboardServlet extends HttpServlet {
 
                         if (erlangDeleteOperationOutcome) {
                             userTransaction.commit();
+
                             response.sendRedirect(request.getContextPath() + "/homepage");
                         } else {
-                            userTransaction.rollback();     // rollback if Erlang operation fails
+                            userTransaction.rollback();// rollback if Erlang operation fails
+                            sendUserRemovedMessage(currentUser, whiteboardDTO);
                             response.sendRedirect(request.getContextPath() + "/homepage?deletionFailed=true");
                         }
                     } else {
@@ -93,6 +104,7 @@ public class DeleteWhiteboardServlet extends HttpServlet {
 
                     if (erlangParticipantRemovalOutcome) {
                         userTransaction.commit();
+                        sendUserRemovedMessage(currentUser, whiteboardDTO);
                         response.sendRedirect(request.getContextPath() + "/homepage");
                     } else {
                         userTransaction.rollback();     // rollback if Erlang operation failed
@@ -111,7 +123,22 @@ public class DeleteWhiteboardServlet extends HttpServlet {
                 }
                 // throw new RuntimeException(e);
                 response.sendRedirect(request.getContextPath() + "/homepage?insertionFailed=true");
+
             }
+        }
+    }
+    private void sendUserRemovedMessage(String currentUser, MinimalWhiteboardDTO whiteboardDTO) {
+        JsonObjectBuilder jsonObjectBuilder = Json.createObjectBuilder()
+                .add("whiteboardID", whiteboardDTO.getId())
+                .add("whiteboardName", whiteboardDTO.getName())
+                .add("command", "remove");
+
+        if(!Objects.equals(currentUser, whiteboardDTO.getOwner())) {
+            jsonObjectBuilder.add("whiteboardOwner", currentUser);
+            JsonObject JSONMessage = jsonObjectBuilder.build();
+            WebSocketServerEndpoint.sendMessageToUser(whiteboardDTO.getOwner(), JSONMessage);
+        } else {
+            //invia a tutti
         }
     }
 }
