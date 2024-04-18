@@ -1,5 +1,3 @@
-<%@ page import="it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO" %>
-<%@ page import="it.unipi.dsmt.jakartaee.app.utility.AccessController" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="it.unipi.dsmt.jakartaee.app.dto.AdditionalUserDataDTO" %>
 
@@ -10,15 +8,8 @@
 
 <!DOCTYPE html>
 <html>
-<%
-    LoggedUserDTO loggedUserDTO = AccessController.getLoggedUserWithRedirect(request, response);
-    if (loggedUserDTO == null) {
-        return;
-    }
-    System.out.println("@profile.jsp: visiting page with logged user " + loggedUserDTO.getUsername());
-%>
 <head>
-    <title><%= loggedUserDTO.getUsername() %>'s Profile</title>
+    <title><%= userData.getUsername() %>'s Profile</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
