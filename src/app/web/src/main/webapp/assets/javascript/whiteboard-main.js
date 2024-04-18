@@ -9,6 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
   setupCanvas();
   establishWebSocketConnection();     // notifications
   setupWebSocket();
-  let snapshotUpdateInterval = setInterval(sendAJAXSnapshot, 5000);
+  setInterval(sendAJAXSnapshot, 5000);
 });
 
