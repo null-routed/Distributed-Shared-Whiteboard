@@ -29,6 +29,13 @@ export const setupCanvas = () => {
   resizeCanvas();
 
   canvas.on("mouse:move", (event) => {
+    if(canvas.isDrawingMode) {
+      canvas.freeDrawingCursor = 'url("/web/assets/images/pen.png"), auto';
+    }
+    if(isRubberToggled) {
+      canvas.defaultCursor = 'url("/web/assets/images/eraser.png"), auto';
+      canvas.hoverCursor = 'url("/web/assets/images/eraser.png"), auto';
+    }
     let pointer = canvas.getPointer(event.e);
     cursorPosition.x = pointer.x;
     cursorPosition.y = pointer.y;
