@@ -27,7 +27,7 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
     private DataSource dataSource;
 
     @Override
-    public List<MinimalWhiteboardDTO> searchWhiteboard(String whiteboardName) {
+    public List<MinimalWhiteboardDTO> searchWhiteboard(@NotNull String whiteboardName, @NotNull String userID) {
         System.out.println("@WhiteboardEJBImplementation: called searchWhiteboard() method");
 
         List<MinimalWhiteboardDTO> whiteboards = new ArrayList<>();
@@ -38,10 +38,12 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                     "FROM Whiteboards W " +
                         "INNER JOIN WhiteboardParticipants WP " +
                             "ON W.WhiteboardID = WP.WhiteboardID " +
-                    "WHERE W.Name LIKE ?;";
+                    "WHERE W.Name LIKE ? " +
+                    "   AND WP.UserID = ?;";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setString(1, "%" + whiteboardName + "%");
+                preparedStatement.setString(2, userID);
 
                 // Executing query
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {

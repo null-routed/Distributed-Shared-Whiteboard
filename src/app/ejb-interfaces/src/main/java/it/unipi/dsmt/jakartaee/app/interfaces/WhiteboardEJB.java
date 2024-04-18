@@ -6,12 +6,12 @@ import it.unipi.dsmt.jakartaee.app.enums.ParticipantOperationStatus;
 import jakarta.ejb.Remote;
 import jakarta.validation.constraints.NotNull;
 
-
 import java.util.List;
+
 
 @Remote
 public interface WhiteboardEJB {
-    List<MinimalWhiteboardDTO> searchWhiteboard(@NotNull String name);
+    List<MinimalWhiteboardDTO> searchWhiteboard(@NotNull String name, @NotNull String userID);
     List<MinimalWhiteboardDTO> getAllWhiteboards(@NotNull String userID);
     List<MinimalWhiteboardDTO> getSharedWhiteboards(@NotNull String ID);
     MinimalWhiteboardDTO getWhiteboardByID(@NotNull int whiteboardID);
