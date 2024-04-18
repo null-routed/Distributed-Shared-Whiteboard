@@ -1,8 +1,11 @@
 package it.unipi.dsmt.jakartaee.app.servlets.accessManager;
 
+import it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO;
 import it.unipi.dsmt.jakartaee.app.dto.SignupDTO;
 import it.unipi.dsmt.jakartaee.app.enums.SignupStatus;
 import it.unipi.dsmt.jakartaee.app.interfaces.UserEJB;
+import it.unipi.dsmt.jakartaee.app.utility.AccessController;
+import it.unipi.dsmt.jakartaee.app.utility.ClientRedirector;
 import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -73,6 +76,10 @@ public class SignupServlet extends HttpServlet {
     @Override
     protected void doPost (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         System.out.println("@SignupServlet: called doPost() method...");
+        if(AccessController.getLoggedUser(request) != null) {
+            ClientRedirector.redirectToMainPage(request, response);
+            return;
+        }
 
         request.setAttribute("signupError", null);
         request.setAttribute("errorMsg", null);
@@ -133,6 +140,10 @@ public class SignupServlet extends HttpServlet {
     @Override
     protected void doGet (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         System.out.println("@SignupServlet: called doGet() method");
+        if(AccessController.getLoggedUser(request) != null) {
+            ClientRedirector.redirectToMainPage(request, response);
+            return;
+        }
         String targetPage = "/WEB-INF/jsp/signup.jsp";
         request.getRequestDispatcher(targetPage).forward(request, response);
     }

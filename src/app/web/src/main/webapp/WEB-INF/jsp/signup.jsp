@@ -20,7 +20,7 @@
 <div class="container">
     <div class="custom-header">
         <div class="text-section">
-            <span>CREATE AN ACCOUNT IN SHARED WHITEBOARDS</span>
+            <span>CREATE AN ACCOUNT ON SHARED WHITEBOARDS</span>
         </div>
     </div>
     <div class="form-container">
