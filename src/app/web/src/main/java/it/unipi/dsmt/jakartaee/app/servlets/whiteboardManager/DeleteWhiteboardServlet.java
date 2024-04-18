@@ -19,6 +19,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.UserTransaction;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -48,11 +50,12 @@ public class DeleteWhiteboardServlet extends HttpServlet {
 
             //boolean clientIsOwner = whiteboardEJB.isWhiteboardOwner(loggedUserDTO.getId(), whiteboardIdToDelete);
 
-            if (/*clientIsOwner*/ Objects.equals(currentUser, whiteboardDTO.getOwner())) {        // Erlang + MySQL operations transaction if the requester is the whiteboard owner
+            if (/*clientIsOwner*/ Objects.equals(currentUser, whiteboardDTO.getOwner())) {// Erlang + MySQL operations transaction if the requester is the whiteboard owner
 
                 try {
                     userTransaction.begin();
 
+                    List<String> participantsUsername = whiteboardEJB.getParticipantUsernames(whiteboardDTO.getId());
                     boolean mySQLDeleteOperationOutcome = whiteboardEJB.deleteWhiteboard(whiteboardIdToDelete);
 
                     if (mySQLDeleteOperationOutcome) {
@@ -65,11 +68,10 @@ public class DeleteWhiteboardServlet extends HttpServlet {
 
                         if (erlangDeleteOperationOutcome) {
                             userTransaction.commit();
-
+                            sendUserRemovedMessage(currentUser, whiteboardDTO, participantsUsername);
                             response.sendRedirect(request.getContextPath() + "/homepage");
                         } else {
                             userTransaction.rollback();// rollback if Erlang operation fails
-                            sendUserRemovedMessage(currentUser, whiteboardDTO);
                             response.sendRedirect(request.getContextPath() + "/homepage?deletionFailed=true");
                         }
                     } else {
@@ -104,7 +106,7 @@ public class DeleteWhiteboardServlet extends HttpServlet {
 
                     if (erlangParticipantRemovalOutcome) {
                         userTransaction.commit();
-                        sendUserRemovedMessage(currentUser, whiteboardDTO);
+                        sendUserRemovedMessage(currentUser, whiteboardDTO, null);
                         response.sendRedirect(request.getContextPath() + "/homepage");
                     } else {
                         userTransaction.rollback();     // rollback if Erlang operation failed
@@ -127,18 +129,23 @@ public class DeleteWhiteboardServlet extends HttpServlet {
             }
         }
     }
-    private void sendUserRemovedMessage(String currentUser, MinimalWhiteboardDTO whiteboardDTO) {
+    private void sendUserRemovedMessage(String currentUser, MinimalWhiteboardDTO whiteboardDTO, List<String> participantsUsername) {
         JsonObjectBuilder jsonObjectBuilder = Json.createObjectBuilder()
                 .add("whiteboardID", whiteboardDTO.getId())
                 .add("whiteboardName", whiteboardDTO.getName())
-                .add("command", "remove");
+                .add("command", "delete");
 
         if(!Objects.equals(currentUser, whiteboardDTO.getOwner())) {
             jsonObjectBuilder.add("whiteboardOwner", currentUser);
             JsonObject JSONMessage = jsonObjectBuilder.build();
             WebSocketServerEndpoint.sendMessageToUser(whiteboardDTO.getOwner(), JSONMessage);
         } else {
-            //invia a tutti
+            jsonObjectBuilder.add("whiteboardOwner", whiteboardDTO.getOwner());
+            JsonObject JSONMessage = jsonObjectBuilder.build();
+            for(String username : participantsUsername) {
+                if(!Objects.equals(username, whiteboardDTO.getOwner()))
+                    WebSocketServerEndpoint.sendMessageToUser(username, JSONMessage);
+            }
         }
     }
 }

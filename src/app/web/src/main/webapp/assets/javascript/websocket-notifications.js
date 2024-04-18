@@ -80,7 +80,7 @@ function handleReceivedMessage(message) {
       // Call the functions only when on the homepage
       addNewWhiteboardToDOM(parsedMessage.whiteboardID, whiteboardName, whiteboardOwner,
           parsedMessage.whiteboardDescription, parsedMessage.whiteboardReadOnly);
-  } else {
+  } else if(command === "remove") {
     if(whiteboardOwner !== currentUser)
       toastMessage = `${whiteboardOwner} has left the whiteboard ${whiteboardName}`;
     else {
@@ -88,7 +88,15 @@ function handleReceivedMessage(message) {
       if (window.location.href.includes("/web/homepage"))
         removeWhiteboardFromDOM(parsedMessage.whiteboardID);
     }
-
+  }
+  else {
+    if(whiteboardOwner !== currentUser) {
+      toastMessage = `${whiteboardOwner} removed you from the whiteboard ${whiteboardName}`;
+      if (window.location.href.includes("/web/homepage"))
+        removeWhiteboardFromDOM(parsedMessage.whiteboardID);
+    }
+    else
+      toastMessage = `${whiteboardOwner} has left the whiteboard ${whiteboardName}`;
   }
   // show toast notification
   addMessage(toastMessage); // Call the addMessage function to display the toast
