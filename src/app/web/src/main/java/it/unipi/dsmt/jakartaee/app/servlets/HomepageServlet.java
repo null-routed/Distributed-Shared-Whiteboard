@@ -33,6 +33,7 @@ public class HomepageServlet extends HttpServlet {
         if (loggedUserDTO == null)
             return;
 
+        request.setAttribute("selfUsername", loggedUserDTO.getUsername());
         String shared =  request.getParameter("shared");
         String searchInput = request.getParameter("search_input");
 
@@ -40,7 +41,7 @@ public class HomepageServlet extends HttpServlet {
 
         if (searchInput != null) {
             request.setAttribute("search_input", searchInput);
-            whiteboards = whiteboardEJB.searchWhiteboard(searchInput);
+            whiteboards = whiteboardEJB.searchWhiteboard(searchInput, loggedUserDTO.getId());
         } else if ((shared != null) && (shared.equals("true"))) {
             whiteboards = whiteboardEJB.getSharedWhiteboards(loggedUserDTO.getId());
             request.setAttribute("shared", shared);
