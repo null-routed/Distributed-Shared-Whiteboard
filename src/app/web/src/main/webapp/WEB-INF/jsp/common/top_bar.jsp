@@ -3,8 +3,7 @@
 <head>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Link to your CSS file -->
+    <!-- Custom CSS -->
     <link href="${pageContext.request.contextPath}/assets/css/common/top_bar.css" rel="stylesheet">
     <title></title>
 </head>

@@ -7,8 +7,9 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
-    <!--<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/common/common.css">-->
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/signup.css">
+    <!-- Custom JavaScript -->
     <script src="${pageContext.request.contextPath}/assets/javascript/login.js"></script>
 
 </head>
