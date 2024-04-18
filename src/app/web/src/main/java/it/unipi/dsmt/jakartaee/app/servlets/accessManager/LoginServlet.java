@@ -5,14 +5,12 @@ import it.unipi.dsmt.jakartaee.app.dto.LoginInformationsDTO;
 import it.unipi.dsmt.jakartaee.app.interfaces.UserEJB;
 import it.unipi.dsmt.jakartaee.app.utility.ClientRedirector;
 import it.unipi.dsmt.jakartaee.app.utility.AccessController;
-// import it.unipi.dsmt.jakartaee.app.utility.JWT;
 import it.unipi.dsmt.jakartaee.app.utility.JWT;
 import jakarta.ejb.EJB;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-// import it.unipi.dsmt.jakartaee.app.utility.JWT;
 
 import java.io.IOException;
 import java.util.Objects;
