@@ -1,5 +1,5 @@
-import {addMessage} from "./whiteboard-ui.js";
-
+import { addMessage } from "./whiteboard-ui.js";
+import { confirmDelete } from "./homepage.js";
 let socket;
 
 // Function to establish WebSocket connection if not already present
@@ -62,21 +62,16 @@ function handleReceivedMessage(message) {
     console.error("Received message does not contain expected properties.");
     return; // Exit function if message format is invalid
   }
-
-  // Extract relevant data from the parsed message
   const whiteboardName = parsedMessage.whiteboardName;
   const whiteboardOwner = parsedMessage.whiteboardOwner;
   const command = parsedMessage.command;
-  // Access the data attribute value
   const currentUser = document.getElementById("self-username").value;
-
-
   let toastMessage = null;
 
   if (command === "share") {
     toastMessage=`${whiteboardOwner} has shared the whiteboard ${whiteboardName} with you`;
     // Check if the current page URL matches a certain pattern
-    if (window.location.href.includes("/web/homepage"))
+    if (window.location.href.includes("/homepage"))
       // Call the functions only when on the homepage
       addNewWhiteboardToDOM(parsedMessage.whiteboardID, whiteboardName, whiteboardOwner,
           parsedMessage.whiteboardDescription, parsedMessage.whiteboardReadOnly);
@@ -85,14 +80,14 @@ function handleReceivedMessage(message) {
       toastMessage = `${whiteboardOwner} has left the whiteboard ${whiteboardName}`;
     else {
       toastMessage = `${whiteboardOwner} removed you from the whiteboard ${whiteboardName}`;
-      if (window.location.href.includes("/web/homepage"))
+      if (window.location.href.includes("/homepage"))
         removeWhiteboardFromDOM(parsedMessage.whiteboardID);
     }
   }
   else {
     if(whiteboardOwner !== currentUser) {
       toastMessage = `${whiteboardOwner} removed you from the whiteboard ${whiteboardName}`;
-      if (window.location.href.includes("/web/homepage"))
+      if (window.location.href.includes("/homepage"))
         removeWhiteboardFromDOM(parsedMessage.whiteboardID);
     }
     else
@@ -104,20 +99,28 @@ function handleReceivedMessage(message) {
 
 // Define a function to add the new whiteboard HTML to the DOM
 function addNewWhiteboardToDOM(id, name, owner, description, readOnly) {
-  // Create a new whiteboard HTML element
-  const whiteboardElement = document.createElement('div');
-  whiteboardElement.classList.add('grid-item-whiteboard');
-  whiteboardElement.innerHTML = `
-        <img class="whiteboard-snapshot" alt="${name}"
-             src="/web/snapshot_manager?whiteboardID=${id}"
-             id="whiteboard_${id}"
-             onclick="location.href = '/web/whiteboard?whiteboardID=${id}'">
-        <button type="button" class="delete-whiteboard-button" onclick="confirmDelete(${id})">&times;</button>
-    `;
+  const whiteboardsContainer = document.querySelector('#whiteboard-container');
+  const colDiv = document.createElement('div');
+  colDiv.className = 'col-sm-6 col-md-4 col-lg-3 mb-4';
+  colDiv.id = `whiteboard_${id}`;
 
-  // Append the new whiteboard HTML element to the whiteboard grid container
-  const whiteboardGridContainer = document.querySelector('.whiteboard-grid-container');
-  whiteboardGridContainer.appendChild(whiteboardElement);
+  colDiv.innerHTML = `
+        <div class="card">
+            <div class="card-img-top-wrapper">
+                <a href="${pageContext}/whiteboard?whiteboardID=${id}">
+                    <img class="card-img-top" alt="${name}" src="${pageContext}/snapshot_manager?whiteboardID=${id}">
+                </a>
+                <button type="button" class="delete-whiteboard-button btn btn-danger btn-sm" data-wb-id="${id}">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+        </div>`;
+
+  whiteboardsContainer.appendChild(colDiv);
+  const deleteButton = colDiv.querySelector('.delete-whiteboard-button');
+  deleteButton.addEventListener('click', (event) => {
+    confirmDelete(event.target.getAttribute('data-wb-id'));
+  });
 }
 
 // Define a function to remove the whiteboard HTML from the DOM
