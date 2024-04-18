@@ -15,6 +15,7 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <!-- Custom JavaScript -->
     <script type="text/javascript"> let pageContext = "${pageContext.request.contextPath}"; </script>
 </head>
@@ -95,12 +96,23 @@
                             <div class="card-img-top-wrapper">
                                 <a href="${pageContext.request.contextPath}/whiteboard?whiteboardID=<%= whiteboard.getId() %>">
                                     <img class="card-img-top" alt="<%= whiteboard.getName() %>"
-                                         src="${pageContext.request.contextPath}/snapshot_manager?whiteboardID=<%= whiteboard.getId() %>"
-                                    >
+                                         data-toggle="popover"
+                                         data-bs-title="<%= whiteboard.getName() %>"
+                                         data-bs-content="<%= whiteboard.getDescription() %>"
+                                         data-placement="right"
+                                         src="${pageContext.request.contextPath}/snapshot_manager?whiteboardID=<%= whiteboard.getId() %>">
                                 </a>
                                 <button type="button" class="delete-whiteboard-button btn btn-danger btn-sm" data-wb-id="<%= whiteboard.getId() %>">
                                     <i class="bi bi-x"></i>
                                 </button>
+                                <script>
+                                    $(document).ready(function (){
+                                        $('[data-toggle="popover"]').popover({
+                                            trigger: "hover",
+                                            container: "body"
+                                        });
+                                    });
+                                </script>
                             </div>
                         </div>
                     </div>
