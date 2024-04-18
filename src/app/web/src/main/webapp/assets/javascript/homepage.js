@@ -2,54 +2,43 @@ import { establishWebSocketConnection } from "./websocket-notifications.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   establishWebSocketConnection();
-  setupWhiteboardDeleteButtons();
+  setupListeners();
+  showErrorModal();
 });
 
-/* ------ ERROR DISPLAYING MODAL ------ */
-let error_X_span = document.getElementsByClassName("close")[0];
+function showErrorModal() {
+    let errorModal = document.getElementById("error-modal");
+    if(errorModal != null) {
+      errorModal = new bootstrap.Modal(errorModal);
+      errorModal.show();
+    }
+}
 
-error_X_span.onclick = function () {
-  let error_modal = document.getElementById("error-display-modal");
-  error_modal.style.display = "none";
-};
-
-window.onclick = function (event) {
-  let error_modal = document.getElementById("error-display-modal");
-  if (event.target === error_modal) {
-    insert_modal.style.display = "none";
-  }
-};
-
-/* ------ INSERT NEW WHITEBOARD MODAL ------ */
-let insert_modal = new bootstrap.Modal(document.getElementById("insert-whiteboard-modal"));
-let insert_btn = document.getElementById("add-button");
-let insert_X_span = document.getElementsByClassName("close")[1];
-
-// When the user clicks on the button, open the modal
-insert_btn.onclick = function () {
-  insert_modal.show();
-  insert_btn.src = pageContext + "/assets/images/add_img_clicked.svg";
-};
-
-// When the user clicks on <span> (x), close the modal
-insert_X_span.onclick = function () {
-  insert_modal.style.display = "none";
-  insert_btn.src = pageContext + "/assets/images/add_img_unclicked.svg";
-};
-
-// When the user clicks anywhere outside the modal, close it
-window.onclick = function (event) {
-  if (event.target === insert_modal) {
-    insert_modal.style.display = "none";
-    insert_btn.src = pageContext + "/assets/images/add_img_unclicked.svg";
-  }
-};
-
-export function setupWhiteboardDeleteButtons () {
+function setupListeners () {
+  let insert_modal = new bootstrap.Modal(document.getElementById("insert-whiteboard-modal"));
+  let newWhiteboardButton = document.getElementById("new-whiteboard");
+    newWhiteboardButton.addEventListener("click", () => {
+        insert_modal.show();
+    });
   let deleteWhiteboardButtons = document.getElementsByClassName("delete-whiteboard-button");
   for (let button of deleteWhiteboardButtons) {
-    button.addEventListener("click", function () {
-      confirmDelete(button.getAttribute("data"))
+    button.addEventListener("click",  (event) => {
+      confirmDelete(event.target.getAttribute("data-wb-id"))
+    });
+  }
+
+  let allView = document.getElementById("all-view");
+  if(allView) {
+    allView.addEventListener("click", () => {
+      window.location.href = pageContext + "/homepage";
+    });
+  }
+
+  let sharedView = document.getElementById("shared-view");
+  if(sharedView) {
+    sharedView.addEventListener("click", () => {
+      console.log(pageContext+ "?shared=true");
+      window.location.href = pageContext + "/homepage?shared=true";
     });
   }
 }
