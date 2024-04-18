@@ -105,16 +105,11 @@ public class RemoveWhiteboardParticipantServlet extends BaseWhiteboardServlet {
         JsonObjectBuilder jsonObjectBuilder = Json.createObjectBuilder()
                 .add("whiteboardID", whiteboardDTO.getId())
                 .add("whiteboardName", whiteboardDTO.getName())
+                .add("whiteboardOwner", whiteboardDTO.getOwner())
+                .add("senderUser", currentUser)
                 .add("command", "remove");
+        JsonObject JSONMessage = jsonObjectBuilder.build();
 
-        if(currentUser.equals(usernameToBeRemoved)) {
-            jsonObjectBuilder.add("whiteboardOwner", currentUser);
-            JsonObject JSONMessage = jsonObjectBuilder.build();
-            WebSocketServerEndpoint.sendMessageToUser(whiteboardDTO.getOwner(), JSONMessage);
-        } else {
-            jsonObjectBuilder.add("whiteboardOwner", whiteboardDTO.getOwner());
-            JsonObject JSONMessage = jsonObjectBuilder.build();
-            WebSocketServerEndpoint.sendMessageToUser(usernameToBeRemoved, JSONMessage);
-        }
+        WebSocketServerEndpoint.sendMessageToUser(usernameToBeRemoved, JSONMessage);
     }
 }

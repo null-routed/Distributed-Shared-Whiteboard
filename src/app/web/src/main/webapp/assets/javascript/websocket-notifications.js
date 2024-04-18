@@ -65,7 +65,8 @@ function handleReceivedMessage(message) {
   const whiteboardName = parsedMessage.whiteboardName;
   const whiteboardOwner = parsedMessage.whiteboardOwner;
   const command = parsedMessage.command;
-  const currentUser = document.getElementById("self-username").value;
+  const sender = parsedMessage.senderUser;
+  //const currentUser = document.getElementById("self-username").value;
   let toastMessage = null;
 
   if (command === "share") {
@@ -76,22 +77,14 @@ function handleReceivedMessage(message) {
       addNewWhiteboardToDOM(parsedMessage.whiteboardID, whiteboardName, whiteboardOwner,
           parsedMessage.whiteboardDescription, parsedMessage.whiteboardReadOnly);
   } else if(command === "remove") {
-    if(whiteboardOwner !== currentUser)
-      toastMessage = `${whiteboardOwner} has left the whiteboard ${whiteboardName}`;
+    if(whiteboardOwner === sender) {
+      toastMessage = `${whiteboardOwner} removed you from the whiteboard ${whiteboardName}`;
+      if (window.location.href.includes("/web/homepage"))
+        removeWhiteboardFromDOM(parsedMessage.whiteboardID);
+    }
     else {
-      toastMessage = `${whiteboardOwner} removed you from the whiteboard ${whiteboardName}`;
-      if (window.location.href.includes("/homepage"))
-        removeWhiteboardFromDOM(parsedMessage.whiteboardID);
+      toastMessage = `${sender} has left the whiteboard ${whiteboardName}`;
     }
-  }
-  else {
-    if(whiteboardOwner !== currentUser) {
-      toastMessage = `${whiteboardOwner} removed you from the whiteboard ${whiteboardName}`;
-      if (window.location.href.includes("/homepage"))
-        removeWhiteboardFromDOM(parsedMessage.whiteboardID);
-    }
-    else
-      toastMessage = `${whiteboardOwner} has left the whiteboard ${whiteboardName}`;
   }
   // show toast notification
   addMessage(toastMessage); // Call the addMessage function to display the toast

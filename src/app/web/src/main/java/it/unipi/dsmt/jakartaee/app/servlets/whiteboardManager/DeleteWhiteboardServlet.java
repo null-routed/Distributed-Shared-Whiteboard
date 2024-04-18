@@ -43,9 +43,11 @@ public class DeleteWhiteboardServlet extends HttpServlet {
 
         String whiteboardIdToDelete = request.getParameter("whiteboardIdToDelete");
 
+
         if (whiteboardIdToDelete != null) {
 
             String currentUser = loggedUserDTO.getUsername();
+
             MinimalWhiteboardDTO whiteboardDTO = whiteboardEJB.getWhiteboardByID(Integer.parseInt(whiteboardIdToDelete));
 
             //boolean clientIsOwner = whiteboardEJB.isWhiteboardOwner(loggedUserDTO.getId(), whiteboardIdToDelete);
@@ -54,7 +56,6 @@ public class DeleteWhiteboardServlet extends HttpServlet {
 
                 try {
                     userTransaction.begin();
-
                     List<String> participantsUsername = whiteboardEJB.getParticipantUsernames(whiteboardDTO.getId());
                     boolean mySQLDeleteOperationOutcome = whiteboardEJB.deleteWhiteboard(whiteboardIdToDelete);
 
@@ -92,6 +93,7 @@ public class DeleteWhiteboardServlet extends HttpServlet {
 
             // If here, the user requesting a DELETE is not the owner -> remove him from the whiteboard participants
             try{
+
                 userTransaction.begin();
 
                 ParticipantOperationStatus mySQLParticipantRemovalOutcome = whiteboardEJB.removeParticipant(loggedUserDTO.getId(), whiteboardIdToDelete);
@@ -133,15 +135,15 @@ public class DeleteWhiteboardServlet extends HttpServlet {
         JsonObjectBuilder jsonObjectBuilder = Json.createObjectBuilder()
                 .add("whiteboardID", whiteboardDTO.getId())
                 .add("whiteboardName", whiteboardDTO.getName())
-                .add("command", "delete");
+                .add("whiteboardOwner", whiteboardDTO.getOwner())
+                .add("senderUser", currentUser)
+                .add("command", "remove");
+
+        JsonObject JSONMessage = jsonObjectBuilder.build();
 
         if(!Objects.equals(currentUser, whiteboardDTO.getOwner())) {
-            jsonObjectBuilder.add("whiteboardOwner", currentUser);
-            JsonObject JSONMessage = jsonObjectBuilder.build();
             WebSocketServerEndpoint.sendMessageToUser(whiteboardDTO.getOwner(), JSONMessage);
         } else {
-            jsonObjectBuilder.add("whiteboardOwner", whiteboardDTO.getOwner());
-            JsonObject JSONMessage = jsonObjectBuilder.build();
             for(String username : participantsUsername) {
                 if(!Objects.equals(username, whiteboardDTO.getOwner()))
                     WebSocketServerEndpoint.sendMessageToUser(username, JSONMessage);
