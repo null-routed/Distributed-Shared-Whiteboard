@@ -12,6 +12,7 @@ import jakarta.annotation.Resource;
 import jakarta.ejb.EJB;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -53,18 +54,19 @@ public class RemoveWhiteboardParticipantServlet extends BaseWhiteboardServlet {
             return;
         }
 
-        removeParticipant(response, whiteboardDTO, usernameToBeRemoved);
+        removeParticipant(response, whiteboardDTO, usernameToBeRemoved, user.getUsername());
     }
 
     private void removeParticipant(
             HttpServletResponse response,
             MinimalWhiteboardDTO whiteboardDTO,
-            String usernameToBeRemoved) throws IOException {
+            String usernameToBeRemoved,
+            String currentUser) throws IOException {
         try {
             userTransaction.begin();
             if (removeParticipantFromWhiteboard(usernameToBeRemoved, String.valueOf(whiteboardDTO.getId()))) {
                 userTransaction.commit();
-                sendUserRemovedMessage(usernameToBeRemoved, whiteboardDTO);
+                sendUserRemovedMessage(usernameToBeRemoved, whiteboardDTO, currentUser);
                 sendResponse(
                         response,
                         createJsonResponse(true, usernameToBeRemoved + " has been removed from this whiteboard.")
@@ -99,14 +101,22 @@ public class RemoveWhiteboardParticipantServlet extends BaseWhiteboardServlet {
                 && whiteboardEJB.removeParticipant(userId, whiteboardID).equals(ParticipantOperationStatus.SQL_SUCCESS);
     }
 
-    private void sendUserRemovedMessage(String usernameToBeRemoved, MinimalWhiteboardDTO whiteboardDTO) {
-        JsonObject JSONMessage = Json.createObjectBuilder()
+    private void sendUserRemovedMessage(String usernameToBeRemoved, MinimalWhiteboardDTO whiteboardDTO, String currentUser) {
+        JsonObjectBuilder jsonObjectBuilder = Json.createObjectBuilder()
                 .add("whiteboardID", whiteboardDTO.getId())
-                .add("whiteboardOwner", whiteboardDTO.getOwner())
                 .add("whiteboardName", whiteboardDTO.getName())
-                .add("command", "remove")
-                .build();
+                .add("command", "remove");
 
-        WebSocketServerEndpoint.sendMessageToUser(usernameToBeRemoved, JSONMessage);
+        System.out.println("send message to: " + usernameToBeRemoved + " with owner: " + whiteboardDTO.getOwner());
+
+        if(currentUser.equals(usernameToBeRemoved)) {
+            jsonObjectBuilder.add("whiteboardOwner", currentUser);
+            JsonObject JSONMessage = jsonObjectBuilder.build();
+            WebSocketServerEndpoint.sendMessageToUser(whiteboardDTO.getOwner(), JSONMessage);
+        } else {
+            jsonObjectBuilder.add("whiteboardOwner", whiteboardDTO.getOwner());
+            JsonObject JSONMessage = jsonObjectBuilder.build();
+            WebSocketServerEndpoint.sendMessageToUser(usernameToBeRemoved, JSONMessage);
+        }
     }
 }
