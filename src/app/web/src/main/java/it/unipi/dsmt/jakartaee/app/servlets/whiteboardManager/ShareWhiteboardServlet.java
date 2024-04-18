@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+
 @WebServlet(name = "ShareWhiteboardServlet", value = "/share_whiteboard")
 public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
 
@@ -39,8 +40,6 @@ public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
             sendResponse(response, createJsonResponse(false, "Forbidden"));
             return;
         }
-
-        System.out.println("@WhiteboardServlet: called doPost() method, params=" + whiteboardID + ", " + newParticipantUsername);
 
         JsonObject jsonResponse = handleRequest(whiteboardDTO, newParticipantUsername);
 
@@ -75,7 +74,7 @@ public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
                 return createJsonResponse(false, getErrorMessage(insertOutcome));
             }
         } catch (Exception e) {
-            System.out.println("Error processing transaction: " + e.getMessage());
+            System.err.println("Error processing transaction: " + e.getMessage());
             rollbackTransaction();
             return createJsonResponse(false, "An error occurred during transaction. Try again.");
         }
@@ -125,6 +124,5 @@ public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
                 .build();
 
         WebSocketServerEndpoint.sendMessageToUser(username, message);
-        System.out.println("@ShareWhiteboardServlet: WebSocket message sent to " + username + ": " + message);
     }
 }

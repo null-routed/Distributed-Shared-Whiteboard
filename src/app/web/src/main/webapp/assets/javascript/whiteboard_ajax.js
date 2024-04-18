@@ -29,12 +29,8 @@ export const removeParticipant = (userToRemove) => {
   );
 };
 
-export const shareWhiteboard = (
-  whiteboardId,
-) => {
-  let targetUsername = document.getElementById(
-    "new-participant-username"
-  ).value;
+export const shareWhiteboard = (whiteboardId) => {
+  let targetUsername = document.getElementById("new-participant-username").value;
 
   let xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = () => {
@@ -45,8 +41,7 @@ export const shareWhiteboard = (
         let participantsListDiv = document.getElementById("participants");
 
         let participantContainer = document.createElement("div");
-        participantContainer.className =
-          "d-flex justify-content-between align-items-center mb-2";
+        participantContainer.className = "d-flex justify-content-between align-items-center mb-2";
         participantContainer.id = `${targetUsername}-container`;
 
         let participantName = document.createElement("p");
@@ -83,6 +78,7 @@ export const shareWhiteboard = (
       targetUsername
   );
 };
+
 export function sendAJAXSnapshot () {
   const compressionFactor = 0.7;
   let currentWhiteboardCanvas = document.getElementById("whiteboard");
