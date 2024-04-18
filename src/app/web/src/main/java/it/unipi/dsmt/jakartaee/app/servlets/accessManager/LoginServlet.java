@@ -36,6 +36,10 @@ public class LoginServlet extends HttpServlet {
      */
     @Override
     protected void doPost (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        if(AccessController.getLoggedUser(request) != null) {
+            ClientRedirector.redirectToMainPage(request, response);
+            return;
+        }
         System.out.println("@LoginServlet: called doPost() method");
 
         // Extracting parameters for login
