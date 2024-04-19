@@ -44,7 +44,7 @@ public abstract class BaseWhiteboardServlet extends HttpServlet {
     }
 
     protected boolean isNotOwner(MinimalWhiteboardDTO whiteboardDTO, String username) {
-        return whiteboardDTO == null || !whiteboardDTO.getOwner().equals(username);
+        return !whiteboardDTO.getOwner().equals(username);
     }
 
 }
