@@ -99,7 +99,13 @@ function addNewWhiteboardToDOM(id, name, owner, description, readOnly) {
         <div class="card">
             <div class="card-img-top-wrapper">
                 <a href="${pageContext}/whiteboard?whiteboardID=${id}">
-                    <img class="card-img-top" alt="${name}" src="${pageContext}/snapshot_manager?whiteboardID=${id}">
+                    <img class="card-img-top" alt="${name}" 
+                        data-toggle="popover"
+                        data-bs-title="${name}"
+                        data-bs-content="${description}"
+                        data-placement="right"    
+                        src="${pageContext}/snapshot_manager?whiteboardID=${id}" 
+                    >
                 </a>
                 <button type="button" class="delete-whiteboard-button btn btn-danger btn-sm" data-wb-id="${id}">
                     <i class="bi bi-x"></i>
