@@ -95,7 +95,7 @@
                                          src="${pageContext.request.contextPath}/snapshot_manager?whiteboardID=<%= whiteboard.getId() %>">
                                 </a>
                                 <button type="button" class="delete-whiteboard-button btn btn-danger btn-sm" data-wb-id="<%= whiteboard.getId() %>">
-                                    <i class="bi bi-x" data-wb-id="<%= whiteboard.getId() %>"></i>
+                                    <i class="bi bi-x"></i>
                                 </button>
                                 <script>
                                     $(document).ready(function (){
