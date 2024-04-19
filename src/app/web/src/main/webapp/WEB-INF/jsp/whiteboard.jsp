@@ -1,21 +1,16 @@
-<%@ page import="it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO" %>
-<%@ page import="it.unipi.dsmt.jakartaee.app.utility.AccessController" %>
 <%@ page import="java.util.List" %>
 <%@ page import="it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO" %>
+<%@ page import="it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO" %>
 <%@ page contentType="text/html;charset=UTF-8"%>
 <!DOCTYPE html>
 <html>
 <%
-    LoggedUserDTO loggedUserDTO = AccessController.getLoggedUserWithRedirect(request, response);
-    if (loggedUserDTO == null)
-        return;
-
     MinimalWhiteboardDTO whiteboardData = (MinimalWhiteboardDTO) session.getAttribute("whiteboardData");
-
-    boolean isLoggedUserOwner = whiteboardData.getOwner().equals(loggedUserDTO.getUsername());
+    String selfUsername = request.getAttribute("selfUsername").toString();
+    boolean isLoggedUserOwner = whiteboardData.getOwner().equals(selfUsername);
     boolean hasWritePermission = isLoggedUserOwner || !whiteboardData.isReadOnly();
     List<String> participantsOnWhiteboardOpen = (List<String>) session.getAttribute("whiteboardParticipants");
-    if (!participantsOnWhiteboardOpen.contains(loggedUserDTO.getUsername())) {
+    if (!participantsOnWhiteboardOpen.contains(selfUsername)) {
 %>
 <script>
     alert("You are not allowed to perform any operation on this whiteboard.");
@@ -68,11 +63,11 @@
                     <% for (String participant : participantsOnWhiteboardOpen) { %>
                         <div class="d-flex justify-content-between align-items-center mb-2" id="<%= participant %>-container">
                             <p class="mb-0"><%= participant %></p>
-                            <% if (isLoggedUserOwner && !participant.equals(loggedUserDTO.getUsername())) { %>
+                            <% if (isLoggedUserOwner && !participant.equals(selfUsername)) { %>
                             <button type="button" class="btn btn-danger btn-sm remove-participant-btn" data-participant="<%= participant %>">
                                 <i class="bi bi-x"></i>
                             </button>
-                            <% } else if (!isLoggedUserOwner && participant.equals(loggedUserDTO.getUsername())) { %>
+                            <% } else if (!isLoggedUserOwner && participant.equals(selfUsername)) { %>
                             <button type="button" class="btn btn-danger btn-sm remove-participant-btn" data-participant="<%= participant %>">
                                 <i class="bi bi-x"></i>
                             </button>
@@ -111,7 +106,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
     <script type="module" src="${pageContext.request.contextPath}/assets/javascript/whiteboard-main.js" defer></script>
-    <input type="hidden" id="self-username" value="<%= loggedUserDTO.getUsername() %>">
+    <input type="hidden" id="self-username" value="<%= selfUsername %>">
     <input type="hidden" id="writePermission" value="<%= hasWritePermission %>">
     <input type="hidden" id="whiteboard-name" value="<%= whiteboardData.getName() %>">
     <input type="hidden" id="whiteboard-id" value="<%= whiteboardData.getId() %>">

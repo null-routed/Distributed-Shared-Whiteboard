@@ -1,7 +1,9 @@
 package it.unipi.dsmt.jakartaee.app.servlets;
 
+import it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO;
 import it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO;
 import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
+import it.unipi.dsmt.jakartaee.app.utility.AccessController;
 import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -29,7 +31,9 @@ public class WhiteboardServlet extends HttpServlet {
     @Override
     protected void doGet (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         System.out.println("@WhiteboardServlet: called doGet() method");
-
+        LoggedUserDTO loggedUserDTO = AccessController.getLoggedUserWithRedirect(request, response);
+        if (loggedUserDTO == null)
+            return;
         String whiteboardIDParam = request.getParameter("whiteboardID");
 
         if (whiteboardIDParam == null || whiteboardIDParam.isEmpty()) {
@@ -48,6 +52,7 @@ public class WhiteboardServlet extends HttpServlet {
         MinimalWhiteboardDTO selectedWhiteboard = whiteboardEJB.getWhiteboardByID(whiteboardID);
         List<String> whiteboardParticipants = whiteboardEJB.getParticipantUsernames(whiteboardID);
 
+        request.setAttribute("selfUsername", loggedUserDTO.getUsername());
         request.getSession().setAttribute("whiteboardData", selectedWhiteboard);
         request.getSession().setAttribute("whiteboardParticipants", whiteboardParticipants);
 
