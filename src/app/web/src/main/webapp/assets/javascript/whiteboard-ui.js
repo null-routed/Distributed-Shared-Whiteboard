@@ -41,7 +41,7 @@ export const setupListeners = () => {
     .getElementById("share-button-modal")
     .addEventListener("click", () => {
       shareWhiteboard(
-        new URLSearchParams(window.location.search).get("whiteboardID"),
+        new URLSearchParams(window.location.search).get("whiteboardID")
       );
     });
 };
@@ -65,7 +65,7 @@ export const addMessage = (message) => {
   toastContainer.insertAdjacentHTML("beforeend", toastHtml);
   const toastElement = document.getElementById(toastId);
   const toast = new bootstrap.Toast(toastElement, {
-    delay: 5000,
+    delay: 2500,
   });
 
   toast.show();

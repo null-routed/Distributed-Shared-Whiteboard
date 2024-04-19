@@ -7,8 +7,7 @@ import { sendAJAXSnapshot } from "./whiteboard_ajax.js";
 document.addEventListener("DOMContentLoaded", () => {
   setupListeners();
   setupCanvas();
-  establishWebSocketConnection();     // notifications
+  establishWebSocketConnection(); // notifications
   setupWebSocket();
   setInterval(sendAJAXSnapshot, 5000);
 });
-
