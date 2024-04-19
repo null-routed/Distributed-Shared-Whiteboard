@@ -1,5 +1,6 @@
 <%@ page import="java.util.List" %>
 <%@ page import="it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO" %>
+<%@ page import="java.util.Objects" %>
 <%@ page contentType="text/html;charset=UTF-8"%>
 
 <% List<MinimalWhiteboardDTO> whiteboards = (List<MinimalWhiteboardDTO>) request.getAttribute("whiteboards"); %>
@@ -90,7 +91,9 @@
                                     <img class="card-img-top" alt="<%= whiteboard.getName() %>"
                                          data-toggle="popover"
                                          data-bs-title="<%= whiteboard.getName() %>"
-                                         data-bs-content="<%= whiteboard.getDescription() %>"
+                                         <% if (!Objects.equals(whiteboard.getDescription(), "")) {%>
+                                            data-bs-content="<%= whiteboard.getDescription() %>"
+                                         <%}%>
                                          data-placement="right"
                                          src="${pageContext.request.contextPath}/snapshot_manager?whiteboardID=<%= whiteboard.getId() %>">
                                 </a>

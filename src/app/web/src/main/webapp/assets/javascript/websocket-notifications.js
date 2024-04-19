@@ -102,7 +102,6 @@ function addNewWhiteboardToDOM(id, name, owner, description, readOnly) {
                     <img class="card-img-top" alt="${name}" 
                         data-toggle="popover"
                         data-bs-title="${name}"
-                        data-bs-content="${description}"
                         data-placement="right"    
                         src="${pageContext}/snapshot_manager?whiteboardID=${id}" 
                     >
@@ -112,6 +111,11 @@ function addNewWhiteboardToDOM(id, name, owner, description, readOnly) {
                 </button>
             </div>
         </div>`;
+
+  if (description !== "") {
+    let imgElement = colDiv.querySelector('.card-img-top');
+    imgElement.setAttribute('data-bs-content', description);
+  }
 
   whiteboardsContainer.appendChild(colDiv);
   const deleteButton = colDiv.querySelector('.delete-whiteboard-button');
