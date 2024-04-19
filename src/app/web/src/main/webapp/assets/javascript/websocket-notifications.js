@@ -13,8 +13,6 @@ export function establishWebSocketConnection() {
         .split("=")[1];
     socket = new WebSocket(`ws://localhost:8080/web/websocket?jwt=${jwt}`);
 
-    console.log("My JWT: " + jwt)
-
     // Function to handle WebSocket open event
     socket.onopen = function (event) {
       console.log("Notification webSocket connection established.");
@@ -79,7 +77,7 @@ function handleReceivedMessage(message) {
   } else if(command === "remove") {
     if(whiteboardOwner === sender) {
       toastMessage = `${whiteboardOwner} removed you from the whiteboard ${whiteboardName}`;
-      if (window.location.href.includes("/web/homepage"))
+      if (window.location.href.includes("/homepage"))
         removeWhiteboardFromDOM(parsedMessage.whiteboardID);
     }
     else {
@@ -121,11 +119,6 @@ function removeWhiteboardFromDOM(whiteboardId) {
   // Find the whiteboard element by its ID
   const whiteboardElement = document.getElementById(`whiteboard_${whiteboardId}`);
   if (whiteboardElement) {
-    // Find the parent div with the class grid-item-whiteboard
-    const parentDiv = whiteboardElement.closest('.grid-item-whiteboard');
-    if (parentDiv) {
-      // Remove the parent div from the DOM
-      parentDiv.parentNode.removeChild(parentDiv);
-    }
+    whiteboardElement.remove();
   }
 }
