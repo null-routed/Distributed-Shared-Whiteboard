@@ -22,8 +22,8 @@ function setupListeners () {
     });
   let deleteWhiteboardButtons = document.getElementsByClassName("delete-whiteboard-button");
   for (let button of deleteWhiteboardButtons) {
-    button.addEventListener("click",  (event) => {
-      confirmDelete(event.target.getAttribute("data-wb-id"))
+    button.addEventListener("click",  () => {
+      confirmDelete(button.getAttribute("data-wb-id"))
     });
   }
 
