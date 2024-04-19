@@ -1,68 +1,109 @@
 import { establishWebSocketConnection } from "./websocket-notifications.js";
-import {addMessage} from "./whiteboard-ui.js";
-
+import { addMessage } from "./whiteboard-ui.js";
+import { addNewWhiteboardToDOM } from "./homepage-ui.js";
 document.addEventListener("DOMContentLoaded", () => {
   establishWebSocketConnection();
   setupListeners();
 });
 
 function showErrorModal() {
-    let errorModal = document.getElementById("error-modal");
-    if(errorModal != null) {
-      errorModal = new bootstrap.Modal(errorModal);
-      errorModal.show();
-    }
+  let errorModal = $("#error-modal");
+  if (errorModal != null) {
+    errorModal = new bootstrap.Modal(errorModal);
+    errorModal.show();
+  }
 }
 
-function setupListeners () {
-  let insert_modal = new bootstrap.Modal(document.getElementById("insert-whiteboard-modal"));
-  let newWhiteboardButton = document.getElementById("new-whiteboard");
-    newWhiteboardButton.addEventListener("click", () => {
-        insert_modal.show();
+function setupListeners() {
+  let deleteWhiteboardButtons = $(".delete-whiteboard-button");
+  deleteWhiteboardButtons.each(function() {
+    $(this).click(() => {
+      confirmDelete($(this).attr("data-wb-id"));
     });
-  let deleteWhiteboardButtons = document.getElementsByClassName("delete-whiteboard-button");
-  for (let button of deleteWhiteboardButtons) {
-    button.addEventListener("click",  () => {
-      confirmDelete(button.getAttribute("data-wb-id"))
-    });
-  }
+  });
 
-  let allView = document.getElementById("all-view");
-  if(allView) {
-    allView.addEventListener("click", () => {
+  let allView = $("#all-view");
+  if (allView) {
+    allView.click(() => {
       window.location.href = pageContext + "/homepage";
     });
   }
 
-  let sharedView = document.getElementById("shared-view");
-  if(sharedView) {
-    sharedView.addEventListener("click", () => {
-      console.log(pageContext+ "?shared=true");
+  let sharedView = $("#shared-view");
+  if (sharedView) {
+    sharedView.click(() => {
+      console.log(pageContext + "?shared=true");
       window.location.href = pageContext + "/homepage?shared=true";
     });
   }
+
+  $('[data-toggle="popover"]').popover({
+    trigger: "hover",
+    container: "body",
+  });
+
+  $("#insert-new-wb-submit").click(submitWhiteboardForm);
 }
 
-export function confirmDelete (whiteboardId) {
+export function confirmDelete(whiteboardId) {
   let deleteConfirmation = confirm(
-      "Are you sure you want to delete this whiteboard? \n" +
+    "Are you sure you want to delete this whiteboard? \n" +
       "If you are not the owner you will leave the participation."
-  )
+  );
 
   if (deleteConfirmation) {
     fetch(pageContext + "/delete_whiteboard", {
       method: "POST",
       headers: { "Content-type": "application/x-www-form-urlencoded" },
-      body: `whiteboardID=${whiteboardId}`
+      body: `whiteboardID=${whiteboardId}`,
     })
-        .then(response => response.json())
-        .then(jsonResponse => {
-          if (jsonResponse.success === true) {
-            document.getElementById(`whiteboard_${whiteboardId}`).remove();
-            addMessage(jsonResponse.message);
-          } else {
-            showErrorModal();
-          }
-        });
+      .then((response) => response.json())
+      .then((jsonResponse) => {
+        if (jsonResponse.success === true) {
+          document.getElementById(`whiteboard_${whiteboardId}`).remove();
+          addMessage(jsonResponse.message);
+        } else {
+          showErrorModal();
+        }
+      });
   }
+}
+
+function submitWhiteboardForm() {
+  $('#insert-whiteboard-modal').modal('hide');
+
+  const whiteboardName = $("#whiteboardName").val();
+  const whiteboardDescription = $("#whiteboardDescription").val();
+  const readOnly = $("#readOnly").prop('checked');
+  
+  // Construct the form data
+  const formData = new URLSearchParams();
+  formData.append("whiteboardName", whiteboardName);
+  formData.append("whiteboardDescription", whiteboardDescription);
+  formData.append("readOnly", readOnly);
+
+  // Send the data using fetch
+  fetch(`${pageContext}/insert_whiteboard`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: formData,
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (!data.success) {
+        showErrorModal();
+      } else {
+        addNewWhiteboardToDOM(
+          data.message,
+          whiteboardName,
+          $("#self-username").val(),
+          whiteboardDescription,
+        );
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
 }
