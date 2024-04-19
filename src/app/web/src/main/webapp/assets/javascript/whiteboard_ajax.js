@@ -1,83 +1,64 @@
 import { addMessage } from "./whiteboard-ui.js";
 
 export const removeParticipant = (userToRemove) => {
-  const whiteboardID = new URLSearchParams(window.location.search).get(
-    "whiteboardID"
-  );
+  const whiteboardID = new URLSearchParams(window.location.search).get("whiteboardID");
 
-  fetch(contextPath + "/delete_whiteboard", {
-    method: "POST",
-    headers: { "Content-type": "application/x-www-form-urlencoded" },
-    body: `whiteboardID=${whiteboardID}&username=${userToRemove}`,
-  })
-    .then((response) => response.json())
-    .then((jsonResponse) => {
-      if (jsonResponse.success === true) {
-        const removedParticipantDiv = document.getElementById(
-          `${userToRemove}-container`
-        );
-        removedParticipantDiv.remove();
-      }
-      addMessage(jsonResponse.message);
-    });
+  $.post(contextPath + "/delete_whiteboard", {
+    whiteboardID: whiteboardID,
+    username: userToRemove
+  }).done((jsonResponse) => {
+    if (jsonResponse.success === true) {
+      $(`#${userToRemove}-container`).remove();
+    }
+    addMessage(jsonResponse.message);
+  });
 };
 
 export const shareWhiteboard = (whiteboardId) => {
-  const targetUsername = document.getElementById(
-    "new-participant-username"
-  ).value;
+  const targetUsername = $("#new-participant-username").val();
 
-  fetch(contextPath + "/share_whiteboard", {
-    method: "POST",
-    headers: { "Content-type": "application/x-www-form-urlencoded" },
-    body: `whiteboardID=${whiteboardId}&newParticipantUsername=${targetUsername}`,
-  })
-    .then((response) => response.json())
-    .then((jsonResponse) => {
-      if (jsonResponse.success === true) {
-        const participantsListDiv = document.getElementById("participants");
-        const participantContainer = document.createElement("div");
-        participantContainer.className =
-          "d-flex justify-content-between align-items-center mb-2";
-        participantContainer.id = `${targetUsername}-container`;
+  $.post(contextPath + "/share_whiteboard", {
+    whiteboardID: whiteboardId,
+    newParticipantUsername: targetUsername
+  }).done((jsonResponse) => {
+    if (jsonResponse.success === true) {
+      const participantContainer = $('<div/>', {
+        'class': 'd-flex justify-content-between align-items-center mb-2',
+        'id': `${targetUsername}-container`
+      });
 
-        const participantName = document.createElement("p");
-        participantName.className = "mb-0";
-        participantName.textContent = targetUsername;
-        participantContainer.appendChild(participantName);
+      const participantName = $('<p/>', {
+        'class': 'mb-0',
+        'text': targetUsername
+      }).appendTo(participantContainer);
 
-        const removeButton = document.createElement("button");
-        removeButton.type = "button";
-        removeButton.className = "btn btn-danger btn-sm remove-participant-btn";
-        removeButton.setAttribute("data-participant", targetUsername);
-        removeButton.innerHTML = '<i class="bi bi-x"></i>';
-        removeButton.addEventListener("click", () => {
-          removeParticipant(targetUsername);
-        });
+      const removeButton = $('<button/>', {
+        'type': 'button',
+        'class': 'btn btn-danger btn-sm remove-participant-btn',
+        'html': '<i class="bi bi-x"></i>',
+        'data-participant': targetUsername
+      }).on("click", function() {
+        removeParticipant(targetUsername);
+      }).appendTo(participantContainer);
 
-        participantContainer.appendChild(removeButton);
-        participantsListDiv.appendChild(participantContainer);
-      }
-
-      addMessage(jsonResponse.message);
-    });
+      $('#participants').append(participantContainer);
+    }
+    addMessage(jsonResponse.message);
+  });
 };
 
 export function sendAJAXSnapshot() {
   const compressionFactor = 0.7;
-  const currentWhiteboardCanvas = document.getElementById("whiteboard");
-  const imageDataURL = currentWhiteboardCanvas.toDataURL(
-    "image/png",
-    compressionFactor
-  );
-  const whiteboardId = document.getElementById("whiteboard-id").value;
+  const imageDataURL = $('#whiteboard').get(0).toDataURL("image/png", compressionFactor);
+  const whiteboardId = $('#whiteboard-id').val();
 
-  fetch(contextPath + "/snapshot_manager", {
+  $.ajax({
+    url: contextPath + "/snapshot_manager",
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
+    contentType: "application/json",
+    data: JSON.stringify({
       whiteboardID: whiteboardId,
-      snapshot: imageDataURL,
-    }),
+      snapshot: imageDataURL
+    })
   });
 }
