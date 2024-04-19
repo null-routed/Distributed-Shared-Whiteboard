@@ -47,4 +47,7 @@ public abstract class BaseWhiteboardServlet extends HttpServlet {
         return !whiteboardDTO.getOwner().equals(username);
     }
 
+    protected void sendJsonResponse(HttpServletResponse response, boolean success, String message) throws IOException {
+        sendResponse(response, createJsonResponse(success, message));
+    }
 }
