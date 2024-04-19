@@ -1,9 +1,9 @@
 import { establishWebSocketConnection } from "./websocket-notifications.js";
+import {addMessage} from "./whiteboard-ui.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   establishWebSocketConnection();
   setupListeners();
-  showErrorModal();
 });
 
 function showErrorModal() {
@@ -50,7 +50,19 @@ export function confirmDelete (whiteboardId) {
   )
 
   if (deleteConfirmation) {
-    document.getElementById("whiteboardIdToDelete").value = whiteboardId;     // setting the hidden field of the delete form
-    document.getElementById("deleteWhiteboardForm").submit();     // submitting the delete form to call the servlet doPost() method
+    fetch(pageContext + "/delete_whiteboard", {
+      method: "POST",
+      headers: { "Content-type": "application/x-www-form-urlencoded" },
+      body: `whiteboardID=${whiteboardId}`
+    })
+        .then(response => response.json())
+        .then(jsonResponse => {
+          if (jsonResponse.success === true) {
+            document.getElementById(`whiteboard_${whiteboardId}`).remove();
+            addMessage(jsonResponse.message);
+          } else {
+            showErrorModal();
+          }
+        });
   }
 }
