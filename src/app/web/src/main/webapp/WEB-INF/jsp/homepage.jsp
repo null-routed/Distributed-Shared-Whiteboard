@@ -77,6 +77,8 @@
                         <button id="new-whiteboard"
                                 type="button"
                                 class="btn btn-outline-primary btn-add"
+                                data-bs-toggle="modal"
+                                data-bs-target="#insert-whiteboard-modal"
                                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
                         >+</button>
                     </div>
@@ -91,7 +93,7 @@
                                     <img class="card-img-top" alt="<%= whiteboard.getName() %>"
                                          data-toggle="popover"
                                          data-bs-title="<%= whiteboard.getName() %>"
-                                         <% if (!Objects.equals(whiteboard.getDescription(), "")) {%>
+                                         <% if (!whiteboard.getDescription().isEmpty()) {%>
                                             data-bs-content="<%= whiteboard.getDescription() %>"
                                          <%}%>
                                          data-placement="right"
@@ -100,14 +102,6 @@
                                 <button type="button" class="delete-whiteboard-button btn btn-danger btn-sm" data-wb-id="<%= whiteboard.getId() %>">
                                     <i class="bi bi-x"></i>
                                 </button>
-                                <script>
-                                    $(document).ready(function (){
-                                        $('[data-toggle="popover"]').popover({
-                                            trigger: "hover",
-                                            container: "body"
-                                        });
-                                    });
-                                </script>
                             </div>
                         </div>
                     </div>
@@ -127,24 +121,22 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="addForm" action="${pageContext.request.contextPath}/insert_whiteboard" method="POST">
-                    <div class="mb-3">
-                        <label for="whiteboardName" class="form-label">Whiteboard Name:</label>
-                        <input type="text" class="form-control" id="whiteboardName" name="whiteboardName">
-                    </div>
-                    <div class="mb-3">
-                        <label for="whiteboardDescription" class="form-label">Description:</label>
-                        <textarea class="form-control" id="whiteboardDescription" name="whiteboardDescription"></textarea>
-                    </div>
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="readOnly" name="readOnly">
-                        <label class="form-check-label" for="readOnly">Read-only</label>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </div>
-                </form>
+                <div class="mb-3">
+                    <label for="whiteboardName" class="form-label">Whiteboard Name:</label>
+                    <input type="text" class="form-control" id="whiteboardName" name="whiteboardName">
+                </div>
+                <div class="mb-3">
+                    <label for="whiteboardDescription" class="form-label">Description:</label>
+                    <textarea class="form-control" id="whiteboardDescription" name="whiteboardDescription"></textarea>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="readOnly" name="readOnly">
+                    <label class="form-check-label" for="readOnly">Read-only</label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="insert-new-wb-submit" type="button" class="btn btn-primary">Submit</button>
+                </div>
             </div>
         </div>
     </div>
