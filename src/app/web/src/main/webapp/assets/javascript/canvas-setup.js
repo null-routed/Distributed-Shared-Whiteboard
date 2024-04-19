@@ -12,7 +12,8 @@ export let usersMap = {};
 export let cursorPosition = { x: 0, y: 0 };
 
 export const setupCanvas = () => {
-  let hasWritePermission = document.getElementById("writePermission").value === "true";
+  let hasWritePermission =
+    document.getElementById("writePermission").value === "true";
   canvas = new fabric.Canvas("whiteboard", {
     isDrawingMode: hasWritePermission,
     perPixelTargetFind: true,
@@ -29,10 +30,10 @@ export const setupCanvas = () => {
   resizeCanvas();
 
   canvas.on("mouse:move", (event) => {
-    if(canvas.isDrawingMode) {
+    if (canvas.isDrawingMode) {
       canvas.freeDrawingCursor = 'url("/web/assets/images/pen.png"), auto';
     }
-    if(isRubberToggled) {
+    if (isRubberToggled) {
       canvas.defaultCursor = 'url("/web/assets/images/eraser.png"), auto';
       canvas.hoverCursor = 'url("/web/assets/images/eraser.png"), auto';
     }
@@ -81,16 +82,16 @@ export const addStroke = (jsonizedPath, strokeId) => {
 };
 
 export const removeUserCursor = (username) => {
-    let user = usersMap[username];
-    if (!user) {
-        return;
-    }
+  let user = usersMap[username];
+  if (!user) {
+    return;
+  }
 
-    if (user.cursor && user.cursor.group) {
-        canvas.remove(user.cursor.group);
-        canvas.renderAll();
-    }
-}
+  if (user.cursor && user.cursor.group) {
+    canvas.remove(user.cursor.group);
+    canvas.renderAll();
+  }
+};
 
 export const updateUserCursor = (data, username) => {
   let user = usersMap[username];
