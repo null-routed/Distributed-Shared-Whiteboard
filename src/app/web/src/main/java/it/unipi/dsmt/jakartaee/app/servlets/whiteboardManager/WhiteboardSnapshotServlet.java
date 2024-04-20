@@ -52,9 +52,6 @@ public class WhiteboardSnapshotServlet extends HttpServlet {
 
         boolean snapshotUpdateOutcome = whiteboardEJB.updateWhiteboardSnapshot(snapshotDataBytes, whiteboardID);
 
-        //if (snapshotUpdateOutcome) System.out.println("@WhiteboardSnapshotServlet: successfully updated snapshot for whiteboardID=" + whiteboardID);
-        //else System.out.println("@WhiteboardSnapshotServlet: failed to update snapshot for whiteboardID=" + whiteboardID);
-
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write("Image uploaded successfully");
