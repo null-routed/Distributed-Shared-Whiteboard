@@ -1,5 +1,5 @@
 import { establishWebSocketConnection } from "./websocket-notifications.js";
-import { addMessage } from "./whiteboard-ui.js";
+import { addToast } from "./whiteboard-ui.js";
 import { addNewWhiteboardToDOM } from "./homepage-ui.js";
 document.addEventListener("DOMContentLoaded", () => {
   establishWebSocketConnection();
@@ -61,7 +61,7 @@ export function confirmDelete(whiteboardId) {
       .then((jsonResponse) => {
         if (jsonResponse.success === true) {
           document.getElementById(`whiteboard_${whiteboardId}`).remove();
-          addMessage(jsonResponse.message);
+          addToast(jsonResponse.message);
         } else {
           showErrorModal();
         }

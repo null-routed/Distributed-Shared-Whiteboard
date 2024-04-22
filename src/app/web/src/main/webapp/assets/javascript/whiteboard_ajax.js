@@ -1,4 +1,4 @@
-import { addMessage } from "./whiteboard-ui.js";
+import { addToast } from "./whiteboard-ui.js";
 
 export const removeParticipant = (userToRemove) => {
   const whiteboardID = new URLSearchParams(window.location.search).get("whiteboardID");
@@ -10,7 +10,7 @@ export const removeParticipant = (userToRemove) => {
     if (jsonResponse.success === true) {
       $(`#${userToRemove}-container`).remove();
     }
-    addMessage(jsonResponse.message);
+    addToast(jsonResponse.message);
   });
 };
 
@@ -43,7 +43,7 @@ export const shareWhiteboard = (whiteboardId) => {
 
       $('#participants').append(participantContainer);
     }
-    addMessage(jsonResponse.message);
+    addToast(jsonResponse.message);
   });
 };
 

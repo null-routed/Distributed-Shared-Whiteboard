@@ -1,6 +1,6 @@
 import { confirmDelete } from "./homepage.js";
 
-export const addNewWhiteboardToDOM = (id, name, owner, description) => {
+export const addNewWhiteboardToDOM = (id, name, description) => {
   const whiteboardsContainer = document.getElementById("whiteboard-container");
   const colDiv = document.createElement("div");
   colDiv.className = "col-sm-6 col-md-4 col-lg-3 mb-4";

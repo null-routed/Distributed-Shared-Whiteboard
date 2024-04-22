@@ -8,7 +8,7 @@ import {
   tempIdMap,
   removeUserCursor,
 } from "./canvas-setup.js";
-import { addMessage } from "./whiteboard-ui.js";
+import { addToast } from "./whiteboard-ui.js";
 import { getRandomColor } from "./utils.js";
 
 let ws, username;
@@ -133,7 +133,7 @@ const handleUserList = (users, showMessage) => {
   for (const user of users) {
     if (!usersMap[user]) {
       usersMap[user] = { color: getRandomColor() };
-      if (showMessage) addMessage(`${user} joined.`);
+      if (showMessage) addToast(`${user} joined.`);
     }
   }
 
@@ -141,7 +141,7 @@ const handleUserList = (users, showMessage) => {
     if (!users.includes(user)) {
       removeUserCursor(user);
       delete usersMap[user];
-      addMessage(`${user} disconnected.`);
+      addToast(`${user} disconnected.`);
     }
   }
 };

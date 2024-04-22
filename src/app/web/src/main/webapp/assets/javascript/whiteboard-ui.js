@@ -42,7 +42,7 @@ export const setupListeners = () => {
   });
 };
 
-export const addMessage = (message) => {
+export const addToast = (message) => {
   $toastContainer = $("#toast-container");
   const toastId = `toast-${Date.now()}`;
   const toastHtml = `
@@ -69,4 +69,18 @@ export const addMessage = (message) => {
   $toastElement.on('hidden.bs.toast', function () {
     $(this).remove();
   });
+};
+
+export const removeParticipantFromDOM = (participant) => {
+  $(`#${participant}-container`).remove();
+}
+
+export const addParticipantToDOM = (participant) => {
+  const participantHtml = `
+    <div class="d-flex justify-content-between align-items-center mb-2" id="${participant}-container">
+        <p class="mb-0">${participant}</p>                      
+    </div>
+  `;
+
+  $("#participants").append(participantHtml);
 };
