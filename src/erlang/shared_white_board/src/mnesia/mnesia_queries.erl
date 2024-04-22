@@ -79,9 +79,6 @@ remove_user_from_whiteboard(WhiteboardId, Username) ->
         RedoStackRecords = mnesia:match_object(#redo_stack{whiteboard_id = WhiteboardId, username = Username, _ = '_'}),
         lists:foreach(fun(Record) -> mnesia:delete_object(Record) end, RedoStackRecords),
 
-        StrokesLogRecords = mnesia:match_object(#whiteboard_strokes_log{whiteboard_id = WhiteboardId, username = Username, _ = '_'}),
-        lists:foreach(fun(Record) -> mnesia:delete_object(Record) end, StrokesLogRecords),
-
         UsersRecords = mnesia:match_object(#whiteboard_users{whiteboard_id = WhiteboardId, username = Username, _ = '_'}),
         lists:foreach(fun(Record) -> mnesia:delete_object(Record) end, UsersRecords),
 
