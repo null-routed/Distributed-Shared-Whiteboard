@@ -80,6 +80,7 @@ function handleReceivedMessage(message) {
         removeWhiteboardFromDOM(parsedMessage.whiteboardID);
     } else {
       toastMessage = `${sender} has left the whiteboard ${whiteboardName}`;
+      $(`#${sender}-container`).remove();       // Removing the user from the participants list
     }
   }
   // show toast notification
