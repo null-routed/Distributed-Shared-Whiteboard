@@ -47,6 +47,7 @@ public class HomepageServlet extends HttpServlet {
         String targetPage = "/WEB-INF/jsp/homepage.jsp";
 
         request.setAttribute("whiteboards", whiteboards);
+        request.setAttribute("selfUsername", loggedUserDTO.getUsername());
         request.getRequestDispatcher(targetPage).forward(request, response);
     }
 }
