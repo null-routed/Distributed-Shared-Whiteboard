@@ -7,6 +7,7 @@ import it.unipi.dsmt.jakartaee.app.interfaces.UserEJB;
 import it.unipi.dsmt.jakartaee.app.servlets.WebSocketServerEndpoint;
 import it.unipi.dsmt.jakartaee.app.utility.AccessController;
 import it.unipi.dsmt.jakartaee.app.utility.RPC;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -64,7 +65,7 @@ public class DeleteWhiteboardServlet extends BaseWhiteboardServlet {
                 return;
             }
             userTransaction.commit();
-            sendUserRemovedMessage(currentUser, whiteboardDTO, participantsUsername);
+            sendUserRemovedMessage(currentUser, whiteboardDTO, null, participantsUsername);
             sendJsonResponse(response, true, "Whiteboard deleted successfully.");
         } catch (Exception e) {
             handleTransactionError(response, e);
@@ -86,7 +87,7 @@ public class DeleteWhiteboardServlet extends BaseWhiteboardServlet {
                 return;
             }
             userTransaction.commit();
-            sendUserRemovedMessage(currentUser, whiteboardDTO, participantsUsername);
+            sendUserRemovedMessage(currentUser, whiteboardDTO, usernameToBeRemoved, participantsUsername);
             String message = usernameToBeRemoved.equals(currentUser) ?
                     "Whiteboard " + whiteboardDTO.getName() + " left successfully." : "Participant removed successfully.";
             sendJsonResponse(response, true, message);
@@ -95,15 +96,19 @@ public class DeleteWhiteboardServlet extends BaseWhiteboardServlet {
         }
     }
 
-    private void sendUserRemovedMessage(String currentUser, MinimalWhiteboardDTO whiteboardDTO, List<String> participantsUsername) {
+    private void sendUserRemovedMessage(String currentUser, MinimalWhiteboardDTO whiteboardDTO, String removedUser, List<String> participantsUsername) {
         if(participantsUsername == null) return;
-        JsonObject message = Json.createObjectBuilder()
+        JsonObjectBuilder builder = Json.createObjectBuilder()
                 .add("whiteboardID", whiteboardDTO.getId())
                 .add("whiteboardName", whiteboardDTO.getName())
-                .add("whiteboardOwner", whiteboardDTO.getOwner())
                 .add("senderUser", currentUser)
-                .add("command", "remove")
-                .build();
+                .add("command", "remove");
+        if (removedUser == null) {
+            builder.addNull("targetUser");
+        } else {
+            builder.add("targetUser", removedUser);
+        }
+        JsonObject message = builder.build();
         for (String username : participantsUsername) {
             if (!username.equals(currentUser))
                 WebSocketServerEndpoint.sendMessageToUser(username, message);
