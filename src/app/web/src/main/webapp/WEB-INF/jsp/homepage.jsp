@@ -5,7 +5,7 @@
 
 <% List<MinimalWhiteboardDTO> whiteboards = (List<MinimalWhiteboardDTO>) request.getAttribute("whiteboards"); %>
 <% String isSharedView = request.getParameter("shared"); %>
-<% String selfUsername = request.getParameter("selfUsername"); %>
+<% String selfUsername = request.getAttribute("selfUsername").toString(); %>
 <html>
 <head>
     <title>Homepage</title>
