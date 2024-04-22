@@ -1,8 +1,12 @@
-import { addMessage } from "./whiteboard-ui.js";
+import {
+  addToast,
+  removeParticipantFromDOM,
+  addParticipantToDOM} from "./whiteboard-ui.js";
 import {
   addNewWhiteboardToDOM,
   removeWhiteboardFromDOM,
 } from "./homepage-ui.js";
+
 let socket;
 
 // Function to establish WebSocket connection if not already present
@@ -42,47 +46,49 @@ function handleReceivedMessage(message) {
     parsedMessage = JSON.parse(message);
   } catch (error) {
     console.error("Error parsing JSON message:", error);
-    return; // Exit function if unable to parse JSON
+    return; 
   }
 
-  // Check if the message contains the expected properties
-  if (
-    !parsedMessage ||
-    !parsedMessage.whiteboardName ||
-    !parsedMessage.whiteboardOwner ||
-    !parsedMessage.command
-  ) {
-    console.error("Received message does not contain expected properties.");
-    return; // Exit function if message format is invalid
+  // Validate the necessary properties
+  if (!parsedMessage || !parsedMessage.whiteboardName || !parsedMessage.targetUser || !parsedMessage.command) {
+    console.error("Received message does not contain expected properties:", parsedMessage);
+    return; 
   }
-  const whiteboardName = parsedMessage.whiteboardName;
-  const whiteboardOwner = parsedMessage.whiteboardOwner;
-  const command = parsedMessage.command;
-  const sender = parsedMessage.senderUser;
-  //const currentUser = document.getElementById("self-username").value;
-  let toastMessage = null;
 
-  if (command === "share") {
-    toastMessage = `${whiteboardOwner} has shared the whiteboard ${whiteboardName} with you`;
-    // Check if the current page URL matches a certain pattern
-    if (window.location.href.includes("/homepage"))
-      // Call the functions only when on the homepage
-      addNewWhiteboardToDOM(
-        parsedMessage.whiteboardID,
-        whiteboardName,
-        whiteboardOwner,
-        parsedMessage.whiteboardDescription,
-      );
-  } else if (command === "remove") {
-    if (whiteboardOwner === sender) {
-      toastMessage = `${whiteboardOwner} removed you from the whiteboard ${whiteboardName}`;
-      if (window.location.href.includes("/homepage"))
-        removeWhiteboardFromDOM(parsedMessage.whiteboardID);
-    } else {
-      toastMessage = `${sender} has left the whiteboard ${whiteboardName}`;
-      $(`#${sender}-container`).remove();       // Removing the user from the participants list
-    }
+  const { whiteboardName, targetUser, command, senderUser: sender, whiteboardID, whiteboardDescription } = parsedMessage;
+  const selfUsername = $("#self-username").val();
+  const isHomepage = window.location.href.includes("/homepage");
+  const currWhiteboardID = parseInt(new URLSearchParams(window.location.search).get('whiteboardID'));
+  // Process commands
+  switch (command) {
+    case "share":
+      if (targetUser === selfUsername || !targetUser) {
+        addToast(`${sender} has shared the whiteboard ${whiteboardName} with you`);
+        if (isHomepage) {
+          addNewWhiteboardToDOM(whiteboardID, whiteboardName, whiteboardDescription);
+        }
+      } else {
+        addToast(`${sender} has shared the whiteboard ${whiteboardName} with ${targetUser}`);
+        if(whiteboardID === currWhiteboardID){
+          addParticipantToDOM(targetUser);
+        }
+      }
+      break;
+    case "remove":
+      if (targetUser === selfUsername) {
+        addToast(`${sender} removed you from the whiteboard ${whiteboardName}`);
+        if (isHomepage) {
+          removeWhiteboardFromDOM(whiteboardID);
+        }
+      } else {
+        addToast(`${targetUser} has left the whiteboard ${whiteboardName}`);
+        if(whiteboardID === currWhiteboardID){
+          removeParticipantFromDOM(targetUser);
+        }
+      }
+      break;
+    default:
+      console.error("Unsupported command:", command);
   }
-  // show toast notification
-  addMessage(toastMessage); // Call the addMessage function to display the toast
 }
+
