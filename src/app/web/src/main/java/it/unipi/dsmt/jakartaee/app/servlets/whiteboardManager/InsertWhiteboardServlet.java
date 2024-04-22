@@ -36,7 +36,7 @@ public class InsertWhiteboardServlet extends BaseWhiteboardServlet {
         }
 
         String whiteboardDescription = getParameter(request, "whiteboardDescription");
-        boolean isReadOnly = "on".equals(getParameter(request, "readOnly"));
+        boolean isReadOnly = "true".equals(getParameter(request, "readOnly"));
         WhiteboardCreationDTO newWhiteboard = new WhiteboardCreationDTO(whiteboardName, whiteboardDescription, isReadOnly);
 
         try {
