@@ -1,6 +1,5 @@
 <%@ page import="java.util.List" %>
 <%@ page import="it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO" %>
-<%@ page import="it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO" %>
 <%@ page contentType="text/html;charset=UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -36,6 +35,7 @@
             <button class="btn btn-light" id="redo-button" title="Redo" <%= !hasWritePermission ? "disabled" : "" %>><i class="bi bi-arrow-clockwise"></i></button>
             <button class="btn btn-light active" id="pen-button" title="Pen" <%= !hasWritePermission ? "disabled" : "" %>><i class="bi bi-pencil-fill"></i></button>
             <button class="btn btn-light" id="rubber-button" title="Rubber" <%= !hasWritePermission ? "disabled" : "" %>><i class="bi bi-eraser-fill"></i></button>
+            <button class="btn btn-light" id="color-palette-button" data-bs-toggle="popover" title="Color Palette" <%= !hasWritePermission ? "disabled" : "" %>><i class="bi bi-palette"></i></button>
         </div>
 
         <!-- Additional actions on the right -->

@@ -32,3 +32,26 @@ body {
 #toast-container {
     z-index: 1060;
 }
+
+.color-palette-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.color-box {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin: 2px;
+    border-radius: 5px;
+}
+
+.black { background-color: black; }
+.red { background-color: red; }
+.blue { background-color: blue; }
+.green { background-color: green; }
+.purple { background-color: purple; }
+
+.selected-color {
+    outline: 2px solid lightseagreen;
+}

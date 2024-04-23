@@ -7,6 +7,14 @@ let lastErasedObject = null;
 let isRubberToggled = false;
 let canvas = null;
 
+const colorMap = {
+  black: "#000000",
+  red: "#FF0000",
+  blue: "#0000FF",
+  green: "#008000",
+  purple: "#800080"
+};
+
 export let tempIdMap = {};
 export let usersMap = {};
 export let cursorPosition = { x: 0, y: 0 };
@@ -17,6 +25,7 @@ export const setupCanvas = () => {
   canvas = new fabric.Canvas("whiteboard", {
     isDrawingMode: hasWritePermission,
     perPixelTargetFind: true,
+    willReadFrequently: true
   });
 
   canvas.freeDrawingBrush.width = currentWidth;
@@ -50,11 +59,10 @@ export const setupCanvas = () => {
     isMouseDown = false;
   });
 
-  canvas.on("mouse:over", function (e) {
+  canvas.on("mouse:over",  (e) => {
     if (isRubberToggled && isMouseDown) {
       const obj = e.target;
       if (obj && obj !== lastErasedObject) {
-        console.log(obj);
         canvas.remove(obj);
         lastErasedObject = obj; // Avoid repeatedly removing the same object in quick succession
         sendDeleteStroke(obj.strokeId);
@@ -178,3 +186,9 @@ export const rubberLogic = () => {
     obj.selectable = false;
   });
 };
+
+export const chooseColor = (color) => {
+    color = colorMap[color];
+    currentColor = color;
+    canvas.freeDrawingBrush.color = currentColor;
+}
