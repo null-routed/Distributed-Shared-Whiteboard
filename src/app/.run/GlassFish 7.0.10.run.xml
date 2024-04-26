@@ -66,11 +66,15 @@
       </SHUTDOWN>
     </ConfigurationWrapper>
     <method v="2">
+      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/ejb/pom.xml" goal="clean" />
+      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/ejb-interfaces/pom.xml" goal="clean" />
+      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/ejb-interfaces/pom.xml" goal="install" />
       <option name="Make" enabled="true" />
       <option name="BuildArtifacts" enabled="true">
         <artifact name="ejb" />
         <artifact name="web:war exploded" />
       </option>
+      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/web/pom.xml" goal="clean" />
     </method>
   </configuration>
 </component>
