@@ -82,3 +82,8 @@
     top: 0;
     right: 0;
 }
+
+#whiteboard-container {
+    max-height: 450px;
+    overflow-y: auto;
+}
