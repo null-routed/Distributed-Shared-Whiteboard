@@ -10,12 +10,11 @@ public class RPC {
     private static OtpConnection connection = null;
 
     public static boolean sendErlangWhiteboardUpdateRPC(String command, String whiteboardId, String userId, int isOwner) {
-        System.out.println("@RPC: called sendErlangWhiteboardUpdateRPC() method, params=" + command + ", " + whiteboardId + ", " + userId + ", " + isOwner);
+        System.out.println("@RPC: called sendErlangWhiteboardUpdateRPC() method");
         try {
             OtpErlangObject received = executeErlangCommand(command, whiteboardId, userId, isOwner);
             if (received instanceof OtpErlangAtom) {
                 String result = ((OtpErlangAtom) received).atomValue();
-                System.out.println("The erlang message is: " + result);
                 return "ok".equals(result);
             }
         } catch (Exception e) {
@@ -25,15 +24,15 @@ public class RPC {
         return false;
     }
 
-    public static OtpConnection getConnection() throws IOException, OtpAuthException {
-        if (connection == null) {
+    public static OtpConnection getConnection() throws IOException {
+        if (connection == null || !connection.isConnected()) {
             OtpSelf self = new OtpSelf("java_client", "shared_whiteboard_app");
             OtpPeer peer = new OtpPeer("node1@localhost");
             try {
                 connection = self.connect(peer);
                 System.out.println("Java erlang node connection established.");
             } catch (Exception e) {
-                System.out.println("cause:" + e.getCause());
+                System.out.println("@RPC: failed to get a connection. Cause:" + e.getCause());
                 e.printStackTrace();
             }
         }
