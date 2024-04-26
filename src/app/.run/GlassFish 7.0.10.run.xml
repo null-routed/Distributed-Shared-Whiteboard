@@ -66,10 +66,6 @@
       </SHUTDOWN>
     </ConfigurationWrapper>
     <method v="2">
-      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/ejb/pom.xml" goal="clean" />
-      <option name="Maven.BeforeRunTask" enabled="true" file="C:\Users\Marco\Desktop\DSMT_project\src\app\web/pom.xml" goal="clean" />
-      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/ejb-interfaces/pom.xml" goal="clean" />
-      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/ejb-interfaces/pom.xml" goal="install" />
       <option name="Make" enabled="true" />
       <option name="BuildArtifacts" enabled="true">
         <artifact name="ejb" />
