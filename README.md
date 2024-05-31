@@ -18,7 +18,7 @@
 * Check the 'Delegate IDE build/run actions to Maven' checkbox
 * Apply -> OK
 ### 3. Compiling the 'ejb' and 'ejb-interfaces' modules
-* **If the 'Maven' button is not showing in the right sidebar:** Open one of the `pom.xml` files -> Right click anywhere in the file -> Click on 'Add as Maven project'
+* **If the 'Maven' button is not showing in the right sidebar:** Open the `pom.xml` file -> Right click anywhere in the file -> Click on 'Add as Maven project' (do this for each `pom.xml` file in the project)
 * Click on 'Maven' in the right sidebar -> ejb -> Lifecycle -> Double-click on 'install'
 * Click on 'Maven' in the right sidebar -> ejb-interfaces -> Lifecycle -> Double-click on 'compile'
 ### 4. Configuring the EJB application
