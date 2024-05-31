@@ -5,4 +5,5 @@ The Erlang nodes are responsible for handling the core logic of the application.
 3. **Enforce access control**: Nodes perform permission checks and enforce access control actions when a user is removed / added to a whiteboard.
 
 ## How to run
-In order to compile and run the Erlang node, it's mandatory to have rebar3 installed and in PATH. After ensuring that, run `./start_node.sh <node_name>`, for example `./start_node.sh node1@localhost`. 
+In order to compile and run the Erlang node, it's mandatory to have `rebar3` installed and in PATH. <br>
+After ensuring that, place yourself in `Distributed-Shared-Whiteboard\src\erlang\shared_white_board` and run `./start_node.sh <node_name>` to start a node, for example `./start_node.sh node1@localhost`. 
