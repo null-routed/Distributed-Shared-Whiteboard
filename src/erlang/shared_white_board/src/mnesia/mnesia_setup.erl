@@ -9,20 +9,11 @@
 -record(redo_stack, {id, stroke_id, whiteboard_id, data, action, username, timestamp}).
 
 init() ->
-    Nodes = application:get_env(shared_white_board, cluster_nodes, []),
-    connect_nodes(Nodes),
     setup_mnesia(),
     create_tables_if_not_exist(),
     truncate_whiteboard_users().
 
-connect_nodes(Nodes) ->
-    lists:foreach(fun(Node) ->
-            case net_adm:ping(Node) of
-                pong -> ok; 
-                pang -> io:format("Node ~p not reachable.~n", [Node])
-            end
-        end, Nodes).
-
+% Setup mnesia database
 setup_mnesia() ->
     MnesiaDir = "mnesia/" ++ erlang:atom_to_list(node()),
     ok = filelib:ensure_dir(MnesiaDir ++ "/schema.DAT"),
@@ -31,6 +22,7 @@ setup_mnesia() ->
     mnesia:start(),
     timer:sleep(1000).
 
+% Create tables if they do not exist
 create_tables_if_not_exist() ->
     wait_for_mnesia(),
     Tables = [
@@ -41,12 +33,15 @@ create_tables_if_not_exist() ->
     ],
     lists:foreach(fun({Name, Fields, Type}) -> create_table(Name, Fields, Type) end, Tables).
 
+% Wait for mnesia to start
 wait_for_mnesia() ->
         io:format("creating mnesia tables"),
     case mnesia:wait_for_tables([schema], 10000) of
         ok -> io:format("Mnesia operational.~n");
         _ -> io:format("Timeout waiting for Mnesia to start.~n"), exit({mnesia_not_started, {}})
     end.
+
+% Create a table
 create_table(Name, Fields, Type) ->
     case mnesia:create_table(Name, [{attributes, Fields}, {disc_copies, [node()]}, {type, Type}]) of
         {atomic, ok} -> io:format("Table ~p created successfully.~n", [Name]);
@@ -54,6 +49,7 @@ create_table(Name, Fields, Type) ->
         Error -> io:format("Failed to create table ~p: ~p~n", [Name, Error])
     end.
 
+% Truncate the whiteboard_users table on node startup
 truncate_whiteboard_users() ->
     case mnesia:table_info(whiteboard_users, size) > 0 of
         true ->

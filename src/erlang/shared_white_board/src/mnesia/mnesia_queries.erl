@@ -5,9 +5,8 @@
     update_or_add_user_connection/3,
     get_connected_users/1,
     get_user_connection/2,
-    remove_user_connection/3,
+    remove_user_connection/2,
     add_user_access/3,
-    print_all_records/0,
     log_stroke/6,
     undo_stroke/2,
     redo_stroke/2,
@@ -133,13 +132,12 @@ update_or_add_user_connection(WhiteboardId, Username, Pid) ->
           end,
     mnesia:transaction(Fun).
 
-remove_user_connection(WhiteboardId, Username, Pid) ->
+remove_user_connection(WhiteboardId, Username) ->
     Fun = fun() ->
               Records = mnesia:match_object(
                 #whiteboard_users{
                     whiteboard_id = WhiteboardId, 
                     username = Username, 
-                    websocket_pid = Pid,
                     _ = '_'
                 }),
               lists:foreach(fun(Record) ->
@@ -307,15 +305,3 @@ redo_stroke(WhiteboardId, Username) ->
         end
     end,
     mnesia:transaction(Fun).
-
-
-print_all_records() ->  
-    Fun = fun() ->
-        FoldFun = fun(Record, Acc) ->
-            io:format("~p~n", [Record]),
-            Acc
-        end,
-        mnesia:foldl(FoldFun, ok, whiteboard_access)
-    end,
-    mnesia:transaction(Fun).
-

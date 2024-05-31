@@ -1,7 +1,7 @@
 -module(websocket_handler).
 -export([init/2, websocket_init/1, websocket_handle/2, websocket_info/2, terminate/3]).
 
-%%% Initial connection setup, including JWT validation and permission checks.
+%%% Connection callback that handles the initial HTTP request.
 init(Req, Opts) ->
     case jwt_utils:validate_jwt(Req) of
         {ok, Username} ->
@@ -35,14 +35,14 @@ reply_with_error(Req, StatusCode, Message, Opts) ->
     Req2 = cowboy_req:reply(StatusCode, #{}, Message, Req),
     {ok, Req2, Opts}.
 
-%%% WebSocket connection initialization.
+%%% Callback that handles websocket upgrade (from HTTP)
 websocket_init(State) ->
     #{username := Username, whiteboard_id := WhiteboardId} = State,
     whiteboard:notify_user_connection(WhiteboardId, Username, node()),
     whiteboard:regenerate_strokes(WhiteboardId, Username),
     {ok, State}.
 
-%%% Handles incoming WebSocket messages.
+%%% Callback that handles incoming WebSocket messages from the client
 websocket_handle({text, Msg}, State) ->
     #{permission := Permission} = State,
     case Permission of
@@ -64,7 +64,7 @@ decode_message(Msg) ->
         _:_ -> error
     end.
 
-%%% WebSocket info handling, including closing and sending messages.
+%%% Handles Erlang messages to the Websocket Process
 websocket_info({close, Reason}, State) ->
     {[{close, 1000, Reason}], State};
 websocket_info({send, Message}, State) ->
@@ -72,11 +72,11 @@ websocket_info({send, Message}, State) ->
 websocket_info(_, State) -> 
     {ok, State}.
 
-%%% Terminates the WebSocket connection.
+%%% Callback called when the WebSocket connection is terminated by the client.
 terminate(_Reason, _Req, State) ->
     case State of
         #{username := Username, whiteboard_id := WhiteboardId} ->
-            whiteboard:notify_user_disconnection(WhiteboardId, Username, self(), node()),
+            whiteboard:notify_user_disconnection(WhiteboardId, Username, node()),
             ok;
         _ ->
             ok

@@ -13,4 +13,4 @@ rebar3 get-deps
 rebar3 compile
 
 echo "Starting node ${NODE_NAME}..."
-rebar3 shell --name ${NODE_NAME} --setcookie ${COOKIE} --config ./config/sys.config
+rebar3 shell --sname ${NODE_NAME} --setcookie ${COOKIE} --config ./config/sys.config

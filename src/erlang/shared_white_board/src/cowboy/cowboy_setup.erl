@@ -1,12 +1,13 @@
 -module(cowboy_setup).
--export([start/0]).
+-export([start/1]).
 
-start() ->
+start(Port) ->
     Dispatch = cowboy_router:compile([
                 {'_', [
                     {"/ws/:whiteboardId", websocket_handler, []}
                 ]}
             ]),
     {ok, _} = cowboy:start_clear(my_http_listener, 
-                [{port, 8888}], 
+                [{port, Port}], 
                 #{env => #{dispatch => Dispatch}}).
+
