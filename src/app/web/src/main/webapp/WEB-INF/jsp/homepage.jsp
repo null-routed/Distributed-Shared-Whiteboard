@@ -95,7 +95,9 @@
                                          data-bs-title="<%= whiteboard.getName() %>"
                                          <% if (!whiteboard.getDescription().isEmpty()) {%>
                                             data-bs-content="<%= whiteboard.getDescription() %>"
-                                         <%}%>
+                                         <%} else { %>
+                                             data-bs-content="No description available"
+                                         <%};%>
                                          data-placement="right"
                                          src="${pageContext.request.contextPath}/snapshot_manager?whiteboardID=<%= whiteboard.getId() %>">
                                 </a>
