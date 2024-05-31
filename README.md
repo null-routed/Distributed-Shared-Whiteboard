@@ -35,7 +35,7 @@
   * Server Domain -> select `domain1`
   * Set Username and Password to your Glassfish Server credentials
   * Set JRE to `corretto-11 (Amazon Corretto version 11....)` 
-* **General Settings** (**here the ordering of operations is very important**):
+* **Deployment Tab:** (**here the ordering of operations is very important**):
   * `+` button -> Artifact... -> select ejb -> OK
   * `+` button -> Artifact... -> select web:war exploded -> OK
 * **Server Tab:**
