@@ -13,6 +13,6 @@
 You can refer to [this](https://github.com/null-routed/Distributed-Shared-Whiteboard/tree/main/src) README file for all the necessary instructions.
 
 ## Contributors
-* [Marcoo Imbelli Cai](https://github.com/marcoimbee)
+* [Marco Imbelli Cai](https://github.com/marcoimbee)
 * [Niccolò Mulè](https://github.com/null-routed)
 * [Nicolò Picchi](https://github.com/NicoUniPi)
