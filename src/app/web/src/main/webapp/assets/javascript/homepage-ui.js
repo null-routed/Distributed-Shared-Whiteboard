@@ -30,7 +30,8 @@ export const addNewWhiteboardToDOM = (id, name, description) => {
   new bootstrap.Popover(imgElement, {
     trigger: 'hover',
     container: 'body',
-    html: true
+    html: true,
+    content: description || 'No description available'
   });
 
   const $colDiv = $(colDiv);
