@@ -4,6 +4,7 @@ import it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO;
 import it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO;
 import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
 import it.unipi.dsmt.jakartaee.app.utility.AccessController;
+import it.unipi.dsmt.jakartaee.app.utility.ClientRedirector;
 import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -50,6 +51,11 @@ public class WhiteboardServlet extends HttpServlet {
         }
 
         MinimalWhiteboardDTO selectedWhiteboard = whiteboardEJB.getWhiteboardByID(whiteboardID);
+        if(selectedWhiteboard == null) {
+            System.out.println("@WhiteboardServlet, doGet(): whiteboard not found");
+            ClientRedirector.redirectToMainPage(request, response);
+            return;
+        }
         List<String> whiteboardParticipants = whiteboardEJB.getParticipantUsernames(whiteboardID);
 
         request.setAttribute("selfUsername", loggedUserDTO.getUsername());
