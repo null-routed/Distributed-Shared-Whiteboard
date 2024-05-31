@@ -2,7 +2,10 @@ package it.unipi.dsmt.jakartaee.app.dto;
 
 import java.io.Serializable;
 
-
+/**
+ * DTO to store the minimal information of a whiteboard
+ * in the application.
+ */
 public class MinimalWhiteboardDTO implements Serializable {
     private int id;
     private String name;
@@ -11,7 +14,7 @@ public class MinimalWhiteboardDTO implements Serializable {
     private byte[] whiteboardSnapshot;
 
     private boolean readOnly;
-
+    
     public MinimalWhiteboardDTO(int id, String name, String description, byte[] whiteboardSnapshot) {
         this.id = id;
         this.name = name;

@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class LoggedUserDTO implements Serializable {
     private String id;
     private String username;
-
+    
     public LoggedUserDTO (@NotNull String id, @NotNull String username) {
         this.id = id;
         this.username = username;
