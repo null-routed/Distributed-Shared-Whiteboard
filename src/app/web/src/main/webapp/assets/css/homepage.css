@@ -84,6 +84,6 @@
 }
 
 #whiteboard-container {
-    max-height: 450px;
+    max-height: 900px;
     overflow-y: auto;
 }

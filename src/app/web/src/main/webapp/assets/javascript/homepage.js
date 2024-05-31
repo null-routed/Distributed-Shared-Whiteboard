@@ -16,7 +16,7 @@ function showErrorModal() {
 
 function setupListeners() {
   let deleteWhiteboardButtons = $(".delete-whiteboard-button");
-  deleteWhiteboardButtons.each(function() {
+  deleteWhiteboardButtons.each(function () {
     $(this).click(() => {
       confirmDelete($(this).attr("data-wb-id"));
     });
@@ -70,12 +70,12 @@ export function confirmDelete(whiteboardId) {
 }
 
 function submitWhiteboardForm() {
-  $('#insert-whiteboard-modal').modal('hide');
+  $("#insert-whiteboard-modal").modal("hide");
 
   const whiteboardName = $("#whiteboardName").val();
   const whiteboardDescription = $("#whiteboardDescription").val();
-  const readOnly = $("#readOnly").prop('checked');
-  
+  const readOnly = $("#readOnly").prop("checked");
+
   // Construct the form data
   const formData = new URLSearchParams();
   formData.append("whiteboardName", whiteboardName);
@@ -98,8 +98,7 @@ function submitWhiteboardForm() {
         addNewWhiteboardToDOM(
           data.message,
           whiteboardName,
-          $("#self-username").val(),
-          whiteboardDescription,
+          whiteboardDescription
         );
       }
     })
