@@ -26,7 +26,7 @@
 * `+` button -> EJB Application: Exploded
   * Name: ejb
   * Click on 'ejb' under 'Available Elements' -> Double-click on ''ejb' compile output'
-  * CLick on 'ejb-interfaces' under 'Available Elements' -> Double-click on ''ejb-interfaces' compile output'
+  * Click on 'ejb-interfaces' under 'Available Elements' -> Double-click on ''ejb-interfaces' compile output'
   * Apply -> OK
 ### 5. Setting up the configuration to a local instance of Glassfish 7.0.10
 * Current File -> Edit Configurations...
