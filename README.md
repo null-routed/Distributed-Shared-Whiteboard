@@ -10,4 +10,4 @@
 ## Overview
 
 ## Installing, configuring and running
-You can refer to [this](https://github.com/null-routed/Distributed-Shared-Whiteboard/tree/main/src) README file.
+You can refer to [this](https://github.com/null-routed/Distributed-Shared-Whiteboard/tree/main/src) README file for all the necessary instructions.
