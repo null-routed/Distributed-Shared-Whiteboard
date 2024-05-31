@@ -26,7 +26,7 @@ export const setupWebSocket = () => {
   ws.onopen = () => {
     setInterval(() => {
       sendSelfCursor();
-    }, 50);
+    }, 100);
   };
 
   ws.onerror = () => {

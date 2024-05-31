@@ -50,7 +50,7 @@ function handleReceivedMessage(message) {
   }
 
   // Validate the necessary properties
-  if (!parsedMessage || !parsedMessage.whiteboardName || !parsedMessage.targetUser || !parsedMessage.command) {
+  if (!parsedMessage || !parsedMessage.whiteboardName || !parsedMessage.command) {
     console.error("Received message does not contain expected properties:", parsedMessage);
     return; 
   }
@@ -80,7 +80,14 @@ function handleReceivedMessage(message) {
         if (isHomepage) {
           removeWhiteboardFromDOM(whiteboardID);
         }
-      } else {
+      }
+      else if (!targetUser) {
+        addToast(`${sender} has deleted the whiteboard ${whiteboardName}`);
+        if (isHomepage) {
+          removeWhiteboardFromDOM(whiteboardID);
+        }
+      }
+      else {
         addToast(`${targetUser} has left the whiteboard ${whiteboardName}`);
         if(whiteboardID === currWhiteboardID){
           removeParticipantFromDOM(targetUser);
