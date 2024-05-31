@@ -11,6 +11,8 @@ public class LoginInformationsDTO implements Serializable {
     private String username;
     private String password;
 
+    public LoginInformationsDTO () {}
+    
     public LoginInformationsDTO (@NotNull String username, @NotNull String password) {
         this.username = username;
         this.password = password;

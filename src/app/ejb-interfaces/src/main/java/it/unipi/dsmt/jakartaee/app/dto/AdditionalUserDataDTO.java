@@ -20,7 +20,7 @@ public class AdditionalUserDataDTO implements Serializable {
         this.email = email;
         this.username = username;
     }
-
+    
     public String getName() {
         return name;
     }
