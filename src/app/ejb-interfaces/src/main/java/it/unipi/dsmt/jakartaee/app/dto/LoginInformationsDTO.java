@@ -8,6 +8,7 @@ import java.io.Serializable;
  * DTO used for sending the user's login information to a remote EJB object.
  */
 public class LoginInformationsDTO implements Serializable {
+
     private String username;
     private String password;
 

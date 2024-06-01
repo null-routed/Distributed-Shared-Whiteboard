@@ -9,6 +9,7 @@ import java.io.Serializable;
  * in the application.
  */
 public class LoggedUserDTO implements Serializable {
+
     private String id;
     private String username;
     

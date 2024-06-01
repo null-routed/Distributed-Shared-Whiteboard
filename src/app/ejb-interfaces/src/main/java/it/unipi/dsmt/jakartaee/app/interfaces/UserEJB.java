@@ -5,6 +5,7 @@ import it.unipi.dsmt.jakartaee.app.enums.SignupStatus;
 import jakarta.ejb.Remote;
 import org.jetbrains.annotations.NotNull;
 
+
 /**
  * Interface for EJBs responsible for handling all the business logic related to the user management.
  */
