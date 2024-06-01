@@ -74,5 +74,7 @@
 * Open your local Nginx folder
 * Open the `conf` folder and place there the file `conf/nginx.conf` of this repository.
 
-### When starting the application
+<br>
+
+## When starting the application
 Make sure the process `OpenJDK Platform Binary` is not running, as this will likely interfere with IntelliJ's build and deploy operations. 
