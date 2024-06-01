@@ -16,10 +16,13 @@ import jakarta.ejb.EJB;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.annotation.Resource;
-
 import java.io.IOException;
 import java.util.List;
 
+
+/**
+ * Servlet for handling requests to delete a whiteboard.
+ */
 @WebServlet(name = "DeleteWhiteboardServlet", value = "/delete_whiteboard")
 public class DeleteWhiteboardServlet extends BaseWhiteboardServlet {
 
@@ -28,6 +31,12 @@ public class DeleteWhiteboardServlet extends BaseWhiteboardServlet {
     @Resource
     private UserTransaction userTransaction;
 
+    /**
+     * Handles POST requests to delete a whiteboard.
+     * @param request HttpServletRequest instance
+     * @param response HttpServletResponse instance
+     * @throws IOException if an I/O error occurs during request processing
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         LoggedUserDTO loggedUserDTO = AccessController.getLoggedUserWithRedirect(request, response);
@@ -45,15 +54,21 @@ public class DeleteWhiteboardServlet extends BaseWhiteboardServlet {
         String userToRemove = !userParam.isEmpty() ? userParam : currentUser;
 
         MinimalWhiteboardDTO whiteboardDTO = whiteboardEJB.getWhiteboardByID(Integer.parseInt(whiteboardIdToDelete));
-        if ((isNotOwner(whiteboardDTO, currentUser) && userToRemove.equals(currentUser)) || (!isNotOwner(whiteboardDTO, currentUser) && !userToRemove.equals(currentUser))) {
+        if ((isNotOwner(whiteboardDTO, currentUser) && userToRemove.equals(currentUser)) || (!isNotOwner(whiteboardDTO, currentUser) && !userToRemove.equals(currentUser)))
             removeParticipant(response, whiteboardDTO, userToRemove, currentUser);
-        } else if (!isNotOwner(whiteboardDTO, currentUser)) {
+        else if (!isNotOwner(whiteboardDTO, currentUser))
             deleteWhiteboard(response, whiteboardDTO, currentUser);
-        } else {
+        else
             sendJsonResponse(response, false, "Unauthorized access.");
-        }
     }
 
+    /**
+     * Deletes the whiteboard.
+     * @param response HttpServletResponse instance
+     * @param whiteboardDTO MinimalWhiteboardDTO instance representing the whiteboard to delete
+     * @param currentUser the current user
+     * @throws IOException if an I/O error occurs during response sending
+     */
     private void deleteWhiteboard(HttpServletResponse response, MinimalWhiteboardDTO whiteboardDTO, String currentUser) throws IOException {
         try {
             userTransaction.begin();
@@ -72,6 +87,14 @@ public class DeleteWhiteboardServlet extends BaseWhiteboardServlet {
         }
     }
 
+    /**
+     * Removes a participant from the whiteboard.
+     * @param response HttpServletResponse instance
+     * @param whiteboardDTO MinimalWhiteboardDTO instance representing the whiteboard
+     * @param usernameToBeRemoved the username of the participant to be removed
+     * @param currentUser the current user
+     * @throws IOException if an I/O error occurs during response sending
+     */
     private void removeParticipant(HttpServletResponse response, MinimalWhiteboardDTO whiteboardDTO, String usernameToBeRemoved, String currentUser) throws IOException {
         try {
             userTransaction.begin();
@@ -96,6 +119,13 @@ public class DeleteWhiteboardServlet extends BaseWhiteboardServlet {
         }
     }
 
+    /**
+     * Sends a message to notify users of a removed user.
+     * @param currentUser the current user
+     * @param whiteboardDTO MinimalWhiteboardDTO instance representing the whiteboard
+     * @param removedUser the username of the removed user, null if the whiteboard was deleted
+     * @param participantsUsername list of usernames of participants
+     */
     private void sendUserRemovedMessage(String currentUser, MinimalWhiteboardDTO whiteboardDTO, String removedUser, List<String> participantsUsername) {
         if(participantsUsername == null) return;
         JsonObjectBuilder builder = Json.createObjectBuilder()
@@ -105,9 +135,9 @@ public class DeleteWhiteboardServlet extends BaseWhiteboardServlet {
                 .add("command", "remove");
         if (removedUser == null) {
             builder.addNull("targetUser");
-        } else {
+        } else
             builder.add("targetUser", removedUser);
-        }
+
         JsonObject message = builder.build();
         for (String username : participantsUsername) {
             if (!username.equals(currentUser))
@@ -115,6 +145,12 @@ public class DeleteWhiteboardServlet extends BaseWhiteboardServlet {
         }
     }
 
+    /**
+     * Handles transaction errors.
+     * @param response HttpServletResponse instance
+     * @param e the Exception thrown
+     * @throws IOException if an I/O error occurs during response sending
+     */
     private void handleTransactionError(HttpServletResponse response, Exception e) throws IOException {
         try {
             userTransaction.rollback();
@@ -123,6 +159,4 @@ public class DeleteWhiteboardServlet extends BaseWhiteboardServlet {
         }
         sendJsonResponse(response, false, "An error occurred: " + e.getMessage());
     }
-
-
 }

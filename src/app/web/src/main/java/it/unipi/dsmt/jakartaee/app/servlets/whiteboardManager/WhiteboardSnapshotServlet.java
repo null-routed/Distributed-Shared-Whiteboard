@@ -8,17 +8,25 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Base64;
 
+
+/**
+ * Servlet to manage whiteboard snapshots.
+ */
 @WebServlet (name = "WhiteboardSnapshotServlet", value = "/snapshot_manager")
 public class WhiteboardSnapshotServlet extends HttpServlet {
 
     @EJB
     private WhiteboardEJB whiteboardEJB;
 
+    /**
+     * Handles GET requests to retrieve a snapshot of a whiteboard.
+     * @param request HttpServletRequest instance
+     * @param response HttpServletResponse instance
+     */
     @Override
     protected void doGet (HttpServletRequest request, HttpServletResponse response) {
         System.out.println("@WhiteboardSnapshotServlet: called doGet() method");
@@ -38,6 +46,12 @@ public class WhiteboardSnapshotServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Handles POST requests to update the snapshot of a whiteboard.
+     * @param request HttpServletRequest instance
+     * @param response HttpServletResponse instance
+     * @throws IOException if an I/O error occurs during request processing
+     */
     @Override
     protected void doPost (HttpServletRequest request, HttpServletResponse response) throws IOException {
         System.out.println("@WhiteboardSnapshotServlet: called doPost() method");
