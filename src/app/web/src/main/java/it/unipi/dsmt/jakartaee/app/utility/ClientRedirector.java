@@ -3,7 +3,6 @@ package it.unipi.dsmt.jakartaee.app.utility;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 
 
@@ -18,7 +17,8 @@ public class ClientRedirector {
      * @param response HttpServletResponse instance
      * @throws IOException if redirection fails
      */
-    public static void redirectToMainPage (@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws IOException {
+    public static void redirectToMainPage (@NotNull HttpServletRequest request,
+                                           @NotNull HttpServletResponse response) throws IOException {
         System.out.println("@ClientRedirector: forwarding to main page");
         response.sendRedirect(request.getContextPath() + "/homepage");
     }
