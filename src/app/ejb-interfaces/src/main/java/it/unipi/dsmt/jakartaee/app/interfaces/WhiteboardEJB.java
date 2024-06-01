@@ -5,7 +5,6 @@ import it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO;
 import it.unipi.dsmt.jakartaee.app.enums.ParticipantOperationStatus;
 import jakarta.ejb.Remote;
 import jakarta.validation.constraints.NotNull;
-
 import java.util.List;
 
 

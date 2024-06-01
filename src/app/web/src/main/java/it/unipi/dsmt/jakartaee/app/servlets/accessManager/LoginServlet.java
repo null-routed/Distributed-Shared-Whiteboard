@@ -11,7 +11,6 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
@@ -54,12 +53,15 @@ public class LoginServlet extends HttpServlet {
             dispatcher.forward(request, response);
             return;
         }
+
         //Login successful
         // Generate JWT token and set it as a cookie in the response
         JWT.generateTokenAndSetCookie(response, loggedUser.getUsername());
+
         // add logged user info to session var
         AccessController.setLoggedUser(request, Objects.requireNonNull(loggedUser));
         response.getWriter().write("InitiateWebSocketConnection");
+
         ClientRedirector.redirectToMainPage(request, response);     // redirect to main page
     }
 }

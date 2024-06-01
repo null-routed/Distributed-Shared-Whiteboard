@@ -1,14 +1,23 @@
 package it.unipi.dsmt.jakartaee.app.utility;
 
 import com.ericsson.otp.erlang.*;
-
 import java.io.IOException;
 
-
+/**
+ * Static class providing methods to execute Remote Procedure Calls via Erlang
+ */
 public class RPC {
 
     private static OtpConnection connection = null;
 
+    /**
+     * Triggers the execution of an Erlang method depending on the command
+     * @param command String describing what needs to be done
+     * @param whiteboardId The whiteboard ID subject to the operation
+     * @param userId The ID of the user triggering the operation
+     * @param isOwner Tells if userId is the owner of the whiteboard identified by whiteboardId
+     * @return a Boolean representing the outcome of the operation
+     */
     public static boolean sendErlangWhiteboardUpdateRPC(String command, String whiteboardId, String userId, int isOwner) {
         System.out.println("@RPC: called sendErlangWhiteboardUpdateRPC() method");
         try {
@@ -24,6 +33,12 @@ public class RPC {
         return false;
     }
 
+
+    /**
+     * Establishes a connection to an Erlang node if not already connected.
+     * @return OtpConnection instance representing the connection to the Erlang node.
+     * @throws IOException if an I/O error occurs when attempting to establish the connection.
+     */
     public static OtpConnection getConnection() throws IOException {
         if (connection == null || !connection.isConnected()) {
             OtpSelf self = new OtpSelf("java_client", "shared_whiteboard_app");
@@ -39,6 +54,17 @@ public class RPC {
         return connection;
     }
 
+    /**
+     * Executes an Erlang command to handle whiteboard changes.
+     * @param command the command to be executed
+     * @param whiteboardId the ID of the whiteboard
+     * @param userId the ID of the user
+     * @param isOwner flag indicating if the user is the owner
+     * @return OtpErlangObject representing the response from the Erlang node
+     * @throws IOException if an I/O error occurs when communicating with the Erlang node
+     * @throws OtpAuthException if authentication fails when connecting to the Erlang node
+     * @throws OtpErlangExit if the Erlang process exits unexpectedly
+     */
     public static OtpErlangObject executeErlangCommand(String command, String whiteboardId, String userId, int isOwner)
             throws IOException, OtpAuthException, OtpErlangExit {
         OtpConnection conn = getConnection();           // Connecting to Erlang node

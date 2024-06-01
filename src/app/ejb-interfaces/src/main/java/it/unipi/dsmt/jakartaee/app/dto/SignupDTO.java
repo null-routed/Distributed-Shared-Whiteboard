@@ -8,6 +8,7 @@ import java.io.Serializable;
  * DTO used for sending the user's signup information to a remote EJB object.
  */
 public class SignupDTO implements Serializable {
+
     private String name;
     private String surname;
     private String email;

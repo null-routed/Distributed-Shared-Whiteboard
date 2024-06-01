@@ -11,9 +11,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.*;
-
 import java.io.IOException;
 
+
+/**
+ * Servlet for handling requests to insert a new whiteboard.
+ */
 @WebServlet(name = "InsertWhiteboardServlet", value = "/insert_whiteboard")
 public class InsertWhiteboardServlet extends BaseWhiteboardServlet {
 
@@ -23,6 +26,12 @@ public class InsertWhiteboardServlet extends BaseWhiteboardServlet {
     @Resource
     private UserTransaction userTransaction;
 
+    /**
+     * Handles POST requests to insert a new whiteboard.
+     * @param request HttpServletRequest instance
+     * @param response HttpServletResponse instance
+     * @throws IOException if an I/O error occurs during request processing
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         LoggedUserDTO loggedUserDTO = AccessController.getLoggedUserWithRedirect(request, response);

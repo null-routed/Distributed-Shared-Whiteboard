@@ -1,25 +1,32 @@
 package it.unipi.dsmt.jakartaee.app.servlets.whiteboardManager;
+
 import it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO;
 import it.unipi.dsmt.jakartaee.app.dto.MinimalWhiteboardDTO;
-
 import it.unipi.dsmt.jakartaee.app.enums.ParticipantOperationStatus;
 import it.unipi.dsmt.jakartaee.app.servlets.WebSocketServerEndpoint;
 import it.unipi.dsmt.jakartaee.app.utility.AccessController;
 import it.unipi.dsmt.jakartaee.app.utility.RPC;
-
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.util.List;
 
 
+/**
+ * Servlet for handling requests to share a whiteboard with a new participant.
+ */
 @WebServlet(name = "ShareWhiteboardServlet", value = "/share_whiteboard")
 public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
 
+    /**
+     * Handles POST requests to share a whiteboard with a new participant.
+     * @param request HttpServletRequest instance
+     * @param response HttpServletResponse instance
+     * @throws IOException if an I/O error occurs during request processing
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -47,6 +54,13 @@ public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
         sendResponse(response, jsonResponse);
     }
 
+    /**
+     * Handles the request to share a whiteboard with a new participant.
+     * @param whiteboardDTO The whiteboard to be shared
+     * @param newParticipantUsername The username of the new participant
+     * @param currentUser The username of the current user
+     * @return JsonObject representing the response
+     */
     private JsonObject handleRequest(MinimalWhiteboardDTO whiteboardDTO, String newParticipantUsername, String currentUser) {
         ParticipantOperationStatus status = whiteboardEJB.isParticipant(
                 newParticipantUsername, String.valueOf(whiteboardDTO.getId()));
@@ -62,15 +76,22 @@ public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
         }
     }
 
+    /**
+     * Processes the transaction of sharing a whiteboard with a new participant.
+     * @param whiteboardID The ID of the whiteboard to be shared
+     * @param newParticipantUsername The username of the new participant
+     * @param currentUser The username of the current user
+     * @return JsonObject representing the response
+     */
     private JsonObject processTransaction(String whiteboardID, String newParticipantUsername, String currentUser) {
         try {
             userTransaction.begin();
             ParticipantOperationStatus insertOutcome = whiteboardEJB.addParticipant(newParticipantUsername, whiteboardID);
             MinimalWhiteboardDTO whiteboardDTO = whiteboardEJB.getWhiteboardByID(Integer.parseInt(whiteboardID));
 
-            if (insertOutcome == ParticipantOperationStatus.SQL_SUCCESS) {
+            if (insertOutcome == ParticipantOperationStatus.SQL_SUCCESS)
                 return handleSuccess(whiteboardDTO, newParticipantUsername, currentUser);
-            } else {
+            else {
                 userTransaction.rollback();
                 return createJsonResponse(false, getErrorMessage(insertOutcome));
             }
@@ -81,6 +102,14 @@ public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
         }
     }
 
+    /**
+     * Handles the success scenario of sharing a whiteboard with a new participant.
+     * @param whiteboardDTO The whiteboard that has been shared
+     * @param newParticipantUsername The username of the new participant
+     * @param currentUser The username of the current user
+     * @return JsonObject representing the response
+     * @throws Exception if an error occurs during the process
+     */
     private JsonObject handleSuccess(MinimalWhiteboardDTO whiteboardDTO, String newParticipantUsername, String currentUser) throws Exception {
         boolean erlangShareOperationOutcome = RPC.sendErlangWhiteboardUpdateRPC(
                 "insert", String.valueOf(whiteboardDTO.getId()),
@@ -97,6 +126,9 @@ public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
         }
     }
 
+    /**
+     * Rolls back the ongoing transaction.
+     */
     private void rollbackTransaction() {
         try {
             userTransaction.rollback();
@@ -105,6 +137,11 @@ public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
         }
     }
 
+    /**
+     * Retrieves an error message based on the given ParticipantOperationStatus.
+     * @param status The status of the participant operation
+     * @return The corresponding error message
+     */
     private String getErrorMessage(ParticipantOperationStatus status) {
         switch (status) {
             case UNREGISTERED_USER:
@@ -115,6 +152,13 @@ public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
         }
     }
 
+    /**
+     * Sends a WebSocket message to inform participants about the whiteboard sharing.
+     * @param targetUsername The username of the new participant
+     * @param whiteboardDTO The whiteboard that has been shared
+     * @param participantsUsername The usernames of all participants
+     * @param currentUser The username of the current user
+     */
     private void sendWebSocketMessage(String targetUsername,
                                       MinimalWhiteboardDTO whiteboardDTO,
                                       List<String> participantsUsername,
@@ -131,6 +175,5 @@ public class ShareWhiteboardServlet extends BaseWhiteboardServlet {
             if (!username.equals(currentUser))
                 WebSocketServerEndpoint.sendMessageToUser(username, message);
         }
-
     }
 }

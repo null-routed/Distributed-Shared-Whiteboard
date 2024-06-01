@@ -9,6 +9,7 @@ import java.io.Serializable;
  * in the application, when requested.
  */
 public class AdditionalUserDataDTO implements Serializable {
+
     private String name;
     private String surname;
     private String email;

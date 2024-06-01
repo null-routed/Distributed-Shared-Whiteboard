@@ -5,8 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.io.IOException;
+
 
 /**
  * Static class providing methods for controlling user permissions to webapp resources
@@ -30,10 +30,8 @@ public class AccessController {
             @NotNull HttpServletResponse response) throws IOException
     {
         LoggedUserDTO loggedUser = getLoggedUser(request);
-        if (loggedUser == null) {
-            // User not logged => redirect to the login page
-            ClientRedirector.redirectToLogin(request, response);
-        }
+        if (loggedUser == null)
+            ClientRedirector.redirectToLogin(request, response);        // User not logged => redirect to the login page
 
         return loggedUser;
     }
@@ -55,5 +53,4 @@ public class AccessController {
     public static void setLoggedUser (@NotNull HttpServletRequest request, @NotNull LoggedUserDTO loggedUser) {
         request.getSession().setAttribute(LOGGED_USER_ATTRIBUTE, loggedUser);
     }
-
 }

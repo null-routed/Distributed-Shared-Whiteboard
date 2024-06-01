@@ -9,7 +9,6 @@ import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -24,7 +23,7 @@ public class WhiteboardServlet extends HttpServlet {
     private WhiteboardEJB whiteboardEJB;
 
     /**
-     * Handle a GET request by forwarding to the specified whiteboard.
+     * Handles a GET request by forwarding to the specified whiteboard.
      * @param request HttpServletRequest instance
      * @param response HttpServletResponse instance
      * @throws IOException if redirection fails

@@ -10,17 +10,26 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.util.List;
 
 
+/**
+ * Servlet for handling requests to the homepage.
+ */
 @WebServlet(name = "HomepageServlet", value = "/homepage")
 public class HomepageServlet extends HttpServlet {
 
     @EJB
     private WhiteboardEJB whiteboardEJB;
 
+    /**
+     * Handles GET requests to display the homepage.
+     * @param request HttpServletRequest instance
+     * @param response HttpServletResponse instance
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs during request processing
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("@HomepageServlet: called doGet() method");

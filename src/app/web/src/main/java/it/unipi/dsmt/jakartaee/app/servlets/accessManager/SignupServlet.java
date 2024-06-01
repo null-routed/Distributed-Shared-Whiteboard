@@ -1,6 +1,5 @@
 package it.unipi.dsmt.jakartaee.app.servlets.accessManager;
 
-import it.unipi.dsmt.jakartaee.app.dto.LoggedUserDTO;
 import it.unipi.dsmt.jakartaee.app.dto.SignupDTO;
 import it.unipi.dsmt.jakartaee.app.enums.SignupStatus;
 import it.unipi.dsmt.jakartaee.app.interfaces.UserEJB;
@@ -10,7 +9,6 @@ import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-
 import java.io.IOException;
 import java.util.Optional;
 
@@ -26,6 +24,15 @@ public class SignupServlet extends HttpServlet {
     @EJB
     private UserEJB userEJB;
 
+    /**
+     * Validates the signup parameters.
+     * @param name the user's name
+     * @param surname the user's surname
+     * @param username the desired username
+     * @param password the desired password
+     * @param repeatPassword the repeated password for confirmation
+     * @return boolean true if all parameters are valid, false otherwise
+     */
     private boolean checkSignupParameters(String name, String surname, String username, String password, String repeatPassword) {
         final int USERNAME_NAME_MAX_LENGTH = 50;
         final int USERNAME_MIN_LENGTH = 5;
@@ -56,8 +63,6 @@ public class SignupServlet extends HttpServlet {
             messageToJSPPage = "Password must be at least " + PASSWORD_MIN_LENGTH + " characters long.";
             return false;
         }
-
-        // TODO: add other controls on pwd
 
         if (!password.equals(repeatPassword)) {
             messageToJSPPage = "Passwords do not match.";
