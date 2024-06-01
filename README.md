@@ -9,7 +9,9 @@
 
 ## Overview
 ### Short demo
-https://github.com/null-routed/Distributed-Shared-Whiteboard/assets/57362927/ca1187fe-5231-4630-9e95-07a088abc36b
+https://github.com/null-routed/Distributed-Shared-Whiteboard/assets/57362927/abc52d0d-c873-4831-98df-819aa2478a09
+
+
 
 
 
