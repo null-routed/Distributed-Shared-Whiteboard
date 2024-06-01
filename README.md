@@ -8,9 +8,21 @@
 # Distributed Shared Whiteboards
 
 ## Overview
+### Short demo
+https://github.com/null-routed/Distributed-Shared-Whiteboard/assets/57362927/ca1187fe-5231-4630-9e95-07a088abc36b
+
+
+
+
+
+
+
+<br>
 
 ## Installing, configuring and running
 You can refer to [this](https://github.com/null-routed/Distributed-Shared-Whiteboard/tree/main/src) README file for all the necessary instructions.
+
+<br>
 
 ## Contributors
 * [Marco Imbelli Cai](https://github.com/marcoimbee)
