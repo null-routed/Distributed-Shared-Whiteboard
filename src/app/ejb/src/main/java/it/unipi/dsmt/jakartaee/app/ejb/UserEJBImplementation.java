@@ -11,7 +11,6 @@ import jakarta.annotation.Resource;
 import jakarta.ejb.Stateless;
 import org.jetbrains.annotations.NotNull;
 import org.apache.commons.codec.digest.DigestUtils;
-
 import javax.sql.DataSource;
 import java.sql.*;
 
@@ -70,7 +69,6 @@ public class UserEJBImplementation implements UserEJB {
 
     /**
      * Definition of the signup operation. Takes a SignupDTO, perform the query and return the result.
-     *
      * @param signupDTO: SignupDTO type which contains user data to be stored
      * @return SignupStatus value indicating if the signup operation was successful or not, if so error code
      */
@@ -155,6 +153,11 @@ public class UserEJBImplementation implements UserEJB {
         }
     }
 
+    /**
+     * Retrieves the user ID associated with the specified username.
+     * @param username The username of the user.
+     * @return The user ID associated with the username, or {@code null} if no user with the username exists.
+     */
     @Override
     public String getUserIdByUsername(@NotNull String username) {
         System.out.println("@UserEJBImplementation: called method getUserIdByUsername(), param=" + username);

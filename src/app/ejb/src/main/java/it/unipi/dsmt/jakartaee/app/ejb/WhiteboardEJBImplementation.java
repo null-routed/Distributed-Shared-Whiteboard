@@ -7,7 +7,6 @@ import it.unipi.dsmt.jakartaee.app.interfaces.WhiteboardEJB;
 import jakarta.annotation.Resource;
 import jakarta.ejb.Stateless;
 import jakarta.validation.constraints.NotNull;
-
 import javax.imageio.ImageIO;
 import javax.sql.DataSource;
 import java.awt.*;
@@ -19,6 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * Stateless EJB implementation for handling whiteboard operations.
+ */
 @Stateless
 public class WhiteboardEJBImplementation implements WhiteboardEJB {
 
@@ -26,6 +28,14 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
     @Resource(lookup = "jdbc/SharedWhiteboardsPool")
     private DataSource dataSource;
 
+    /**
+     * Searches for whiteboards with a name containing the specified search term
+     * and owned by the specified user.
+     * @param whiteboardName The search term for whiteboard names.
+     * @param userID The ID of the user performing the search.
+     * @return A list of {@link MinimalWhiteboardDTO} objects representing the
+     *         whiteboards matching the search criteria.
+     */
     @Override
     public List<MinimalWhiteboardDTO> searchWhiteboard(@NotNull String whiteboardName, @NotNull String userID) {
         System.out.println("@WhiteboardEJBImplementation: called searchWhiteboard() method");
@@ -65,6 +75,12 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         return whiteboards;
     }
 
+    /**
+     * Retrieves all whiteboards owned by the specified user.
+     * @param userId The ID of the user whose whiteboards are to be retrieved.
+     * @return A list of {@link MinimalWhiteboardDTO} objects representing the
+     *         whiteboards owned by the user.
+     */
     @Override
     public List<MinimalWhiteboardDTO> getAllWhiteboards(@NotNull String userId) {
         System.out.println("@WhiteboardEJBImplementation: called getAllWhiteboards() method");
@@ -77,7 +93,6 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
                     "INNER JOIN WhiteboardParticipants WP " +
                         "ON W.WhiteboardID = WP.WhiteboardID " +
                 "WHERE WP.UserID = ?";
-
 
         try (Connection connection = dataSource.getConnection()) {
 
@@ -103,6 +118,12 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         return whiteboards;
     }
 
+    /**
+     * Retrieves all shared whiteboards for the specified user.
+     * @param id The ID of the user.
+     * @return A list of {@link MinimalWhiteboardDTO} objects representing the
+     *         shared whiteboards for the user.
+     */
     @Override
     public List<MinimalWhiteboardDTO> getSharedWhiteboards(String id) {
         System.out.println("@WhiteboardEJBImplementation: called getsSharedWhiteboards() method");
@@ -139,6 +160,11 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         return whiteboards;
     }
 
+    /**
+     * Retrieves the usernames of all participants in the specified whiteboard.
+     * @param whiteboardID The ID of the whiteboard.
+     * @return A list of usernames of participants in the whiteboard.
+     */
     public List<String> getParticipantUsernames(int whiteboardID) {
         System.out.println("@WhiteboardEJBImplementation: called getParticipants() method");
 
@@ -169,6 +195,13 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         return participantUsernames;
     }
 
+    /**
+     * Adds a new whiteboard to the database.
+     * @param ownerId The ID of the user creating the whiteboard.
+     * @param newWhiteboard The {@link WhiteboardCreationDTO} object representing
+     *                      the details of the new whiteboard.
+     * @return The ID of the newly created whiteboard, or -1 if creation failed.
+     */
     @Override
     public int addWhiteboard(String ownerId, WhiteboardCreationDTO newWhiteboard) {
         System.out.println("@WhiteboardEJBImplementation: called addWhiteboard() method");
@@ -213,6 +246,12 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         }
     }
 
+    /**
+     * Retrieves the whiteboard with the specified ID.
+     * @param whiteboardID The ID of the whiteboard to retrieve.
+     * @return A {@link MinimalWhiteboardDTO} object representing the retrieved whiteboard,
+     *         or {@code null} if no whiteboard with the specified ID is found.
+     */
     @Override
     public MinimalWhiteboardDTO getWhiteboardByID (int whiteboardID) {
         System.out.println("@WhiteboardEJBImplementation: called getWhiteboardByID() method");
@@ -249,6 +288,11 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         }
     }
 
+    /**
+     * Deletes the whiteboard with the specified ID from the database.
+     * @param whiteboardID The ID of the whiteboard to delete.
+     * @return {@code true} if the whiteboard was successfully deleted, {@code false} otherwise.
+     */
     @Override
     public boolean deleteWhiteboard(String whiteboardID) {
         System.out.println("@WhiteboardEJBImplementation: called deleteWhiteboard() method");
@@ -277,6 +321,12 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         }
     }
 
+    /**
+     * Checks if the specified user is the owner of the specified whiteboard.
+     * @param userId The ID of the user to check.
+     * @param whiteboardId The ID of the whiteboard to check ownership for.
+     * @return {@code true} if the user is the owner of the whiteboard, {@code false} otherwise.
+     */
     @Override
     public boolean isWhiteboardOwner(String userId, String whiteboardId) {
         System.out.println("@WhiteboardEJBImplementation: called isWhiteboardOwner() method");
@@ -302,6 +352,12 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         }
     }
 
+    /**
+     * Removes a participant from a whiteboard.
+     * @param userId The ID of the user to remove from the whiteboard.
+     * @param whiteboardId The ID of the whiteboard.
+     * @return The {@link ParticipantOperationStatus} indicating the outcome of the operation.
+     */
     @Override
     public ParticipantOperationStatus removeParticipant(String userId, String whiteboardId) {
         System.out.println("@WhiteboardEJBImplementation: called removeParticipant() method");
@@ -326,6 +382,12 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         }
     }
 
+    /**
+     * Checks if a user is a participant in a whiteboard.
+     * @param username The username of the user to check.
+     * @param whiteboardId The ID of the whiteboard.
+     * @return The {@link ParticipantOperationStatus} indicating the user's participation status.
+     */
     @Override
     public ParticipantOperationStatus isParticipant(String username, String whiteboardId) {
         System.out.println("@WhiteboardEJBImplementation: called isParticipant() method, params=" + username + ", " + whiteboardId);
@@ -374,6 +436,12 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         return ParticipantOperationStatus.OTHER_ERROR;        // Default to error
     }
 
+    /**
+     * Adds a participant to a whiteboard.
+     * @param username The username of the user to add.
+     * @param whiteboardId The ID of the whiteboard.
+     * @return The {@link ParticipantOperationStatus} indicating the outcome of the operation.
+     */
     @Override
     public ParticipantOperationStatus addParticipant(String username, String whiteboardId) {
         System.out.println("@WhiteboardEJBImplementation: called addParticipant() method, params=" + username + ", " + whiteboardId);
@@ -421,6 +489,12 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         return ParticipantOperationStatus.OTHER_ERROR;        // Default to error
     }
 
+    /**
+     * Updates the snapshot of a whiteboard with the specified ID.
+     * @param snapshotDataBytes The byte array representing the snapshot data.
+     * @param whiteboardID The ID of the whiteboard.
+     * @return {@code true} if the snapshot was successfully updated, {@code false} otherwise.
+     */
     @Override
     public boolean updateWhiteboardSnapshot (byte[] snapshotDataBytes, String whiteboardID) {
 
@@ -444,6 +518,13 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         }
     }
 
+    /**
+     * Generates a blank snapshot image with the specified width and height.
+     * @param width  The width of the image.
+     * @param height The height of the image.
+     * @return The byte array representing the blank snapshot image.
+     * @throws IOException If an I/O error occurs while generating the image.
+     */
     private static byte[] generateBlankSnapshot(int width, int height) throws IOException {
         BufferedImage blankSnapshot = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics2D = blankSnapshot.createGraphics();
@@ -454,6 +535,12 @@ public class WhiteboardEJBImplementation implements WhiteboardEJB {
         return outputStream.toByteArray();
     }
 
+    /**
+     * Retrieves the snapshot data of the whiteboard with the specified ID.
+     * @param whiteboardID The ID of the whiteboard.
+     * @return The byte array representing the snapshot data of the whiteboard,
+     *         or {@code null} if no snapshot is available or an error occurs.
+     */
     @Override
     public byte[] getSnapshotByWhiteboardID (String whiteboardID) {
         System.out.println("@WhiteboardEJBImplementation: called getSnapshotByWhiteboardID()");
