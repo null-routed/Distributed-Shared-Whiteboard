@@ -7,6 +7,9 @@
 * Execute `nginx -s quit` from your local Nginx folder to stop the Nginx load balancer
 * More infos [here](https://nginx.org/en/docs/windows.html)
 
+## Starting Erlang nodes
+In order to compile and run the Erlang node, it's mandatory to have `rebar3` installed and in PATH. <br>
+After ensuring that, place yourself in `Distributed-Shared-Whiteboard\src\erlang\shared_white_board` and run `./start_node.sh <node_name>` to start a node, for example `./start_node.sh node1@localhost`. 
 <br>
 
 ## Opening and deploying this project using IntelliJ IDEA Ultimate Edition IDE and a local instance of Glassfish 7.0.10:
@@ -73,6 +76,8 @@
 ### 8. Setting up Nginx to use the custom configuration
 * Open your local Nginx folder
 * Open the `conf` folder and place there the file `conf/nginx.conf` of this repository.
+
+
 
 <br>
 
